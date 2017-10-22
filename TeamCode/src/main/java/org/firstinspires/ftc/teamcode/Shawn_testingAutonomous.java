@@ -29,41 +29,35 @@
 
 package org.firstinspires.ftc.teamcode;
 
-import android.content.Context;
-
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.hardware.HardwareMap;
 
-import org.firstinspires.ftc.robotcontroller.external.samples.HardwarePushbot;
-
-@Autonomous(name = "Test: Autonomous Something", group = "Pushbot")
-@Disabled
-public class Shawn_TestAutonomousOpMode extends LinearOpMode {
+@Autonomous(name = "Test: Autonomous", group = "Pushbot")
+// @Disabled
+public class Shawn_testingAutonomous extends LinearOpMode {
 
 //    experimentation
 //    HardwarePushbot robot = new HardwarePushbot();
 //    HardwareMap thing = new HardwareMap(hardwareMap.appContext);
 
-    static final double     COUNTS_PER_MOTOR_REV    = 1440 ;    // eg: TETRIX Motor Encoder
-    static final double     DRIVE_GEAR_REDUCTION    = -2.0 ;     // This is < 1.0 if geared UP
-    static final double     WHEEL_DIAMETER_INCHES   = 4.0 ;     // For figuring circumference
-    static final double     COUNTS_PER_INCH         = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) /
+    static final double COUNTS_PER_MOTOR_REV = 1440;    // eg: TETRIX Motor Encoder
+    static final double DRIVE_GEAR_REDUCTION = -2.0;     // This is < 1.0 if geared UP
+    static final double WHEEL_DIAMETER_INCHES = 4.0;     // For figuring circumference
+    static final double COUNTS_PER_INCH = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) /
             (WHEEL_DIAMETER_INCHES * 3.1415);
 
     DcMotor rightDrive = null;
     DcMotor leftDrive = null;
 
-    double test = 0.0;
-
     double robotDiameter;
 
-    Shawn_TestAutonomousOpMode() {
-        rightDrive = hardwareMap.get(DcMotor.class, "right_drive");
-        leftDrive = hardwareMap.get(DcMotor.class, "left_drive");
+    @Override
+    public void runOpMode() throws InterruptedException {
+
+        rightDrive = hardwareMap.dcMotor.get("right_drive");
+        leftDrive = hardwareMap.dcMotor.get("left_drive");
 
         rightDrive.setDirection(DcMotorSimple.Direction.FORWARD);
         leftDrive.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -76,58 +70,33 @@ public class Shawn_TestAutonomousOpMode extends LinearOpMode {
 
         robotDiameter = 14.25;
 
-    }
-
-
-//    autonomous has no init
-//    @Override
-//    public void init() {
-//
-//        rightDrive = hardwareMap.get(DcMotor.class, "right_drive");
-//        leftDrive = hardwareMap.get(DcMotor.class, "left_drive");
-//
-//        rightDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-//        leftDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-//
-//        rightDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-//        leftDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-//
-//        rightDrive.setDirection(DcMotor.Direction.FORWARD);
-//        leftDrive.setDirection(DcMotor.Direction.REVERSE);
-//
-//        telemetry.addData("Status", "Initialized");
-//   }
-
-    @Override
-    public void runOpMode(){
-
-       // robot.init(hardwareMap); //idk what this does
-
-        Shawn_TestAutonomousOpMode Sheep = new Shawn_TestAutonomousOpMode();
+        waitForStart();
 
         driveForwardDistance(1, (int)COUNTS_PER_INCH * 12);
 
         turnRight(90, 1);
-
     }
+
 
     public void driveForward(double power) {
         rightDrive.setPower(power);
         leftDrive.setPower(power);
     }
 
+
     public void stopDrive() {
         driveForward(0.0);
     }
 
+
     public void turnRight(int degrees, int power) {
-        double distance = (degrees/360) * (robotDiameter * 3.141592653589793238462643383279);
+        double distance = (((double)degrees / 360) * (robotDiameter * 3.141592653589793238462643383279)) * COUNTS_PER_INCH;
 
         rightDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         leftDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
-        rightDrive.setTargetPosition((int)distance);
-        leftDrive.setTargetPosition((int)distance);
+        rightDrive.setTargetPosition((int) -distance);
+        leftDrive.setTargetPosition((int) distance);
 
         rightDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         leftDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -135,7 +104,7 @@ public class Shawn_TestAutonomousOpMode extends LinearOpMode {
         rightDrive.setPower(power);
         leftDrive.setPower(power);
 
-        while(rightDrive.isBusy() && leftDrive.isBusy()) {
+        while (rightDrive.isBusy() && leftDrive.isBusy()) {
 
         }
 
@@ -147,6 +116,7 @@ public class Shawn_TestAutonomousOpMode extends LinearOpMode {
     public void turnLeft(int degrees, int power) {
         turnRight(-degrees, power);
     }
+
 
     public void driveForwardDistance(double power, int distance) {
         rightDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -168,4 +138,5 @@ public class Shawn_TestAutonomousOpMode extends LinearOpMode {
         rightDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         leftDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
+
 }
