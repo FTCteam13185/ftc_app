@@ -88,7 +88,7 @@ public class Shawn_AutonomousGyro extends LinearOpMode {
     HardwareShawn Shawn = new HardwareShawn();   // Use a Shawn's hardware
 
     static final double     COUNTS_PER_MOTOR_REV    = 1440 ;    // eg: TETRIX Motor Encoder
-    static final double     DRIVE_GEAR_REDUCTION    = -2.0 ;     // This is < 1.0 if geared UP
+    static final double     DRIVE_GEAR_REDUCTION    = 2.0 ;     // This is < 1.0 if geared UP
     static final double     WHEEL_DIAMETER_INCHES   = 4.0 ;     // For figuring circumference
     static final double     COUNTS_PER_INCH         = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) /
                                                       (WHEEL_DIAMETER_INCHES * 3.1415);
@@ -158,12 +158,12 @@ public class Shawn_AutonomousGyro extends LinearOpMode {
         gyroHold(TURN_SPEED, 45, 0.5);
         gyroTurn(TURN_SPEED, 0);
         gyroHold(TURN_SPEED, 0, 0.5);
-        gyroDrive(DRIVE_SPEED, 6, 0);
+        gyroDrive(DRIVE_SPEED, 24, 0);
         gyroTurn(TURN_SPEED, -45);
         gyroHold(TURN_SPEED, -45, 0.5);
         gyroTurn(TURN_SPEED, 0);
         gyroHold(TURN_SPEED, 0, 0.5);
-        gyroDrive(DRIVE_SPEED, -6, 0);
+        gyroDrive(DRIVE_SPEED, -24, 0);
 
         while (isStarted()) {
             telemetry.addData("Heading", "%5.1f", Shawn.imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle);
@@ -187,9 +187,7 @@ public class Shawn_AutonomousGyro extends LinearOpMode {
     *                   0 = fwd. +ve is CCW from fwd. -ve is CW from forward.
     *                   If a relative angle is required, add/subtract from current heading.
     */
-    public void gyroDrive ( double speed,
-                            double distance,
-                            double angle) {
+    public void gyroDrive ( double speed, double distance, double angle) {
 
         int     newLeftTarget;
         int     newRightTarget;
