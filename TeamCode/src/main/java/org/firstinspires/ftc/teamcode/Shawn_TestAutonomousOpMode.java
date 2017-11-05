@@ -45,7 +45,7 @@ import org.firstinspires.ftc.robotcontroller.external.samples.HardwarePushbot;
 public class Shawn_TestAutonomousOpMode extends LinearOpMode {
 
 //    experimentation
-//    HardwarePushbot robot = new HardwarePushbot();
+//    HardwarePushbot Shawn = new HardwarePushbot();
 //    HardwareMap thing = new HardwareMap(hardwareMap.appContext);
 
     static final double     COUNTS_PER_MOTOR_REV    = 1440 ;    // eg: TETRIX Motor Encoder
@@ -101,7 +101,7 @@ public class Shawn_TestAutonomousOpMode extends LinearOpMode {
     @Override
     public void runOpMode(){
 
-       // robot.init(hardwareMap); //idk what this does
+       // Shawn.init(hardwareMap); //idk what this does
 
         Shawn_TestAutonomousOpMode Sheep = new Shawn_TestAutonomousOpMode();
 

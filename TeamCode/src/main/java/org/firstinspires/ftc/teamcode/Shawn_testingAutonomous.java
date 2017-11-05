@@ -30,16 +30,17 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 @Autonomous(name = "Test: Autonomous", group = "Pushbot")
-// @Disabled
+@Disabled
 public class Shawn_testingAutonomous extends LinearOpMode {
 
 //    experimentation
-//    HardwarePushbot robot = new HardwarePushbot();
+//    HardwarePushbot Shawn = new HardwarePushbot();
 //    HardwareMap thing = new HardwareMap(hardwareMap.appContext);
 
     static final double COUNTS_PER_MOTOR_REV = 1440;    // eg: TETRIX Motor Encoder
