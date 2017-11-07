@@ -94,17 +94,16 @@ public class Shawn_AutonomousGyro extends LinearOpMode {
                                                       (WHEEL_DIAMETER_INCHES * 3.1415);
 
     // These constants define the desired driving/control characteristics
-    // The can/should be tweaked to suite the specific Shawn drive train.
-    static final double     DRIVE_SPEED             = 0.7;     // Nominal speed for better accuracy.
+    // They can/should be tweaked to suite the specific Shawn drive train.
+    static final double     DRIVE_SPEED             = 0.5;     // Nominal speed for better accuracy.
     static final double     TURN_SPEED              = 0.5;     // Nominal half speed for better accuracy.
 
     static final double     HEADING_THRESHOLD       = 1 ;      // As tight as we can make it with an integer gyro
     static final double     P_TURN_COEFF            = 0.1;     // Larger is more responsive, but also less stable
-    static final double     P_DRIVE_COEFF           = 0.15;     // Larger is more responsive, but also less stable
-
+    static final double     P_DRIVE_COEFF           = 0.05;     // Larger is more responsive, but also less stable
 
     @Override
-    public void runOpMode() {
+    public void runOpMode() throws InterruptedException {
 
         /*
          * Initialize the standard drive system variables.
@@ -136,6 +135,7 @@ public class Shawn_AutonomousGyro extends LinearOpMode {
 
         // Wait for the game to start (Display Gyro value), and reset gyro before we move..
         while (!isStarted()) {
+            Thread.sleep(10);
             telemetry.addData(">", "Robot Heading = %f", Shawn.imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle);
             telemetry.update();
         }
@@ -158,20 +158,17 @@ public class Shawn_AutonomousGyro extends LinearOpMode {
         gyroHold(TURN_SPEED, 45, 0.5);
         gyroTurn(TURN_SPEED, 0);
         gyroHold(TURN_SPEED, 0, 0.5);
-        gyroDrive(DRIVE_SPEED, 24, 0);
+        gyroDrive(DRIVE_SPEED, 10*12, 0);
         gyroTurn(TURN_SPEED, -45);
         gyroHold(TURN_SPEED, -45, 0.5);
         gyroTurn(TURN_SPEED, 0);
         gyroHold(TURN_SPEED, 0, 0.5);
-        gyroDrive(DRIVE_SPEED, -24, 0);
-
-        while (isStarted()) {
-            telemetry.addData("Heading", "%5.1f", Shawn.imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle);
-            telemetry.update();
-        }
+        gyroDrive(DRIVE_SPEED, -10*12, 0);
 
         telemetry.addData("Path", "Complete");
         telemetry.update();
+
+
     }
 
 
