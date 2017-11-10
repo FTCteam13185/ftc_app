@@ -95,12 +95,12 @@ public class Shawn_AutonomousGyro extends LinearOpMode {
 
     // These constants define the desired driving/control characteristics
     // They can/should be tweaked to suite the specific Shawn drive train.
-    static final double     DRIVE_SPEED             = 0.5;     // Nominal speed for better accuracy.
+    static final double     DRIVE_SPEED             = 0.6;     // Nominal speed for better accuracy.
     static final double     TURN_SPEED              = 0.5;     // Nominal half speed for better accuracy.
 
     static final double     HEADING_THRESHOLD       = 1 ;      // As tight as we can make it with an integer gyro
     static final double     P_TURN_COEFF            = 0.1;     // Larger is more responsive, but also less stable
-    static final double     P_DRIVE_COEFF           = 0.05;     // Larger is more responsive, but also less stable
+    static final double     P_DRIVE_COEFF           = 0.06;    // Larger is more responsive, but also less stable
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -152,18 +152,18 @@ public class Shawn_AutonomousGyro extends LinearOpMode {
 //        gyroHold( TURN_SPEED,  45.0, 0.5);    // Hold  45 Deg heading for a 1/2 second
 //        gyroTurn( TURN_SPEED,   0.0);         // Turn  CW  to   0 Degrees
 //        gyroHold( TURN_SPEED,   0.0, 1.0);    // Hold  0 Deg heading for a 1 second
-////        gyroDrive(DRIVE_SPEED,-48.0, 0.0);    // Drive REV 48 inches
+//        gyroDrive(DRIVE_SPEED,-48.0, 0.0);    // Drive REV 48 inches
 
-        gyroTurn(TURN_SPEED, 45);
-        gyroHold(TURN_SPEED, 45, 0.5);
-        gyroTurn(TURN_SPEED, 0);
-        gyroHold(TURN_SPEED, 0, 0.5);
-        gyroDrive(DRIVE_SPEED, 10*12, 0);
-        gyroTurn(TURN_SPEED, -45);
-        gyroHold(TURN_SPEED, -45, 0.5);
-        gyroTurn(TURN_SPEED, 0);
-        gyroHold(TURN_SPEED, 0, 0.5);
-        gyroDrive(DRIVE_SPEED, -10*12, 0);
+        gyroDrive(DRIVE_SPEED, 12, 0.0);
+        gyroTurn(TURN_SPEED, -10);
+        gyroHold(TURN_SPEED, -10, 1);
+        gyroTurn(TURN_SPEED, 0.0);
+        gyroHold(TURN_SPEED, 0.0, 0.5);
+        gyroDrive(DRIVE_SPEED, -12, 0.0);
+        gyroTurn(TURN_SPEED, 90);
+        gyroHold(TURN_SPEED, 90, 0.5);
+        gyroDrive(DRIVE_SPEED, 36, 90);
+        gyroHold(TURN_SPEED, 90, 0.5);
 
         telemetry.addData("Path", "Complete");
         telemetry.update();
