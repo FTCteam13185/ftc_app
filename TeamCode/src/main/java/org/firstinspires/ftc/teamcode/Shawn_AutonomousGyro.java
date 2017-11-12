@@ -119,6 +119,8 @@ public class Shawn_AutonomousGyro extends LinearOpMode {
         telemetry.addData(">", "Calibrating Gyro");    //
         telemetry.update();
 
+
+
 //        Shawn.imu.calibrate();
 
         // make sure the gyro is calibrated before continuing
@@ -144,26 +146,19 @@ public class Shawn_AutonomousGyro extends LinearOpMode {
         // Note: Reverse movement is obtained by setting a negative distance (not speed)
         // Put a hold after each turn
 
-//        gyroDrive(DRIVE_SPEED, 48.0, 0.0);    // Drive FWD 48 inches
-//        gyroTurn( TURN_SPEED, -45.0);         // Turn  CCW to -45 Degrees
-//        gyroHold( TURN_SPEED, -45.0, 0.5);    // Hold -45 Deg heading for a 1/2 second
-//        gyroDrive(DRIVE_SPEED, 12.0, -45.0);  // Drive FWD 12 inches at 45 degrees
-//        gyroTurn( TURN_SPEED,  45.0);         // Turn  CW  to  45 Degrees
-//        gyroHold( TURN_SPEED,  45.0, 0.5);    // Hold  45 Deg heading for a 1/2 second
-//        gyroTurn( TURN_SPEED,   0.0);         // Turn  CW  to   0 Degrees
-//        gyroHold( TURN_SPEED,   0.0, 1.0);    // Hold  0 Deg heading for a 1 second
-//        gyroDrive(DRIVE_SPEED,-48.0, 0.0);    // Drive REV 48 inches
+        gyroDrive(DRIVE_SPEED, 12, 0.0);    // drive to jewels
 
-        gyroDrive(DRIVE_SPEED, 12, 0.0);
+        // insert boop code here
         gyroTurn(TURN_SPEED, -10);
         gyroHold(TURN_SPEED, -10, 1);
         gyroTurn(TURN_SPEED, 0.0);
         gyroHold(TURN_SPEED, 0.0, 0.5);
-        gyroDrive(DRIVE_SPEED, -12, 0.0);
-        gyroTurn(TURN_SPEED, 90);
+        gyroDrive(DRIVE_SPEED, -12, 0.0);   // returns to original position
+
+        gyroTurn(TURN_SPEED, 90);           // turn 90 degrees to the right
         gyroHold(TURN_SPEED, 90, 0.5);
-        gyroDrive(DRIVE_SPEED, 36, 90);
-        gyroHold(TURN_SPEED, 90, 0.5);
+        gyroDrive(DRIVE_SPEED, 36, 90);     //drives to the safe zone
+        gyroHold(TURN_SPEED, 90, 10);
 
         telemetry.addData("Path", "Complete");
         telemetry.update();

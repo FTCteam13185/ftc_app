@@ -29,11 +29,9 @@
 
 package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.Range;
 
 /**
@@ -60,6 +58,10 @@ public class Shawn_TestOpMode extends OpMode {
 
     double test = 0.0;
 
+    boolean drive = true;
+
+    int stay;
+
     final int ticksPerRotation = 1440;
 
     @Override
@@ -76,7 +78,7 @@ public class Shawn_TestOpMode extends OpMode {
         double rightPower;
         double leftPower;
         double elbowPower;
-        double shoulderPower;
+        double shoulderPower = 0;
         double clawPower;
 
         if (gamepad2.dpad_right) {
@@ -96,10 +98,23 @@ public class Shawn_TestOpMode extends OpMode {
         rightPower = Range.clip(drive - turn, -1.0, 1.0);
         Shawn.leftDrive.setPower(-leftPower);
         Shawn.rightDrive.setPower(-rightPower);
-        Shawn.armElbow.setPower(elbowPower);
-        Shawn.armShoulder.setPower(shoulderPower);
         Shawn.armClaw.setPower(clawPower);
+ //       Shawn.armElbow.setPower(elbowPower);
 
+        if (shoulderPower != 0) {
+            if (this.drive) {
+                Shawn.armShoulder.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+                this.drive = false;
+            }
+            Shawn.armShoulder.setPower(shoulderPower);
+        } else {
+            if (!this.drive) {
+                Shawn.armShoulder.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                this.drive = true;
+                stay = Shawn.armShoulder.getCurrentPosition();
+            }
+            Shawn.armShoulder.setTargetPosition(stay);
+        }
     }
 
     public void driveForward(double power) {
