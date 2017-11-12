@@ -33,6 +33,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.Range;
 
 /**
@@ -50,12 +51,12 @@ import com.qualcomm.robotcore.util.Range;
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 
-@TeleOp(name = "Test: TeleOp Something", group = "Pushbot")
-@Disabled
+@TeleOp(name = "Test: TeleOp Drive & Arm", group = "Motors")
+//@Disabled
 public class Shawn_TestOpMode extends OpMode {
 
-    DcMotor rightDrive = null;
-    DcMotor leftDrive = null;
+    /* Declare OpMode members. */
+    HardwareShawn Shawn = new HardwareShawn();   // Use a Shawn's hardware
 
     double test = 0.0;
 
@@ -64,17 +65,7 @@ public class Shawn_TestOpMode extends OpMode {
     @Override
     public void init() {
 
-        rightDrive = hardwareMap.get(DcMotor.class, "right_drive");
-        leftDrive = hardwareMap.get(DcMotor.class, "left_drive");
-
-        rightDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        leftDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
-        rightDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        leftDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-
-        rightDrive.setDirection(DcMotor.Direction.FORWARD);
-        leftDrive.setDirection(DcMotor.Direction.REVERSE);
+        Shawn.init(hardwareMap);
 
         telemetry.addData("Status", "Initialized");
     }
@@ -84,20 +75,36 @@ public class Shawn_TestOpMode extends OpMode {
 
         double rightPower;
         double leftPower;
+        double elbowPower;
+        double shoulderPower;
+        double clawPower;
+
+        if (gamepad2.dpad_right) {
+            clawPower = 1;
+        } else if (gamepad2.dpad_left) {
+            clawPower = -1;
+        } else {
+            clawPower = 0;
+        }
 
         double drive = -gamepad1.left_stick_y;
-        double turn  =  gamepad1.right_stick_x;
-        leftPower    = Range.clip(drive + turn, -1.0, 1.0) ;
-        rightPower   = Range.clip(drive - turn, -1.0, 1.0) ;
+        double turn = gamepad1.right_stick_x;
+        shoulderPower = -(gamepad2.left_stick_y / 3);
+        elbowPower = -(gamepad2.right_stick_y / 3);
 
-        leftDrive.setPower(-leftPower);
-        rightDrive.setPower(-rightPower);
+        leftPower = Range.clip(drive + turn, -1.0, 1.0);
+        rightPower = Range.clip(drive - turn, -1.0, 1.0);
+        Shawn.leftDrive.setPower(-leftPower);
+        Shawn.rightDrive.setPower(-rightPower);
+        Shawn.armElbow.setPower(elbowPower);
+        Shawn.armShoulder.setPower(shoulderPower);
+        Shawn.armClaw.setPower(clawPower);
 
     }
 
     public void driveForward(double power) {
-        rightDrive.setPower(power);
-        leftDrive.setPower(power);
+        Shawn.rightDrive.setPower(power);
+        Shawn.leftDrive.setPower(power);
     }
 
     public void stopDrive() {
@@ -105,8 +112,8 @@ public class Shawn_TestOpMode extends OpMode {
     }
 
     public void turnLeft(double power) {
-        rightDrive.setPower(-power);
-        leftDrive.setPower(power);
+        Shawn.rightDrive.setPower(-power);
+        Shawn.leftDrive.setPower(power);
     }
 
     public void turnRight(double power) {
