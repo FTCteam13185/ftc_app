@@ -87,13 +87,6 @@ public class SensorMRColor extends LinearOpMode {
     int relativeLayoutId = hardwareMap.appContext.getResources().getIdentifier("RelativeLayout", "id", hardwareMap.appContext.getPackageName());
     final View relativeLayout = ((Activity) hardwareMap.appContext).findViewById(relativeLayoutId);
 
-    // bPrevState and bCurrState represent the previous and current state of the button.
-    boolean bPrevState = false;
-    boolean bCurrState = false;
-
-    // bLedOn represents the state of the LED.
-    boolean bLedOn = true;
-
     // get a reference to our ColorSensor object.
     colorSensor = hardwareMap.get(ColorSensor.class, "sensor_color");
 
@@ -101,7 +94,7 @@ public class SensorMRColor extends LinearOpMode {
     sensorDistance = hardwareMap.get(DistanceSensor.class, "sensor_color_distance");
 
     // Set the LED in the beginning
-    colorSensor.enableLed(bLedOn);
+    colorSensor.enableLed(false);
 
     // wait for the start button to be pressed.
     waitForStart();
@@ -109,20 +102,6 @@ public class SensorMRColor extends LinearOpMode {
     // while the op mode is active, loop and read the RGB data.
     // Note we use opModeIsActive() as our loop condition because it is an interruptible method.
     while (opModeIsActive()) {
-
-      // check the status of the x button on either gamepad.
-//      bCurrState = gamepad1.x;
-//
-//      // check for button state transitions.
-//      if (bCurrState && (bCurrState != bPrevState))  {
-//
-//        // button is transitioning to a pressed state. So Toggle LED
-//        bLedOn = !bLedOn;
-//        colorSensor.enableLed(bLedOn);
-//      }
-//
-//      // update previous state variable.
-//      bPrevState = bCurrState;
 
       // convert the RGB values to HSV values.
       RED   = colorSensor.red() * SCALE_FACTOR;
@@ -133,7 +112,6 @@ public class SensorMRColor extends LinearOpMode {
       // send the info back to driver station using telemetry function.
       telemetry.addData("Distance (cm)",
               String.format(Locale.US, "%.02f", sensorDistance.getDistance(DistanceUnit.CM)));
-      telemetry.addData("LED", bLedOn ? "On" : "Off");
       //telemetry.addData("Clear", colorSensor.alpha());
       telemetry.addData("Red  ", RED);
       telemetry.addData("Green", GREEN);
