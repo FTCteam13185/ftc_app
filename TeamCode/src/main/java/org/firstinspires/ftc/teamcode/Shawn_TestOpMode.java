@@ -59,8 +59,8 @@ public class Shawn_TestOpMode extends OpMode {
     double test = 0.0;
 
     boolean drive = true;
-
-    int stay;
+//
+//    int stay;
 
     final int ticksPerRotation = 1440;
 
@@ -91,29 +91,40 @@ public class Shawn_TestOpMode extends OpMode {
 
         double drive = -gamepad1.left_stick_y;
         double turn = gamepad1.right_stick_x;
-        shoulderPower = -(gamepad2.left_stick_y / 3);
-        elbowPower = -(gamepad2.right_stick_y / 3);
+//        shoulderPower = Range.clip(-(gamepad2.left_stick_y), -0.5, 0.5);
+//        elbowPower = Range.clip(-(gamepad2.right_stick_y), -0.5, 0.5);
+        shoulderPower = -(gamepad2.left_stick_y);
+        elbowPower = -(gamepad2.right_stick_y);
 
         leftPower = Range.clip(drive + turn, -1.0, 1.0);
         rightPower = Range.clip(drive - turn, -1.0, 1.0);
-        Shawn.leftDrive.setPower(-leftPower);
-        Shawn.rightDrive.setPower(-rightPower);
+        Shawn.leftDrive.setPower(leftPower/3);
+        Shawn.rightDrive.setPower(rightPower/3);
         Shawn.armClaw.setPower(clawPower);
  //       Shawn.armElbow.setPower(elbowPower);
 
-        if (shoulderPower != 0) {
+        ArmPosition(Shawn.armShoulder, shoulderPower);
+        ArmPosition(Shawn.armElbow, elbowPower);
+
+}
+
+    public void ArmPosition(DcMotor armMotor, double power){
+
+        int stayPosition = 0;
+
+        if (power != 0) {
             if (this.drive) {
-                Shawn.armShoulder.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+                armMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
                 this.drive = false;
             }
-            Shawn.armShoulder.setPower(shoulderPower);
+            armMotor.setPower(power);
         } else {
             if (!this.drive) {
-                Shawn.armShoulder.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                armMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                 this.drive = true;
-                stay = Shawn.armShoulder.getCurrentPosition();
+                stayPosition = armMotor.getCurrentPosition();
             }
-            Shawn.armShoulder.setTargetPosition(stay);
+            armMotor.setTargetPosition(stayPosition);
         }
     }
 
