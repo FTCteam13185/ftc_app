@@ -56,16 +56,25 @@ import com.qualcomm.robotcore.util.Range;
 public class Shawn_TestOpMode extends OpMode {
 
     /* Declare OpMode members. */
-    HardwareShawn Shawn = new HardwareShawn();   // Use a Shawn's hardware
+    HardwareShawn Shawn;   // Use a Shawn's hardware
 
     double test = 0.0;
+    int initArmElbow;
+    int initArmShoulder;
 
     final int ticksPerRotation = 1440;
 
     @Override
     public void init() {
-
+        Shawn = new HardwareShawn();
         Shawn.init(hardwareMap);
+
+//        try{
+//            wait(1000);
+//        }catch(Exception e){}
+//
+//        initArmElbow = Shawn.armElbow.getCurrentPosition();
+//        initArmShoulder = Shawn.armShoulder.getCurrentPosition();
 
         telemetry.addData("Status", "Initialized");
     }
@@ -84,9 +93,26 @@ public class Shawn_TestOpMode extends OpMode {
         shoulderPower = -(gamepad2.left_stick_y/3);
         elbowPower = -(gamepad2.right_stick_y)/3;
 
+//        if (Shawn.armElbow.getCurrentPosition() < initArmElbow){
+//
+//            if (elbowPower < 0){
+//                elbowPower = 0;
+//            }
+//
+//        }
+//
+//        if (Shawn.armShoulder.getCurrentPosition() < initArmShoulder){
+//
+//            if (shoulderPower < 0){
+//                shoulderPower = 0;
+//            }
+//
+//        }
+
         leftPower    = Range.clip(drive + turn, -1.0, 1.0) ;
         rightPower   = Range.clip(drive - turn, -1.0, 1.0) ;
         Shawn.leftDrive.setPower(-leftPower);
+
         Shawn.rightDrive.setPower(-rightPower);
         Shawn.armElbow.setPower(elbowPower);
         Shawn.armShoulder.setPower(shoulderPower);
