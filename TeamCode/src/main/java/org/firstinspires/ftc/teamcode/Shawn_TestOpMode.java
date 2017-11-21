@@ -34,31 +34,23 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.Range;
 
-/**
- * Hyelo, frienderinos
- * This OpMode uses the common Pushbot hardware class to define the devices on the Shawn.
- * All device access is managed through the HardwarePushbot class.
- * The code is structured as a LinearOpMode
- * <p>
- * This particular OpMode executes a POV Game style Teleop for a PushBot
- * In this mode the left stick moves the Shawn FWD and back, the Right stick turns left and right.
- * It raises and lowers the claw using the Gampad Y and A buttons respectively.
- * It also opens and closes the claws slowly using the left and right Bumper buttons.
- * <p>
- * Use Android Studios to Copy this Class, and Paste it into your team's code folder with a new name.
- * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
- */
-
 @TeleOp(name = "Test: TeleOp Drive & Arm", group = "Motors")
 //@Disabled
 public class Shawn_TestOpMode extends OpMode {
 
     /* Declare OpMode members. */
+
+    public static final int TICKS_PER_DEGREE    = 4;
+    public static final int MAX_ARM_INCREMENT   = TICKS_PER_DEGREE * 8;
+    public static final double ARM_POWER        = 1;
+
     HardwareShawn Shawn = new HardwareShawn();   // Use a Shawn's hardware
 
     double test = 0.0;
 
     boolean drive = true;
+
+    int currentShoulderPosition = 0;
 //
 //    int stay;
 
@@ -70,6 +62,7 @@ public class Shawn_TestOpMode extends OpMode {
         Shawn.init(hardwareMap);
 
         telemetry.addData("Status", "Initialized");
+
     }
 
     @Override
@@ -78,8 +71,9 @@ public class Shawn_TestOpMode extends OpMode {
         double rightPower;
         double leftPower;
         double elbowPower;
-        double shoulderPower = 0;
+        double shoulderPower;
         double clawPower;
+        int currentElbowPosition;
 
         if (gamepad2.dpad_right) {
             clawPower = 1;
@@ -93,18 +87,48 @@ public class Shawn_TestOpMode extends OpMode {
         double turn = gamepad1.right_stick_x;
 //        shoulderPower = Range.clip(-(gamepad2.left_stick_y), -0.5, 0.5);
 //        elbowPower = Range.clip(-(gamepad2.right_stick_y), -0.5, 0.5);
-        shoulderPower = -(gamepad2.left_stick_y);
-        elbowPower = -(gamepad2.right_stick_y);
+//        shoulderPower = -(gamepad2.left_stick_y);
+//        elbowPower = -(gamepad2.right_stick_y);
 
         leftPower = Range.clip(drive + turn, -1.0, 1.0);
         rightPower = Range.clip(drive - turn, -1.0, 1.0);
-        Shawn.leftDrive.setPower(leftPower/3);
-        Shawn.rightDrive.setPower(rightPower/3);
+        Shawn.leftDrive.setPower(leftPower);
+        Shawn.rightDrive.setPower(rightPower);
         Shawn.armClaw.setPower(clawPower);
  //       Shawn.armElbow.setPower(elbowPower);
 
-        ArmPosition(Shawn.armShoulder, shoulderPower);
-        ArmPosition(Shawn.armElbow, elbowPower);
+   //     currentElbowPosition = Shawn.armElbow.getCurrentPosition();
+
+//        if (-gamepad2.right_stick_y > 0){
+//           Shawn.armElbow.setTargetPosition(currentElbowPosition + 1);
+//        } else if (-gamepad2.right_stick_y < 0){
+//            Shawn.armElbow.setTargetPosition(currentElbowPosition - 1);
+//        }
+
+        double leftStick = -gamepad2.left_stick_y;
+
+        if (leftStick > 0) {
+            currentShoulderPosition = Shawn.armShoulder.getCurrentPosition();
+            Shawn.armShoulder.setTargetPosition(currentShoulderPosition + (int)(MAX_ARM_INCREMENT * leftStick));
+            Shawn.armShoulder.setPower(ARM_POWER);
+            telemetry.addLine("up");
+            telemetry.addData("Current Position: ", "%4d", currentShoulderPosition);
+            telemetry.addData("Power: ", "%3.1f", Shawn.armShoulder.getPower());
+        } else if (leftStick < 0){
+            currentShoulderPosition = Shawn.armShoulder.getCurrentPosition();
+            Shawn.armShoulder.setTargetPosition(currentShoulderPosition + (int)(MAX_ARM_INCREMENT * -1));
+            Shawn.armShoulder.setPower(ARM_POWER);
+            telemetry.addLine("down");
+            telemetry.addData("Current Position: ", "%4d", currentShoulderPosition);
+            telemetry.addData("Power: ", "%3.1f", Shawn.armShoulder.getPower());
+        } else {
+            Shawn.armShoulder.setTargetPosition(currentShoulderPosition);
+            telemetry.addLine("stay");
+        }
+        telemetry.update();
+
+    //    ArmPosition(Shawn.armShoulder, -gamepad2.left_stick_y);
+    //    ArmPosition(Shawn.armElbow, 0.5);
 
 }
 
@@ -114,15 +138,16 @@ public class Shawn_TestOpMode extends OpMode {
 
         if (power != 0) {
             if (this.drive) {
-                armMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+                armMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                 this.drive = false;
             }
-            armMotor.setPower(power);
+//            armMotor.setTargetPosition(armMotor.getCurrentPosition() + 1);
         } else {
             if (!this.drive) {
                 armMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                 this.drive = true;
                 stayPosition = armMotor.getCurrentPosition();
+                armMotor.setPower(ARM_POWER);
             }
             armMotor.setTargetPosition(stayPosition);
         }
