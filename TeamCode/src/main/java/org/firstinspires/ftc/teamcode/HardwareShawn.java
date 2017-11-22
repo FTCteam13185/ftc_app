@@ -58,7 +58,7 @@ public class HardwareShawn
     /* Public OpMode members. */
     public DcMotor  leftDrive   = null;
     public DcMotor  rightDrive  = null;
- //   public DcMotor  armElbow    = null;
+    public DcMotor  armElbow    = null;
     public DcMotor armShoulder = null;
     public BNO055IMU imu = null;
     public CRServo armClaw = null;
@@ -88,7 +88,7 @@ public class HardwareShawn
         // Define and Initialize Motors
         leftDrive   = hwMap.get(DcMotor.class, "left_drive");
         rightDrive  = hwMap.get(DcMotor.class, "right_drive");
-   //     armElbow    = hwMap.get(DcMotor.class, "arm_elbow");
+        armElbow    = hwMap.get(DcMotor.class, "arm_elbow");
         armShoulder = hwMap.get(DcMotor.class, "arm_shoulder");
         armClaw     = hwMap.get(CRServo.class, "armClaw");
 
@@ -96,14 +96,14 @@ public class HardwareShawn
 //        leftArm    = hwMap.get(DcMotor.class, "left_arm");
         leftDrive.setDirection(DcMotor.Direction.FORWARD); // Set to REVERSE if using AndyMark motors
         rightDrive.setDirection(DcMotor.Direction.REVERSE);// Set to FORWARD if using AndyMark motors
-     //   armElbow.setDirection(DcMotor.Direction.REVERSE);
+        armElbow.setDirection(DcMotor.Direction.FORWARD);
         armShoulder.setDirection(DcMotor.Direction.FORWARD);
         armClaw.setDirection(CRServo.Direction.REVERSE);
 
         // Set all motors to zero power
         leftDrive.setPower(0);
         rightDrive.setPower(0);
-     //   armElbow.setPower(0);
+        armElbow.setPower(0);
         armShoulder.setPower(0);
         armClaw.setPower(0);
 
@@ -111,15 +111,16 @@ public class HardwareShawn
         // May want to use RUN_USING_ENCODERS if encoders are installed.
 
         armShoulder.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        armElbow.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         leftDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         rightDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-     //   armElbow.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        armElbow.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         armShoulder.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
         rightDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         leftDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-     //   armElbow.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        armElbow.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         armShoulder.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         // Define and initialize ALL installed servos.
