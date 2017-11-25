@@ -53,12 +53,19 @@ public class Shawn_TestOpMode extends OpMode {
     int currentShoulderPosition = 0;
     int currentElbowPosition = 0;
 
+    int initArmElbow;
+    int initArmShoulder;
+
     final int ticksPerRotation = 1440;
 
     @Override
     public void init() {
 
         Shawn.init(hardwareMap);
+
+        initArmElbow = Shawn.armElbow.getCurrentPosition();
+        initArmShoulder = Shawn.armShoulder.getCurrentPosition();
+
 
         telemetry.addData("Status", "Initialized");
 
@@ -83,60 +90,27 @@ public class Shawn_TestOpMode extends OpMode {
 
         double drive = -gamepad1.left_stick_y;
         double turn = gamepad1.right_stick_x;
-//        shoulderPower = Range.clip(-(gamepad2.left_stick_y), -0.5, 0.5);
-//        elbowPower = Range.clip(-(gamepad2.right_stick_y), -0.5, 0.5);
-//        shoulderPower = -(gamepad2.left_stick_y);
-//        elbowPower = -(gamepad2.right_stick_y);
 
         leftPower = Range.clip(drive + turn, -1.0, 1.0);
         rightPower = Range.clip(drive - turn, -1.0, 1.0);
         Shawn.leftDrive.setPower(leftPower);
         Shawn.rightDrive.setPower(rightPower);
         Shawn.armClaw.setPower(clawPower);
- //       Shawn.armElbow.setPower(elbowPower);
-
-   //     currentElbowPosition = Shawn.armElbow.getCurrentPosition();
-
-//        if (-gamepad2.right_stick_y > 0){
-//           Shawn.armElbow.setTargetPosition(currentElbowPosition + 1);
-//        } else if (-gamepad2.right_stick_y < 0){
-//            Shawn.armElbow.setTargetPosition(currentElbowPosition - 1);
-//        }
-
-//        if (leftStick > 0) {
-//            currentShoulderPosition = Shawn.armShoulder.getCurrentPosition();
-//            Shawn.armShoulder.setTargetPosition(currentShoulderPosition + (int)(MAX_ARM_INCREMENT * leftStick));
-//            Shawn.armShoulder.setPower(ARM_POWER);
-//            telemetry.addLine("up");
-//            telemetry.addData("Current Position: ", "%4d", currentShoulderPosition);
-//            telemetry.addData("Power: ", "%3.1f", Shawn.armShoulder.getPower());
-//        } else if (leftStick < 0){
-//            currentShoulderPosition = Shawn.armShoulder.getCurrentPosition();
-//            Shawn.armShoulder.setTargetPosition(currentShoulderPosition + (int)(MAX_ARM_INCREMENT * -1));
-//            Shawn.armShoulder.setPower(ARM_POWER);
-//            telemetry.addLine("down");
-//            telemetry.addData("Current Position: ", "%4d", currentShoulderPosition);
-//            telemetry.addData("Power: ", "%3.1f", Shawn.armShoulder.getPower());
-//        } else {
-//            Shawn.armShoulder.setTargetPosition(currentShoulderPosition);
-//            telemetry.addLine("stay");
-//        }
-//        telemetry.update();
 
         leftStick = -gamepad2.left_stick_y;
         rightStick = -gamepad2.right_stick_y;
-        currentShoulderPosition = moveArm(Shawn.armShoulder, leftStick, currentShoulderPosition);
-        currentElbowPosition = moveArm(Shawn.armElbow, rightStick, currentElbowPosition);
+        currentShoulderPosition = moveArm(Shawn.armShoulder, leftStick, currentShoulderPosition, initArmShoulder);
+        currentElbowPosition = moveArm(Shawn.armElbow, rightStick, currentElbowPosition, initArmElbow);
 
     }
 
-    public int moveArm(DcMotor armMotor, double stick, int currentPosition) {
+    public int moveArm(DcMotor armMotor, double stick, int currentPosition, int initPosition) {
 
         if (stick > 0){
             currentPosition = armMotor.getCurrentPosition();
             armMotor.setTargetPosition(currentPosition + (int)(MAX_ARM_INCREMENT * stick));
             armMotor.setPower(ARM_POWER);
-        } else if (stick < 0) {
+        } else if (stick < 0 && currentPosition > initPosition) {
             currentPosition = armMotor.getCurrentPosition();
             armMotor.setTargetPosition(currentPosition + (int)(MAX_ARM_INCREMENT * stick));
             armMotor.setPower(ARM_POWER);
@@ -144,27 +118,6 @@ public class Shawn_TestOpMode extends OpMode {
             armMotor.setTargetPosition(currentPosition);
         }
         return currentPosition;
-    }
-
-    public void ArmPosition(DcMotor armMotor, double power){
-
-        int stayPosition = 0;
-
-        if (power != 0) {
-            if (this.drive) {
-                armMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                this.drive = false;
-            }
-//            armMotor.setTargetPosition(armMotor.getCurrentPosition() + 1);
-        } else {
-            if (!this.drive) {
-                armMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                this.drive = true;
-                stayPosition = armMotor.getCurrentPosition();
-                armMotor.setPower(ARM_POWER);
-            }
-            armMotor.setTargetPosition(stayPosition);
-        }
     }
 
 }

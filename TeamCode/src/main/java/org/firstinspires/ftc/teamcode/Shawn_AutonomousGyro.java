@@ -146,6 +146,8 @@ public class Shawn_AutonomousGyro extends LinearOpMode {
         // Note: Reverse movement is obtained by setting a negative distance (not speed)
         // Put a hold after each turn
 
+        //DRIVING IS HERE
+
         gyroDrive(DRIVE_SPEED, 12, 0.0);    // drive to jewels
 
         // insert boop code here
