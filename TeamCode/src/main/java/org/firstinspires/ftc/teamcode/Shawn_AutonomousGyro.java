@@ -34,6 +34,8 @@ import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cGyro;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.CRServo;
+import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.GyroSensor;
 import com.qualcomm.robotcore.hardware.Gyroscope;
@@ -46,6 +48,8 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
+
+import static java.lang.Math.abs;
 
 /**
  * This file illustrates the concept of driving a path based on Gyro heading and encoder counts.
@@ -102,6 +106,11 @@ public class Shawn_AutonomousGyro extends LinearOpMode {
     static final double     P_TURN_COEFF            = 0.1;     // Larger is more responsive, but also less stable
     static final double     P_DRIVE_COEFF           = 0.06;    // Larger is more responsive, but also less stable
 
+    public static final int TICKS_PER_DEGREE    = 4;
+    public static final double ARM_POWER        = 1;
+
+    Shawn_SensorMRColor sensor = new Shawn_SensorMRColor();
+
     @Override
     public void runOpMode() throws InterruptedException {
 
@@ -146,25 +155,120 @@ public class Shawn_AutonomousGyro extends LinearOpMode {
         // Note: Reverse movement is obtained by setting a negative distance (not speed)
         // Put a hold after each turn
 
-        //DRIVING IS HERE
+        //fff
 
-        gyroDrive(DRIVE_SPEED, 12, 0.0);    // drive to jewels
+//        gyroDrive(DRIVE_SPEED/1.5, 3.5, 0.0);    // drive to position
+//
+//        // let tail down
+//        moveArm(40, 0, ARM_POWER);
+//        Thread.sleep(1000);
+//        moveArm(-50, 0, ARM_POWER/4);
+//        Thread.sleep(500);
+////        gyroHold(TURN_SPEED, 0, 2);
+////        for (int i = 0; i < 5; i++) {
+////            moveArm(-10, 0, ARM_POWER);
+////     //       gyroHold(TURN_SPEED, 0, 0.2);
+////            Thread.sleep(200);
+////        }
+//        Shawn.armShoulder.setPower(0);
+//        Shawn.armShoulder.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+//
+//        // boop code
+////        if (sensor.isBlue(Shawn.colorSensor)) {
+////            telemetry.clearAll();
+////            telemetry.addLine("The ball is blue");
+////            telemetry.update();
+////            Thread.sleep(1500);
+////            gyroTurn(TURN_SPEED, 20);
+////            gyroHold(TURN_SPEED, 20, 0.5);
+////            gyroTurn(TURN_SPEED, 0);
+////            gyroHold(TURN_SPEED, 0, 0.5);
+////        } else {
+////            telemetry.clearAll();
+////            telemetry.addLine("The ball is red");
+////            telemetry.update();
+////            Thread.sleep(1500);
+////            gyroTurn(TURN_SPEED, -20);
+////            gyroHold(TURN_SPEED, -20, 0.5);
+////            gyroTurn(TURN_SPEED, 0);
+////            gyroHold(TURN_SPEED, 0, 0.5);
+////        }
+//
+//        int initElbowPos = Shawn.armElbow.getCurrentPosition();
+//
+//        moveArm(0, 140, ARM_POWER/1.5);
+//        moveArm(0, 150, ARM_POWER/4);
+//        telemetry.addLine("moving elbow up 120deg");
+//        telemetry.update();
+//        Thread.sleep(1000);
+////        gyroHold(TURN_SPEED, 0, 1);
+////        for (int i = 0; i < 20; i++) {
+////            moveArm(0, 10, ARM_POWER);
+////      //      gyroHold(TURN_SPEED, 0, 0.3);
+////            Thread.sleep(300);
+////        }
+//
+//        gyroDrive(DRIVE_SPEED/1.5, -3, 0);
+//
+//        Thread.sleep(10000);
+//
+//        gyroTurn(TURN_SPEED, 10);
+//        gyroHold(TURN_SPEED, 10, 0.5);
+//        gyroTurn(TURN_SPEED, 0);
+//        gyroHold(TURN_SPEED, 0, 0.5);
+//        gyroTurn(TURN_SPEED, -10);
+//        gyroHold(TURN_SPEED, -10, 0.5);
+//        gyroTurn(TURN_SPEED, 0);
+//        gyroHold(TURN_SPEED, 0, 0.5);
+//
+//        gyroDrive(DRIVE_SPEED/1.5, 3, 0);
+//
+//        moveArm(0, -140, ARM_POWER/1.5);
+//        int currElbowPos = Shawn.armElbow.getCurrentPosition();
+//        moveArm(0, initElbowPos-currElbowPos, ARM_POWER/4);
+////        for (int i = 0; i < 20; i++) {
+////            moveArm(0, -10, ARM_POWER);
+////      //      gyroHold(TURN_SPEED, 0, 0.3);
+////            Thread.sleep(300);
+////        }
+//
+//        gyroDrive(DRIVE_SPEED/1.5, -3.5, 0);
 
-        // insert boop code here
-        gyroTurn(TURN_SPEED, -10);
-        gyroHold(TURN_SPEED, -10, 1);
-        gyroTurn(TURN_SPEED, 0.0);
-        gyroHold(TURN_SPEED, 0.0, 0.5);
-        gyroDrive(DRIVE_SPEED, -12, 0.0);   // returns to original position
 
-        gyroTurn(TURN_SPEED, 90);           // turn 90 degrees to the right
-        gyroHold(TURN_SPEED, 90, 0.5);
-        gyroDrive(DRIVE_SPEED, 36, 90);     //drives to the safe zone
-        gyroHold(TURN_SPEED, 90, 10);
+
+//        gyroDrive(DRIVE_SPEED, 6, 0.0);   // returns to original position
+//
+//        gyroTurn(TURN_SPEED, 90);           // turn 90 degrees to the right
+//        gyroHold(TURN_SPEED, 90, 0.5);
+//        gyroDrive(DRIVE_SPEED, -36, 90);     //drives to the safe zone
+//        gyroHold(TURN_SPEED, 90, 0.5);
+//        gyroTurn(TURN_SPEED, 0);
+//        gyroHold(TURN_SPEED, 0, 0.5);
+
+        Shawn.armShoulder.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        moveArm(40, 0, 10, ARM_POWER/2);
+        moveArm(-40,0, 20, ARM_POWER/2);
+        Shawn.armShoulder.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        Shawn.armShoulder.setPower(0);
+        Thread.sleep(1000);
+        Shawn.armShoulder.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+//        Thread.sleep(500);
+
+        Shawn.armElbow.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        Shawn.armElbow.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        moveArm(0, 100, 100, ARM_POWER/3);
+        moveArm(0, 100, 5, ARM_POWER/4);
+        Thread.sleep(10000);
+
+//        gyroDrive(DRIVE_SPEED, -30, 0);
+//        gyroTurn(TURN_SPEED, -45);
+//        gyroHold(TURN_SPEED, -45, 0.5);
+//        gyroDrive(DRIVE_SPEED, 40 , 45);
+//        gyroTurn(TURN_SPEED, 0);
+//        gyroHold(TURN_SPEED, 0, 0.5);
 
         telemetry.addData("Path", "Complete");
         telemetry.update();
-
 
     }
 
@@ -208,7 +312,7 @@ public class Shawn_AutonomousGyro extends LinearOpMode {
             Shawn.rightDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
             // start motion.
-            speed = Range.clip(Math.abs(speed), 0.0, 1.0);
+            speed = Range.clip(abs(speed), 0.0, 1.0);
             Shawn.leftDrive.setPower(speed);
             Shawn.rightDrive.setPower(speed);
 
@@ -228,7 +332,7 @@ public class Shawn_AutonomousGyro extends LinearOpMode {
                 rightSpeed = speed + steer;
 
                 // Normalize speeds if either one exceeds +/- 1.0;
-                max = Math.max(Math.abs(leftSpeed), Math.abs(rightSpeed));
+                max = Math.max(abs(leftSpeed), abs(rightSpeed));
                 if (max > 1.0)
                 {
                     leftSpeed /= max;
@@ -324,7 +428,7 @@ public class Shawn_AutonomousGyro extends LinearOpMode {
         // determine turn power based on +/- error
         error = getError(angle);
 
-        if (Math.abs(error) <= HEADING_THRESHOLD) {
+        if (abs(error) <= HEADING_THRESHOLD) {
             steer = 0.0;
             leftSpeed  = 0.0;
             rightSpeed = 0.0;
@@ -375,6 +479,53 @@ public class Shawn_AutonomousGyro extends LinearOpMode {
      */
     public double getSteer(double error, double PCoeff) {
         return Range.clip(error * PCoeff, -1, 1);
+    }
+
+    public void moveArm(int shoulderDegrees, int  elbowDegrees, int increment, double power) {
+
+        int currentShoulderPosition = Shawn.armShoulder.getCurrentPosition();
+        int currentElbowPosition = Shawn.armElbow.getCurrentPosition();
+        int finalShoulderPosition =  currentShoulderPosition+ (shoulderDegrees * TICKS_PER_DEGREE);
+        int finalElbowPosition = currentElbowPosition + (elbowDegrees * TICKS_PER_DEGREE);
+
+        if (shoulderDegrees > 0) {
+            Shawn.armShoulder.setPower(power);
+            while (currentShoulderPosition <= finalShoulderPosition) {
+                Shawn.armShoulder.setTargetPosition(currentShoulderPosition + (abs(increment) * TICKS_PER_DEGREE));
+                while (Shawn.armShoulder.isBusy()) {
+                }
+                currentShoulderPosition = Shawn.armShoulder.getCurrentPosition();
+            }
+        } else if (shoulderDegrees < 0) {
+            Shawn.armShoulder.setPower(power);
+            while (currentShoulderPosition >= finalShoulderPosition) {
+                Shawn.armShoulder.setTargetPosition(currentShoulderPosition - (abs(increment) * TICKS_PER_DEGREE));
+                while (Shawn.armShoulder.isBusy()) {
+                }
+                currentShoulderPosition = Shawn.armShoulder.getCurrentPosition();
+            }
+        }
+        Shawn.armShoulder.setPower(0);
+
+        if (elbowDegrees > 0) {
+            Shawn.armElbow.setPower(power);
+            while (currentElbowPosition <= finalElbowPosition) {
+                Shawn.armElbow.setTargetPosition(currentElbowPosition + (abs(increment) * TICKS_PER_DEGREE));
+                while (Shawn.armElbow.isBusy()) {
+                }
+                currentElbowPosition = Shawn.armElbow.getCurrentPosition();
+            }
+        } else if (elbowDegrees < 0) {
+            Shawn.armElbow.setPower(power);
+            while (currentElbowPosition >= finalElbowPosition) {
+                Shawn.armElbow.setTargetPosition(currentElbowPosition - (abs(increment) * TICKS_PER_DEGREE));
+                while (Shawn.armElbow.isBusy()) {
+                }
+                currentElbowPosition = Shawn.armElbow.getCurrentPosition();
+            }
+        }
+        Shawn.armElbow.setPower(0);
+
     }
 
 }

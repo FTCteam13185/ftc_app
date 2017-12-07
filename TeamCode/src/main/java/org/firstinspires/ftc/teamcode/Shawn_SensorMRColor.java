@@ -58,7 +58,7 @@ import java.util.Locale;
  */
 @TeleOp(name = "Sensor: REV Color", group = "Sensor")
 // Disabled
-public class SensorMRColor extends LinearOpMode {
+public class Shawn_SensorMRColor extends LinearOpMode {
 
   ColorSensor colorSensor;    // Hardware Device Object
   DistanceSensor sensorDistance;
@@ -142,5 +142,20 @@ public class SensorMRColor extends LinearOpMode {
         relativeLayout.setBackgroundColor(Color.WHITE);
       }
     });
+
   }
+
+  // thing
+
+  public boolean isBlue(ColorSensor sensor) {
+      int RED = sensor.red() * 50;
+      int BLUE = sensor.blue() * 50;
+      int GREEN = sensor.green() * 50;
+      if (BLUE > RED && BLUE > GREEN){
+          return true;
+      } else {
+          return false;
+      }
+  }
+
 }

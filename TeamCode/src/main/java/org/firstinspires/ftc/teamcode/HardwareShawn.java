@@ -29,9 +29,12 @@
 
 package org.firstinspires.ftc.teamcode;
 
+import android.graphics.Color;
+
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 import com.qualcomm.robotcore.hardware.CRServo;
+import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -62,6 +65,7 @@ public class HardwareShawn
     public DcMotor armShoulder = null;
     public BNO055IMU imu = null;
     public CRServo armClaw = null;
+    public ColorSensor colorSensor = null;
 
 //    public DcMotor  leftArm     = null;
 //    public Servo    leftClaw    = null;
@@ -91,11 +95,12 @@ public class HardwareShawn
         armElbow    = hwMap.get(DcMotor.class, "arm_elbow");
         armShoulder = hwMap.get(DcMotor.class, "arm_shoulder");
         armClaw     = hwMap.get(CRServo.class, "armClaw");
+        colorSensor = hwMap.get(ColorSensor.class, "sensor_color");
 
         imu = hwMap.get(BNO055IMU.class, "imu");
 //        leftArm    = hwMap.get(DcMotor.class, "left_arm");
-        leftDrive.setDirection(DcMotor.Direction.FORWARD); // Set to REVERSE if using AndyMark motors
-        rightDrive.setDirection(DcMotor.Direction.REVERSE);// Set to FORWARD if using AndyMark motors
+        leftDrive.setDirection(DcMotor.Direction.REVERSE); // Set to REVERSE if using AndyMark motors
+        rightDrive.setDirection(DcMotor.Direction.FORWARD);// Set to FORWARD if using AndyMark motors
         armElbow.setDirection(DcMotor.Direction.FORWARD);
         armShoulder.setDirection(DcMotor.Direction.FORWARD);
         armClaw.setDirection(CRServo.Direction.REVERSE);

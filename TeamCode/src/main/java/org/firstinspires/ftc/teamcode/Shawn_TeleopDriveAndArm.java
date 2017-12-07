@@ -36,7 +36,7 @@ import com.qualcomm.robotcore.util.Range;
 
 @TeleOp(name = "Test: TeleOp Drive & Arm", group = "Motors")
 //@Disabled
-public class Shawn_TestOpMode extends OpMode {
+public class Shawn_TeleopDriveAndArm extends OpMode {
 
     /* Declare OpMode members. */
 
@@ -89,7 +89,7 @@ public class Shawn_TestOpMode extends OpMode {
         }
 
         double drive = -gamepad1.left_stick_y;
-        double turn = gamepad1.right_stick_x;
+        double turn = (gamepad1.right_stick_x)/2;
 
         leftPower = Range.clip(drive + turn, -1.0, 1.0);
         rightPower = Range.clip(drive - turn, -1.0, 1.0);
