@@ -48,7 +48,7 @@ import java.util.Locale;
  * This is an example LinearOpMode that shows how to use
  * a Modern Robotics Color Sensor.
  *
- * The op mode assumes that the color sensor
+ * The op mode assumes that the color cSensor
  * is configured with a name of "sensor_color".
  *
  * You can use the X button on gamepad1 to toggle the LED on and off.
@@ -83,14 +83,14 @@ public class Shawn_SensorMRColor extends LinearOpMode {
     final int SCALE_FACTOR = 50;
 
     // get a reference to the RelativeLayout so we can change the background
-    // color of the Robot Controller app to match the hue detected by the RGB sensor.
+    // color of the Robot Controller app to match the hue detected by the RGB cSensor.
     int relativeLayoutId = hardwareMap.appContext.getResources().getIdentifier("RelativeLayout", "id", hardwareMap.appContext.getPackageName());
     final View relativeLayout = ((Activity) hardwareMap.appContext).findViewById(relativeLayoutId);
 
     // get a reference to our ColorSensor object.
     colorSensor = hardwareMap.get(ColorSensor.class, "sensor_color");
 
-    // get a reference to the distance sensor that shares the same name.
+    // get a reference to the distance cSensor that shares the same name.
     sensorDistance = hardwareMap.get(DistanceSensor.class, "sensor_color_distance");
 
     // Set the LED in the beginning
@@ -124,7 +124,7 @@ public class Shawn_SensorMRColor extends LinearOpMode {
         telemetry.addLine("It's blue");
       }
 
-      // change the background color to match the color detected by the RGB sensor.
+      // change the background color to match the color detected by the RGB cSensor.
       // pass a reference to the hue, saturation, and value array as an argument
       // to the HSVToColor method.
       relativeLayout.post(new Runnable() {

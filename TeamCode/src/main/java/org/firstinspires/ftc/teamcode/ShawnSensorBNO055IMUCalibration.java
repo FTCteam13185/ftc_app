@@ -71,8 +71,8 @@ import java.util.Locale;
  * datasheet for more information):</p>
  *
  * <li>
- *     <ol>GYR: Simply let the sensor sit flat for a few seconds.</ol>
- *     <ol>ACC: Move the sensor in various positions. Start flat, then rotate slowly by 45
+ *     <ol>GYR: Simply let the cSensor sit flat for a few seconds.</ol>
+ *     <ol>ACC: Move the cSensor in various positions. Start flat, then rotate slowly by 45
  *              degrees, hold for a few seconds, then continue rotating another 45 degrees and
  *              hold, etc. 6 or more movements of this type may be required. You can move through
  *              any axis you desire, but make sure that the device is lying at least once

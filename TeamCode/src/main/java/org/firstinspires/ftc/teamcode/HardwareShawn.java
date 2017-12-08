@@ -142,5 +142,7 @@ public class HardwareShawn
         parameters.loggingEnabled      = true;
         parameters.loggingTag          = "IMU";
         parameters.accelerationIntegrationAlgorithm = new JustLoggingAccelerationIntegrator();
+
+        imu.initialize(parameters);
     }
  }

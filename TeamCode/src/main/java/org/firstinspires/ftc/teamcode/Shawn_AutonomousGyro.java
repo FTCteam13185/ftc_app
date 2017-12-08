@@ -29,18 +29,9 @@
 
 package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.hardware.bosch.BNO055IMU;
-import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cGyro;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.hardware.CRServo;
-import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.GyroSensor;
-import com.qualcomm.robotcore.hardware.Gyroscope;
-import com.qualcomm.robotcore.hardware.HardwareDevice;
-import com.qualcomm.robotcore.hardware.I2cAddr;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
@@ -100,7 +91,8 @@ public class Shawn_AutonomousGyro extends LinearOpMode {
     // These constants define the desired driving/control characteristics
     // They can/should be tweaked to suite the specific Shawn drive train.
     static final double     DRIVE_SPEED             = 0.6;     // Nominal speed for better accuracy.
-    static final double     TURN_SPEED              = 0.5;     // Nominal half speed for better accuracy.
+//    static final double     TURN_SPEED              = 0.5;     // Nominal half speed for better accuracy.
+    static final double     TURN_SPEED              = 0.75;    // Nominal half speed for better accuracy.
 
     static final double     HEADING_THRESHOLD       = 1 ;      // As tight as we can make it with an integer gyro
     static final double     P_TURN_COEFF            = 0.1;     // Larger is more responsive, but also less stable
@@ -109,7 +101,7 @@ public class Shawn_AutonomousGyro extends LinearOpMode {
     public static final int TICKS_PER_DEGREE    = 4;
     public static final double ARM_POWER        = 1;
 
-    Shawn_SensorMRColor sensor = new Shawn_SensorMRColor();
+    Shawn_SensorMRColor cSensor = new Shawn_SensorMRColor();
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -123,8 +115,9 @@ public class Shawn_AutonomousGyro extends LinearOpMode {
         // Ensure the Shawn it stationary, then reset the encoders and calibrate the gyro.
         Shawn.leftDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         Shawn.rightDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        Shawn.leftDrive.setDirection(DcMotor.Direction.FORWARD); // Set to REVERSE if using AndyMark motors
+        Shawn.rightDrive.setDirection(DcMotor.Direction.REVERSE);// Set to FORWARD if using AndyMark motors        // Send telemetry message to alert driver that we are calibrating;
 
-        // Send telemetry message to alert driver that we are calibrating;
         telemetry.addData(">", "Calibrating Gyro");    //
         telemetry.update();
 
@@ -156,117 +149,46 @@ public class Shawn_AutonomousGyro extends LinearOpMode {
         // Put a hold after each turn
 
         //fff
+           Shawn.armShoulder.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+           moveArm(40, 0, 10, ARM_POWER / 2);
+           moveArm(-40, 0, 20, ARM_POWER / 2);
+           Shawn.armShoulder.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+           Shawn.armShoulder.setPower(0);
+           Thread.sleep(1000);
+           Shawn.armShoulder.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-//        gyroDrive(DRIVE_SPEED/1.5, 3.5, 0.0);    // drive to position
-//
-//        // let tail down
-//        moveArm(40, 0, ARM_POWER);
-//        Thread.sleep(1000);
-//        moveArm(-50, 0, ARM_POWER/4);
+           gyroDrive(DRIVE_SPEED / 2, 3.5, 0);
 //        Thread.sleep(500);
-////        gyroHold(TURN_SPEED, 0, 2);
-////        for (int i = 0; i < 5; i++) {
-////            moveArm(-10, 0, ARM_POWER);
-////     //       gyroHold(TURN_SPEED, 0, 0.2);
-////            Thread.sleep(200);
-////        }
-//        Shawn.armShoulder.setPower(0);
-//        Shawn.armShoulder.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-//
-//        // boop code
-////        if (sensor.isBlue(Shawn.colorSensor)) {
-////            telemetry.clearAll();
-////            telemetry.addLine("The ball is blue");
-////            telemetry.update();
-////            Thread.sleep(1500);
-////            gyroTurn(TURN_SPEED, 20);
-////            gyroHold(TURN_SPEED, 20, 0.5);
-////            gyroTurn(TURN_SPEED, 0);
-////            gyroHold(TURN_SPEED, 0, 0.5);
-////        } else {
-////            telemetry.clearAll();
-////            telemetry.addLine("The ball is red");
-////            telemetry.update();
-////            Thread.sleep(1500);
-////            gyroTurn(TURN_SPEED, -20);
-////            gyroHold(TURN_SPEED, -20, 0.5);
-////            gyroTurn(TURN_SPEED, 0);
-////            gyroHold(TURN_SPEED, 0, 0.5);
-////        }
-//
-//        int initElbowPos = Shawn.armElbow.getCurrentPosition();
-//
-//        moveArm(0, 140, ARM_POWER/1.5);
-//        moveArm(0, 150, ARM_POWER/4);
-//        telemetry.addLine("moving elbow up 120deg");
-//        telemetry.update();
-//        Thread.sleep(1000);
-////        gyroHold(TURN_SPEED, 0, 1);
-////        for (int i = 0; i < 20; i++) {
-////            moveArm(0, 10, ARM_POWER);
-////      //      gyroHold(TURN_SPEED, 0, 0.3);
-////            Thread.sleep(300);
-////        }
-//
-//        gyroDrive(DRIVE_SPEED/1.5, -3, 0);
-//
-//        Thread.sleep(10000);
-//
+
+           Shawn.armElbow.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+           Shawn.armElbow.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+           moveArm(0, 100, 100, ARM_POWER / 3);
+           moveArm(0, 118, 5, ARM_POWER / 4);
+           gyroDrive(DRIVE_SPEED / 2, -2.5, 0);
+
+           //    if (cSensor.isBlue(Shawn.colorSensor)) {
+           if (true) {
+               gyroTurn(TURN_SPEED, 7);
+               gyroHold(TURN_SPEED, 7, 0.5);
+               gyroTurn(TURN_SPEED, 0);
+               gyroHold(TURN_SPEED, 0, 0.5);
+           } else if (!cSensor.isBlue(Shawn.colorSensor)) {
+               gyroTurn(TURN_SPEED, -7);
+               gyroHold(TURN_SPEED, -7, 0.5);
+               gyroTurn(TURN_SPEED, 0);
+               gyroHold(TURN_SPEED, 0, 0.5);
+           } else {
+
+           }
+      //  Thread.sleep(10000);
+
 //        gyroTurn(TURN_SPEED, 10);
 //        gyroHold(TURN_SPEED, 10, 0.5);
+//        gyroDrive(DRIVE_SPEED, 5, 10);
 //        gyroTurn(TURN_SPEED, 0);
 //        gyroHold(TURN_SPEED, 0, 0.5);
-//        gyroTurn(TURN_SPEED, -10);
-//        gyroHold(TURN_SPEED, -10, 0.5);
-//        gyroTurn(TURN_SPEED, 0);
-//        gyroHold(TURN_SPEED, 0, 0.5);
+//        gyroDrive(DRIVE_SPEED, -10, 0);
 //
-//        gyroDrive(DRIVE_SPEED/1.5, 3, 0);
-//
-//        moveArm(0, -140, ARM_POWER/1.5);
-//        int currElbowPos = Shawn.armElbow.getCurrentPosition();
-//        moveArm(0, initElbowPos-currElbowPos, ARM_POWER/4);
-////        for (int i = 0; i < 20; i++) {
-////            moveArm(0, -10, ARM_POWER);
-////      //      gyroHold(TURN_SPEED, 0, 0.3);
-////            Thread.sleep(300);
-////        }
-//
-//        gyroDrive(DRIVE_SPEED/1.5, -3.5, 0);
-
-
-
-//        gyroDrive(DRIVE_SPEED, 6, 0.0);   // returns to original position
-//
-//        gyroTurn(TURN_SPEED, 90);           // turn 90 degrees to the right
-//        gyroHold(TURN_SPEED, 90, 0.5);
-//        gyroDrive(DRIVE_SPEED, -36, 90);     //drives to the safe zone
-//        gyroHold(TURN_SPEED, 90, 0.5);
-//        gyroTurn(TURN_SPEED, 0);
-//        gyroHold(TURN_SPEED, 0, 0.5);
-
-        Shawn.armShoulder.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        moveArm(40, 0, 10, ARM_POWER/2);
-        moveArm(-40,0, 20, ARM_POWER/2);
-        Shawn.armShoulder.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-        Shawn.armShoulder.setPower(0);
-        Thread.sleep(1000);
-        Shawn.armShoulder.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-//        Thread.sleep(500);
-
-        Shawn.armElbow.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        Shawn.armElbow.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        moveArm(0, 100, 100, ARM_POWER/3);
-        moveArm(0, 100, 5, ARM_POWER/4);
-        Thread.sleep(10000);
-
-//        gyroDrive(DRIVE_SPEED, -30, 0);
-//        gyroTurn(TURN_SPEED, -45);
-//        gyroHold(TURN_SPEED, -45, 0.5);
-//        gyroDrive(DRIVE_SPEED, 40 , 45);
-//        gyroTurn(TURN_SPEED, 0);
-//        gyroHold(TURN_SPEED, 0, 0.5);
-
         telemetry.addData("Path", "Complete");
         telemetry.update();
 
@@ -505,7 +427,6 @@ public class Shawn_AutonomousGyro extends LinearOpMode {
                 currentShoulderPosition = Shawn.armShoulder.getCurrentPosition();
             }
         }
-        Shawn.armShoulder.setPower(0);
 
         if (elbowDegrees > 0) {
             Shawn.armElbow.setPower(power);
@@ -524,7 +445,6 @@ public class Shawn_AutonomousGyro extends LinearOpMode {
                 currentElbowPosition = Shawn.armElbow.getCurrentPosition();
             }
         }
-        Shawn.armElbow.setPower(0);
 
     }
 
