@@ -35,6 +35,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
@@ -91,8 +92,7 @@ public class Shawn_AutonomousGyro extends LinearOpMode {
     // These constants define the desired driving/control characteristics
     // They can/should be tweaked to suite the specific Shawn drive train.
     static final double     DRIVE_SPEED             = 0.6;     // Nominal speed for better accuracy.
-//    static final double     TURN_SPEED              = 0.5;     // Nominal half speed for better accuracy.
-    static final double     TURN_SPEED              = 0.75;    // Nominal half speed for better accuracy.
+    static final double     TURN_SPEED              = 0.5;     // Nominal half speed for better accuracy.
 
     static final double     HEADING_THRESHOLD       = 1 ;      // As tight as we can make it with an integer gyro
     static final double     P_TURN_COEFF            = 0.1;     // Larger is more responsive, but also less stable
@@ -101,7 +101,7 @@ public class Shawn_AutonomousGyro extends LinearOpMode {
     public static final int TICKS_PER_DEGREE    = 4;
     public static final double ARM_POWER        = 1;
 
-    Shawn_SensorMRColor cSensor = new Shawn_SensorMRColor();
+//    Shawn_SensorMRColor cSensor = new Shawn_SensorMRColor();
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -110,7 +110,7 @@ public class Shawn_AutonomousGyro extends LinearOpMode {
          * Initialize the standard drive system variables.
          * The init() method of the hardware class does most of the work here
          */
-        Shawn.init(hardwareMap);
+        Shawn.init(hardwareMap, true);
 
         // Ensure the Shawn it stationary, then reset the encoders and calibrate the gyro.
         Shawn.leftDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -120,8 +120,6 @@ public class Shawn_AutonomousGyro extends LinearOpMode {
 
         telemetry.addData(">", "Calibrating Gyro");    //
         telemetry.update();
-
-
 
 //        Shawn.imu.calibrate();
 
@@ -149,37 +147,55 @@ public class Shawn_AutonomousGyro extends LinearOpMode {
         // Put a hold after each turn
 
         //fff
-           Shawn.armShoulder.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-           moveArm(40, 0, 10, ARM_POWER / 2);
-           moveArm(-40, 0, 20, ARM_POWER / 2);
-           Shawn.armShoulder.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-           Shawn.armShoulder.setPower(0);
-           Thread.sleep(1000);
-           Shawn.armShoulder.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+//        if(false) {
+//            Shawn.armShoulder.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+//            moveArm(40, 0, 10, ARM_POWER / 2);
+//            moveArm(-40, 0, 20, ARM_POWER / 2);
+//            Shawn.armShoulder.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+//            Shawn.armShoulder.setPower(0);
+//            Thread.sleep(1000);
+//            Shawn.armShoulder.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+//
+//            gyroDrive(DRIVE_SPEED / 2, 3.5, 0);
+//            Shawn.leftDrive.setPower(0);
+//            Shawn.rightDrive.setPower(0);
+//            //        Thread.sleep(500);
+//
+//
+//            Shawn.armElbow.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+//            Shawn.armElbow.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+//            moveArm(0, 100, 25, ARM_POWER / 2);
+//            Thread.sleep(5000);
+//            moveArm(0, 195, 5, ARM_POWER / 4);
+//            Thread.sleep(5000);
+//            gyroDrive(DRIVE_SPEED / 2, -2.5, 0);
+//
+//            //    if (cSensor.isBlue(Shawn.colorSensor)) {
+//            if (true) {
+//                gyroTurn(TURN_SPEED, 45);
+//                gyroHold(TURN_SPEED, 45, 0.5);
+//                gyroTurn(TURN_SPEED, 0);
+//                gyroHold(TURN_SPEED, 0, 0.5);
+//            } else if (!cSensor.isBlue(Shawn.colorSensor)) {
+//                gyroTurn(TURN_SPEED, -45);
+//                gyroHold(TURN_SPEED, -45, 0.5);
+//                gyroTurn(TURN_SPEED, 0);
+//                gyroHold(TURN_SPEED, 0, 0.5);
+//            } else {
+//
+//            }
+//        }
 
-           gyroDrive(DRIVE_SPEED / 2, 3.5, 0);
-//        Thread.sleep(500);
+        Shawn.armShoulder.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        moveArm(40, 0, 10, ARM_POWER / 2);
+        moveArm(-40, 0, 20, ARM_POWER / 2);
+        Shawn.armShoulder.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        Shawn.armShoulder.setPower(0);
+        Thread.sleep(1000);
+        Shawn.armShoulder.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-           Shawn.armElbow.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-           Shawn.armElbow.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-           moveArm(0, 100, 100, ARM_POWER / 3);
-           moveArm(0, 118, 5, ARM_POWER / 4);
-           gyroDrive(DRIVE_SPEED / 2, -2.5, 0);
+        gyroDrive(DRIVE_SPEED, 30, 0);
 
-           //    if (cSensor.isBlue(Shawn.colorSensor)) {
-           if (true) {
-               gyroTurn(TURN_SPEED, 7);
-               gyroHold(TURN_SPEED, 7, 0.5);
-               gyroTurn(TURN_SPEED, 0);
-               gyroHold(TURN_SPEED, 0, 0.5);
-           } else if (!cSensor.isBlue(Shawn.colorSensor)) {
-               gyroTurn(TURN_SPEED, -7);
-               gyroHold(TURN_SPEED, -7, 0.5);
-               gyroTurn(TURN_SPEED, 0);
-               gyroHold(TURN_SPEED, 0, 0.5);
-           } else {
-
-           }
       //  Thread.sleep(10000);
 
 //        gyroTurn(TURN_SPEED, 10);
@@ -407,24 +423,32 @@ public class Shawn_AutonomousGyro extends LinearOpMode {
 
         int currentShoulderPosition = Shawn.armShoulder.getCurrentPosition();
         int currentElbowPosition = Shawn.armElbow.getCurrentPosition();
-        int finalShoulderPosition =  currentShoulderPosition+ (shoulderDegrees * TICKS_PER_DEGREE);
+        int finalShoulderPosition =  currentShoulderPosition + (shoulderDegrees * TICKS_PER_DEGREE);
         int finalElbowPosition = currentElbowPosition + (elbowDegrees * TICKS_PER_DEGREE);
 
         if (shoulderDegrees > 0) {
             Shawn.armShoulder.setPower(power);
-            while (currentShoulderPosition <= finalShoulderPosition) {
+            while (currentShoulderPosition < finalShoulderPosition) {
                 Shawn.armShoulder.setTargetPosition(currentShoulderPosition + (abs(increment) * TICKS_PER_DEGREE));
                 while (Shawn.armShoulder.isBusy()) {
                 }
                 currentShoulderPosition = Shawn.armShoulder.getCurrentPosition();
+                telemetry.addData("current shoulder position: ", "%5d", currentShoulderPosition);
+                telemetry.addData("final shoulder position: ", "%5d", finalShoulderPosition);
+                telemetry.update();
+
             }
         } else if (shoulderDegrees < 0) {
             Shawn.armShoulder.setPower(power);
-            while (currentShoulderPosition >= finalShoulderPosition) {
+            while (currentShoulderPosition > finalShoulderPosition) {
                 Shawn.armShoulder.setTargetPosition(currentShoulderPosition - (abs(increment) * TICKS_PER_DEGREE));
                 while (Shawn.armShoulder.isBusy()) {
                 }
                 currentShoulderPosition = Shawn.armShoulder.getCurrentPosition();
+                telemetry.addData("current shoulder position: ", "%5d", currentShoulderPosition);
+                telemetry.addData("final shoulder position: ", "%5d", finalShoulderPosition);
+                telemetry.update();
+
             }
         }
 
@@ -435,6 +459,10 @@ public class Shawn_AutonomousGyro extends LinearOpMode {
                 while (Shawn.armElbow.isBusy()) {
                 }
                 currentElbowPosition = Shawn.armElbow.getCurrentPosition();
+                telemetry.addData("current elbow position: ", "%5d", currentElbowPosition);
+                telemetry.addData("final elbow position: ", "%5d", finalElbowPosition);
+                telemetry.update();
+
             }
         } else if (elbowDegrees < 0) {
             Shawn.armElbow.setPower(power);
@@ -443,6 +471,10 @@ public class Shawn_AutonomousGyro extends LinearOpMode {
                 while (Shawn.armElbow.isBusy()) {
                 }
                 currentElbowPosition = Shawn.armElbow.getCurrentPosition();
+                telemetry.addData("current elbow position: ", "%5d", currentElbowPosition);
+                telemetry.addData("final elbow position: ", "%5d", finalElbowPosition);
+                telemetry.update();
+
             }
         }
 

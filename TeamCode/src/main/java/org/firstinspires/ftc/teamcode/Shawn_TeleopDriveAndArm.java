@@ -61,7 +61,7 @@ public class Shawn_TeleopDriveAndArm extends OpMode {
     @Override
     public void init() {
 
-        Shawn.init(hardwareMap);
+        Shawn.init(hardwareMap, false);
 
         initArmElbow = Shawn.armElbow.getCurrentPosition();
         initArmShoulder = Shawn.armShoulder.getCurrentPosition();

@@ -33,13 +33,20 @@ import android.graphics.Color;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.HardwareDevice;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.robotcore.util.ReadWriteFile;
+
+import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
+
+import java.io.File;
 
 /**
  * This is NOT an opmode.
@@ -65,7 +72,7 @@ public class HardwareShawn
     public DcMotor armShoulder = null;
     public BNO055IMU imu = null;
     public CRServo armClaw = null;
-    public ColorSensor colorSensor = null;
+//    public ColorSensor colorSensor = null;
 
 //    public DcMotor  leftArm     = null;
 //    public Servo    leftClaw    = null;
@@ -85,9 +92,36 @@ public class HardwareShawn
 }
 
     /* Initialize standard Hardware interfaces */
-    public void init(HardwareMap ahwMap) {
+    public void init(HardwareMap ahwMap, boolean gyro) {
         // Save reference to Hardware map
         hwMap = ahwMap;
+
+        if (gyro) {
+            // IMU Calibration
+            BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
+            parameters.loggingEnabled = true;
+            parameters.loggingTag = "IMU";
+            imu = hwMap.get(BNO055IMU.class, "imu");
+            imu.initialize(parameters);
+
+            BNO055IMU.CalibrationData calibrationData = imu.readCalibrationData();
+
+            // Save the calibration data to a file. You can choose whatever file
+            // name you wish here, but you'll want to indicate the same file name
+            // when you initialize the IMU in an opmode in which it is used. If you
+            // have more than one IMU on your robot, you'll of course want to use
+            // different configuration file names for each.
+            String filename = "AdafruitIMUCalibration.json";
+            File file = AppUtil.getInstance().getSettingsFile(filename);
+            ReadWriteFile.writeFile(file, calibrationData.serialize());
+
+            parameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
+            parameters.accelUnit = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
+            parameters.calibrationDataFile = "AdafruitIMUCalibration.json"; // see the calibration sample opmode
+            parameters.accelerationIntegrationAlgorithm = new JustLoggingAccelerationIntegrator();
+
+            imu.initialize(parameters);
+        }
 
         // Define and Initialize Motors
         leftDrive   = hwMap.get(DcMotor.class, "left_drive");
@@ -95,10 +129,9 @@ public class HardwareShawn
         armElbow    = hwMap.get(DcMotor.class, "arm_elbow");
         armShoulder = hwMap.get(DcMotor.class, "arm_shoulder");
         armClaw     = hwMap.get(CRServo.class, "armClaw");
-        colorSensor = hwMap.get(ColorSensor.class, "sensor_color");
+//        colorSensor = hwMap.get(ColorSensor.class, "sensor_color");
 
         imu = hwMap.get(BNO055IMU.class, "imu");
-//        leftArm    = hwMap.get(DcMotor.class, "left_arm");
         leftDrive.setDirection(DcMotor.Direction.REVERSE); // Set to REVERSE if using AndyMark motors
         rightDrive.setDirection(DcMotor.Direction.FORWARD);// Set to FORWARD if using AndyMark motors
         armElbow.setDirection(DcMotor.Direction.FORWARD);
@@ -128,21 +161,7 @@ public class HardwareShawn
         armElbow.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         armShoulder.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-        // Define and initialize ALL installed servos.
-//        leftClaw  = hwMap.get(Servo.class, "left_hand");
-//        rightClaw = hwMap.get(Servo.class, "right_hand");
-//        leftClaw.setPosition(MID_SERVO);
-//        rightClaw.setPosition(MID_SERVO);
-
-        // things for imu
-        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
-        parameters.angleUnit           = BNO055IMU.AngleUnit.DEGREES;
-        parameters.accelUnit           = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
-        parameters.calibrationDataFile = "AdafruitIMUCalibration.json"; // see the calibration sample opmode
-        parameters.loggingEnabled      = true;
-        parameters.loggingTag          = "IMU";
-        parameters.accelerationIntegrationAlgorithm = new JustLoggingAccelerationIntegrator();
-
-        imu.initialize(parameters);
     }
+
+
  }

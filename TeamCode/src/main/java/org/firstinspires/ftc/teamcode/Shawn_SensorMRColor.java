@@ -57,7 +57,7 @@ import java.util.Locale;
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 @TeleOp(name = "Sensor: REV Color", group = "Sensor")
-// Disabled
+@Disabled
 public class Shawn_SensorMRColor extends LinearOpMode {
 
   ColorSensor colorSensor;    // Hardware Device Object
