@@ -43,20 +43,23 @@ public class Shawn_TeleopDriveAndArm extends OpMode {
     public static final int TICKS_PER_DEGREE    = 4;
     public static final int MAX_ARM_INCREMENT   = TICKS_PER_DEGREE * 5;
     public static final double ARM_POWER        = 1;
+    public static final double ARM_INCREMENT    = 0.03;
+    public static final int LOOP_WAIT           = 10;
 
     HardwareShawn Shawn = new HardwareShawn();   // Use a Shawn's hardware
 
-    double test = 0.0;
-
     boolean drive = true;
-
-    int currentShoulderPosition = 0;
-    int currentElbowPosition = 0;
 
     int initArmElbow;
     int initArmShoulder;
 
+    double initServoPos;
+
     final int ticksPerRotation = 1440;
+
+    double position;
+
+    int numLoops = 0;
 
     @Override
     public void init() {
@@ -66,7 +69,11 @@ public class Shawn_TeleopDriveAndArm extends OpMode {
         initArmElbow = Shawn.armElbow.getCurrentPosition();
         initArmShoulder = Shawn.armShoulder.getCurrentPosition();
 
+        Shawn.armServo.setPosition(0);
+        position = 0;
+        initServoPos = Shawn.armServo.getPosition();
 
+        telemetry.addData("Initial servo position", "%4.2f", initServoPos);
         telemetry.addData("Status", "Initialized");
 
     }
@@ -80,14 +87,6 @@ public class Shawn_TeleopDriveAndArm extends OpMode {
         double leftStick;
         double rightStick;
 
-        if (gamepad2.dpad_right) {
-            clawPower = 1;
-        } else if (gamepad2.dpad_left) {
-            clawPower = -1;
-        } else {
-            clawPower = 0;
-        }
-
         double drive = -gamepad1.left_stick_y;
         double turn = (gamepad1.right_stick_x)/2;
 
@@ -95,12 +94,33 @@ public class Shawn_TeleopDriveAndArm extends OpMode {
         rightPower = Range.clip(drive - turn, -1.0, 1.0);
         Shawn.leftDrive.setPower(leftPower);
         Shawn.rightDrive.setPower(rightPower);
-        Shawn.armClaw.setPower(clawPower);
 
-        leftStick = -gamepad2.left_stick_y;
-        rightStick = -gamepad2.right_stick_y;
-        currentShoulderPosition = moveArm(Shawn.armShoulder, leftStick, currentShoulderPosition, initArmShoulder);
-        currentElbowPosition = moveArm(Shawn.armElbow, rightStick, currentElbowPosition, initArmElbow);
+        if (numLoops == LOOP_WAIT) {
+            if (-gamepad2.left_stick_y > 0) {
+                if (position < 1) {
+                    position += ARM_INCREMENT;
+                    if (position > 1) {
+                        position = 1;
+                    }
+                }
+            } else if (-gamepad2.left_stick_y < 0) {
+                if (position > 0) {
+                    position -= ARM_INCREMENT;
+                    if (position < 0) {
+                        position = 0;
+                    }
+                }
+            }
+            numLoops = 0;
+        }
+
+        Shawn.armServo.setPosition(position);
+
+        telemetry.addData("gamepad2.left_stick_y: ", "%4.2f", -gamepad2.left_stick_y);
+        telemetry.addData("servo position: ", "%4.2f", Shawn.armServo.getPosition());
+        telemetry.addData("position: ", "%4.2f", position);
+
+        numLoops += 1;
 
     }
 

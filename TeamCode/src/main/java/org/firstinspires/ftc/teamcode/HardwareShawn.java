@@ -71,7 +71,8 @@ public class HardwareShawn
     public DcMotor  armElbow    = null;
     public DcMotor armShoulder = null;
     public BNO055IMU imu = null;
-    public CRServo armClaw = null;
+  //  public CRServo armClaw = null;
+    public Servo armServo = null;
 //    public ColorSensor colorSensor = null;
 
 //    public DcMotor  leftArm     = null;
@@ -128,7 +129,8 @@ public class HardwareShawn
         rightDrive  = hwMap.get(DcMotor.class, "right_drive");
         armElbow    = hwMap.get(DcMotor.class, "arm_elbow");
         armShoulder = hwMap.get(DcMotor.class, "arm_shoulder");
-        armClaw     = hwMap.get(CRServo.class, "armClaw");
+   //     armClaw     = hwMap.get(CRServo.class, "armClaw");
+        armServo    = hwMap.get(Servo.class, "armServo");
 //        colorSensor = hwMap.get(ColorSensor.class, "sensor_color");
 
         imu = hwMap.get(BNO055IMU.class, "imu");
@@ -136,14 +138,14 @@ public class HardwareShawn
         rightDrive.setDirection(DcMotor.Direction.FORWARD);// Set to FORWARD if using AndyMark motors
         armElbow.setDirection(DcMotor.Direction.FORWARD);
         armShoulder.setDirection(DcMotor.Direction.FORWARD);
-        armClaw.setDirection(CRServo.Direction.REVERSE);
+   //     armClaw.setDirection(CRServo.Direction.REVERSE);
 
         // Set all motors to zero power
         leftDrive.setPower(0);
         rightDrive.setPower(0);
         armElbow.setPower(0);
         armShoulder.setPower(0);
-        armClaw.setPower(0);
+   //     armClaw.setPower(0);
 
         // Set all motors to run without encoders.
         // May want to use RUN_USING_ENCODERS if encoders are installed.
