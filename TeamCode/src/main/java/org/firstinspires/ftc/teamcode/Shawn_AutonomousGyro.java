@@ -186,15 +186,15 @@ public class Shawn_AutonomousGyro extends LinearOpMode {
 //            }
 //        }
 
-        Shawn.armShoulder.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        moveArm(40, 0, 10, ARM_POWER / 2);
-        moveArm(-40, 0, 20, ARM_POWER / 2);
-        Shawn.armShoulder.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-        Shawn.armShoulder.setPower(0);
-        Thread.sleep(1000);
-        Shawn.armShoulder.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+//        Shawn.armShoulder.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+//        moveArm(40, 0, 10, ARM_POWER / 2);
+//        moveArm(-40, 0, 20, ARM_POWER / 2);
+//        Shawn.armShoulder.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+//        Shawn.armShoulder.setPower(0);
+//        Thread.sleep(1000);
+//        Shawn.armShoulder.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-        gyroDrive(DRIVE_SPEED, 30, 0);
+  //      gyroDrive(DRIVE_SPEED, 30, 0);
 
       //  Thread.sleep(10000);
 
@@ -204,7 +204,9 @@ public class Shawn_AutonomousGyro extends LinearOpMode {
 //        gyroTurn(TURN_SPEED, 0);
 //        gyroHold(TURN_SPEED, 0, 0.5);
 //        gyroDrive(DRIVE_SPEED, -10, 0);
-//
+
+
+
         telemetry.addData("Path", "Complete");
         telemetry.update();
 
@@ -214,11 +216,11 @@ public class Shawn_AutonomousGyro extends LinearOpMode {
    /**
     *  Method to drive on a fixed compass bearing (angle), based on encoder counts.
     *  Move will stop if either of these conditions occur:
-    *  1) Move gets to the desired position
+    *  1) Move gets to the desired armPosition
     *  2) Driver stops the opmode running.
     *
     * @param speed      Target speed for forward motion.  Should allow for _/- variance for adjusting heading
-    * @param distance   Distance (in inches) to move from current position.  Negative distance means move backwards.
+    * @param distance   Distance (in inches) to move from current armPosition.  Negative distance means move backwards.
     * @param angle      Absolute Angle (in Degrees) relative to last gyro reset.
     *                   0 = fwd. +ve is CCW from fwd. -ve is CW from forward.
     *                   If a relative angle is required, add/subtract from current heading.
@@ -237,7 +239,7 @@ public class Shawn_AutonomousGyro extends LinearOpMode {
         // Ensure that the opmode is still active
         if (opModeIsActive()) {
 
-            // Determine new target position, and pass to motor controller
+            // Determine new target armPosition, and pass to motor controller
             moveCounts = (int)(distance * COUNTS_PER_INCH);
             newLeftTarget = Shawn.leftDrive.getCurrentPosition() + moveCounts;
             newRightTarget = Shawn.rightDrive.getCurrentPosition() + moveCounts;
@@ -433,8 +435,8 @@ public class Shawn_AutonomousGyro extends LinearOpMode {
                 while (Shawn.armShoulder.isBusy()) {
                 }
                 currentShoulderPosition = Shawn.armShoulder.getCurrentPosition();
-                telemetry.addData("current shoulder position: ", "%5d", currentShoulderPosition);
-                telemetry.addData("final shoulder position: ", "%5d", finalShoulderPosition);
+                telemetry.addData("current shoulder armPosition: ", "%5d", currentShoulderPosition);
+                telemetry.addData("final shoulder armPosition: ", "%5d", finalShoulderPosition);
                 telemetry.update();
 
             }
@@ -445,8 +447,8 @@ public class Shawn_AutonomousGyro extends LinearOpMode {
                 while (Shawn.armShoulder.isBusy()) {
                 }
                 currentShoulderPosition = Shawn.armShoulder.getCurrentPosition();
-                telemetry.addData("current shoulder position: ", "%5d", currentShoulderPosition);
-                telemetry.addData("final shoulder position: ", "%5d", finalShoulderPosition);
+                telemetry.addData("current shoulder armPosition: ", "%5d", currentShoulderPosition);
+                telemetry.addData("final shoulder armPosition: ", "%5d", finalShoulderPosition);
                 telemetry.update();
 
             }
@@ -459,8 +461,8 @@ public class Shawn_AutonomousGyro extends LinearOpMode {
                 while (Shawn.armElbow.isBusy()) {
                 }
                 currentElbowPosition = Shawn.armElbow.getCurrentPosition();
-                telemetry.addData("current elbow position: ", "%5d", currentElbowPosition);
-                telemetry.addData("final elbow position: ", "%5d", finalElbowPosition);
+                telemetry.addData("current elbow armPosition: ", "%5d", currentElbowPosition);
+                telemetry.addData("final elbow armPosition: ", "%5d", finalElbowPosition);
                 telemetry.update();
 
             }
@@ -471,8 +473,8 @@ public class Shawn_AutonomousGyro extends LinearOpMode {
                 while (Shawn.armElbow.isBusy()) {
                 }
                 currentElbowPosition = Shawn.armElbow.getCurrentPosition();
-                telemetry.addData("current elbow position: ", "%5d", currentElbowPosition);
-                telemetry.addData("final elbow position: ", "%5d", finalElbowPosition);
+                telemetry.addData("current elbow armPosition: ", "%5d", currentElbowPosition);
+                telemetry.addData("final elbow armPosition: ", "%5d", finalElbowPosition);
                 telemetry.update();
 
             }

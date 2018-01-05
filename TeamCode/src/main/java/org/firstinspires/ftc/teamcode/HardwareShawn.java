@@ -73,6 +73,8 @@ public class HardwareShawn
     public BNO055IMU imu = null;
   //  public CRServo armClaw = null;
     public Servo armServo = null;
+    public Servo leftClaw = null;
+    public Servo rightClaw = null;
 //    public ColorSensor colorSensor = null;
 
 //    public DcMotor  leftArm     = null;
@@ -131,6 +133,9 @@ public class HardwareShawn
         armShoulder = hwMap.get(DcMotor.class, "arm_shoulder");
    //     armClaw     = hwMap.get(CRServo.class, "armClaw");
         armServo    = hwMap.get(Servo.class, "armServo");
+        leftClaw    = hwMap.get(Servo.class, "leftClaw");
+        rightClaw   = hwMap.get(Servo.class, "rightClaw");
+
 //        colorSensor = hwMap.get(ColorSensor.class, "sensor_color");
 
         imu = hwMap.get(BNO055IMU.class, "imu");

@@ -57,7 +57,8 @@ public class Shawn_TeleopDriveAndArm extends OpMode {
 
     final int ticksPerRotation = 1440;
 
-    double position;
+    double armPosition;
+    double clawPosition;
 
     int numLoops = 0;
 
@@ -70,10 +71,14 @@ public class Shawn_TeleopDriveAndArm extends OpMode {
         initArmShoulder = Shawn.armShoulder.getCurrentPosition();
 
         Shawn.armServo.setPosition(0);
-        position = 0;
+        armPosition = 0;
         initServoPos = Shawn.armServo.getPosition();
 
-        telemetry.addData("Initial servo position", "%4.2f", initServoPos);
+        clawPosition = 0;
+        Shawn.rightClaw.setPosition(clawPosition);
+        Shawn.leftClaw.setPosition(1 - clawPosition);
+
+        telemetry.addData("Initial servo armPosition", "%4.2f", initServoPos);
         telemetry.addData("Status", "Initialized");
 
     }
@@ -97,47 +102,56 @@ public class Shawn_TeleopDriveAndArm extends OpMode {
 
         if (numLoops == LOOP_WAIT) {
             if (-gamepad2.left_stick_y > 0) {
-                if (position < 1) {
-                    position += ARM_INCREMENT;
-                    if (position > 1) {
-                        position = 1;
+                if (armPosition < 1) {
+                    armPosition += ARM_INCREMENT;
+                    if (armPosition > 1) {
+                        armPosition = 1;
                     }
                 }
             } else if (-gamepad2.left_stick_y < 0) {
-                if (position > 0) {
-                    position -= ARM_INCREMENT;
-                    if (position < 0) {
-                        position = 0;
+                if (armPosition > 0) {
+                    armPosition -= ARM_INCREMENT;
+                    if (armPosition < 0) {
+                        armPosition = 0;
+                    }
+                }
+            }
+        }
+
+        Shawn.armServo.setPosition(armPosition);
+
+        telemetry.addData("gamepad2.left_stick_y: ", "%4.2f", -gamepad2.left_stick_y);
+        telemetry.addData("servo armPosition: ", "%4.2f", Shawn.armServo.getPosition());
+        telemetry.addData("armPosition: ", "%4.2f", armPosition);
+
+        if (numLoops == LOOP_WAIT) {
+            if (gamepad2.dpad_left) {
+                if (clawPosition < 1) {
+                    clawPosition += ARM_INCREMENT;
+                    if (clawPosition > 1) {
+                        clawPosition = 1;
+                    }
+                }
+            } else if (gamepad2.dpad_right) {
+                if (clawPosition > 0) {
+                    clawPosition -= ARM_INCREMENT;
+                    if (clawPosition < 0) {
+                        clawPosition = 0;
                     }
                 }
             }
             numLoops = 0;
         }
 
-        Shawn.armServo.setPosition(position);
+        if (gamepad2.x) {
+            clawPosition = 0;
+        }
 
-        telemetry.addData("gamepad2.left_stick_y: ", "%4.2f", -gamepad2.left_stick_y);
-        telemetry.addData("servo position: ", "%4.2f", Shawn.armServo.getPosition());
-        telemetry.addData("position: ", "%4.2f", position);
+        Shawn.rightClaw.setPosition(clawPosition);
+        Shawn.leftClaw.setPosition(1 - clawPosition);
 
         numLoops += 1;
 
-    }
-
-    public int moveArm(DcMotor armMotor, double stick, int currentPosition, int initPosition) {
-
-        if (stick > 0){
-            currentPosition = armMotor.getCurrentPosition();
-            armMotor.setTargetPosition(currentPosition + (int)(MAX_ARM_INCREMENT * stick));
-            armMotor.setPower(ARM_POWER);
-        } else if (stick < 0 && currentPosition > initPosition) {
-            currentPosition = armMotor.getCurrentPosition();
-            armMotor.setTargetPosition(currentPosition + (int)(MAX_ARM_INCREMENT * stick));
-            armMotor.setPower(ARM_POWER);
-        } else {
-            armMotor.setTargetPosition(currentPosition);
-        }
-        return currentPosition;
     }
 
 }
