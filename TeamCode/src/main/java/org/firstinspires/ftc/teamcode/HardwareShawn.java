@@ -29,16 +29,12 @@
 
 package org.firstinspires.ftc.teamcode;
 
-import android.graphics.Color;
-
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.hardware.HardwareDevice;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -75,7 +71,10 @@ public class HardwareShawn
     public Servo armServo = null;
     public Servo leftClaw = null;
     public Servo rightClaw = null;
-//    public ColorSensor colorSensor = null;
+    public Servo tailServo = null;
+    public CRServo tailEnd = null;
+
+    public ColorSensor colorSensor = null;
 
 //    public DcMotor  leftArm     = null;
 //    public Servo    leftClaw    = null;
@@ -135,14 +134,17 @@ public class HardwareShawn
         armServo    = hwMap.get(Servo.class, "armServo");
         leftClaw    = hwMap.get(Servo.class, "leftClaw");
         rightClaw   = hwMap.get(Servo.class, "rightClaw");
+        tailServo   = hwMap.get(Servo.class, "tailServo");
+        tailEnd    = hwMap.get(CRServo.class, "tailEnd");
 
-//        colorSensor = hwMap.get(ColorSensor.class, "sensor_color");
+        colorSensor = hwMap.get(ColorSensor.class, "sensor_color");
 
         imu = hwMap.get(BNO055IMU.class, "imu");
         leftDrive.setDirection(DcMotor.Direction.REVERSE); // Set to REVERSE if using AndyMark motors
         rightDrive.setDirection(DcMotor.Direction.FORWARD);// Set to FORWARD if using AndyMark motors
         armElbow.setDirection(DcMotor.Direction.FORWARD);
         armShoulder.setDirection(DcMotor.Direction.FORWARD);
+        tailEnd.setDirection(CRServo.Direction.FORWARD);
    //     armClaw.setDirection(CRServo.Direction.REVERSE);
 
         // Set all motors to zero power
@@ -167,6 +169,8 @@ public class HardwareShawn
         leftDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         armElbow.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         armShoulder.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+        tailEnd.setPower(0);
 
     }
 
