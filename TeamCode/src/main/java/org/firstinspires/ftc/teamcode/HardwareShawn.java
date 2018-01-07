@@ -31,6 +31,7 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
+import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cColorSensor;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -72,14 +73,14 @@ public class HardwareShawn
     public Servo leftClaw = null;
     public Servo rightClaw = null;
     public Servo tailServo = null;
-    public CRServo tailEnd = null;
+    public Servo tailEnd = null;
 
     public DcMotor leftFront = null;
     public DcMotor rightFront = null;
     public DcMotor leftRear = null;
     public DcMotor rightRear = null;
 
- //   public ColorSensor colorSensor = null;
+    public ColorSensor colorSensor = null;
 
 //    public DcMotor  leftArm     = null;
 //    public Servo    leftClaw    = null;
@@ -140,21 +141,20 @@ public class HardwareShawn
         leftClaw    = hwMap.get(Servo.class, "leftClaw");
         rightClaw   = hwMap.get(Servo.class, "rightClaw");
         tailServo   = hwMap.get(Servo.class, "tailServo");
-        tailEnd     = hwMap.get(CRServo.class, "tailEnd");
+        tailEnd     = hwMap.get(Servo.class, "tailEnd");
 
 //        leftFront   = hwMap.get(DcMotor.class, "leftFront");
 //        rightFront  = hwMap.get(DcMotor.class, "rightFront");
 //        leftRear    = hwMap.get(DcMotor.class, "leftRear");
 //        rightRear   = hwMap.get(DcMotor.class, "rightRear");
 
-    //    colorSensor = hwMap.get(ColorSensor.class, "sensor_color");
+        colorSensor = hwMap.get(ColorSensor.class, "sensor_color");
 
         imu = hwMap.get(BNO055IMU.class, "imu");
         leftDrive.setDirection(DcMotor.Direction.REVERSE); // Set to REVERSE if using AndyMark motors
         rightDrive.setDirection(DcMotor.Direction.FORWARD);// Set to FORWARD if using AndyMark motors
         armElbow.setDirection(DcMotor.Direction.FORWARD);
         armShoulder.setDirection(DcMotor.Direction.FORWARD);
-        tailEnd.setDirection(CRServo.Direction.FORWARD);
 
 //        leftFront.setDirection(DcMotorSimple.Direction.FORWARD);
 //        rightFront.setDirection(DcMotorSimple.Direction.FORWARD);
@@ -200,8 +200,6 @@ public class HardwareShawn
 //        rightFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 //        leftRear.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 //        rightRear.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-
-        tailEnd.setPower(0);
 
     }
 
