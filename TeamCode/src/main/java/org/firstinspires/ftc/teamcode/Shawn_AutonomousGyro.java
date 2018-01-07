@@ -172,7 +172,7 @@ public class Shawn_AutonomousGyro extends LinearOpMode {
             Shawn.tailEnd.setPower(0);
         }
         Thread.sleep(1000);
-
+//
 //        gyroDrive(DRIVE_SPEED, 24, 0);
 //        gyroTurn(TURN_SPEED, -45);
 //        gyroHold(TURN_SPEED, -45, 0.5);
