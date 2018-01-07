@@ -74,7 +74,12 @@ public class HardwareShawn
     public Servo tailServo = null;
     public CRServo tailEnd = null;
 
-    public ColorSensor colorSensor = null;
+    public DcMotor leftFront = null;
+    public DcMotor rightFront = null;
+    public DcMotor leftRear = null;
+    public DcMotor rightRear = null;
+
+ //   public ColorSensor colorSensor = null;
 
 //    public DcMotor  leftArm     = null;
 //    public Servo    leftClaw    = null;
@@ -135,9 +140,14 @@ public class HardwareShawn
         leftClaw    = hwMap.get(Servo.class, "leftClaw");
         rightClaw   = hwMap.get(Servo.class, "rightClaw");
         tailServo   = hwMap.get(Servo.class, "tailServo");
-        tailEnd    = hwMap.get(CRServo.class, "tailEnd");
+        tailEnd     = hwMap.get(CRServo.class, "tailEnd");
 
-        colorSensor = hwMap.get(ColorSensor.class, "sensor_color");
+//        leftFront   = hwMap.get(DcMotor.class, "leftFront");
+//        rightFront  = hwMap.get(DcMotor.class, "rightFront");
+//        leftRear    = hwMap.get(DcMotor.class, "leftRear");
+//        rightRear   = hwMap.get(DcMotor.class, "rightRear");
+
+    //    colorSensor = hwMap.get(ColorSensor.class, "sensor_color");
 
         imu = hwMap.get(BNO055IMU.class, "imu");
         leftDrive.setDirection(DcMotor.Direction.REVERSE); // Set to REVERSE if using AndyMark motors
@@ -145,6 +155,12 @@ public class HardwareShawn
         armElbow.setDirection(DcMotor.Direction.FORWARD);
         armShoulder.setDirection(DcMotor.Direction.FORWARD);
         tailEnd.setDirection(CRServo.Direction.FORWARD);
+
+//        leftFront.setDirection(DcMotorSimple.Direction.FORWARD);
+//        rightFront.setDirection(DcMotorSimple.Direction.FORWARD);
+//        leftRear.setDirection(DcMotorSimple.Direction.FORWARD);
+//        rightRear.setDirection(DcMotorSimple.Direction.FORWARD);
+
    //     armClaw.setDirection(CRServo.Direction.REVERSE);
 
         // Set all motors to zero power
@@ -152,7 +168,12 @@ public class HardwareShawn
         rightDrive.setPower(0);
         armElbow.setPower(0);
         armShoulder.setPower(0);
-   //     armClaw.setPower(0);
+
+//        leftFront.setPower(0);
+//        rightFront.setPower(0);
+//        leftRear.setPower(0);
+//        rightRear.setPower(0);
+           //     armClaw.setPower(0);
 
         // Set all motors to run without encoders.
         // May want to use RUN_USING_ENCODERS if encoders are installed.
@@ -165,10 +186,20 @@ public class HardwareShawn
         armElbow.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         armShoulder.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
+//        leftFront.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+//        rightFront.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+//        leftRear.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+//        rightRear.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
         rightDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         leftDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         armElbow.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         armShoulder.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+//        leftFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+//        rightFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+//        leftRear.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+//        rightRear.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         tailEnd.setPower(0);
 

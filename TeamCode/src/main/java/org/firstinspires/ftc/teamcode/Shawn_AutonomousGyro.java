@@ -111,7 +111,6 @@ public class Shawn_AutonomousGyro extends LinearOpMode {
          * The init() method of the hardware class does most of the work here
          */
         Shawn.init(hardwareMap,true);
-        Shawn.tailServo.setPosition(0);
 
         // Ensure the Shawn it stationary, then reset the encoders and calibrate the gyro.
         Shawn.leftDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -149,33 +148,38 @@ public class Shawn_AutonomousGyro extends LinearOpMode {
 
         //fff
 
-        Shawn.tailServo.setPosition(0.5);
-        if (cSensor.isBlue(Shawn.colorSensor)) {
-            Shawn.tailEnd.setPower(1);
-            Thread.sleep(100);
+        Shawn.tailServo.setPosition(0);
+        Thread.sleep(1000);
+        if (/*cSensor.isBlue(Shawn.colorSensor)*/ true) {
+            Shawn.tailEnd.setPower(0.25);
+            Thread.sleep(200);
             Shawn.tailEnd.setPower(0);
-            Thread.sleep(100);
-            Shawn.tailEnd.setPower(-1);
-            Thread.sleep(100);
+            Thread.sleep(200);
+            Shawn.tailServo.setPosition(0.6);
+            Thread.sleep(700);
+            Shawn.tailEnd.setPower(-0.25);
+            Thread.sleep(230);
             Shawn.tailEnd.setPower(0);
         } else {
-            Shawn.tailEnd.setPower(-1);
-            Thread.sleep(100);
+            Shawn.tailEnd.setPower(-0.25);
+            Thread.sleep(200);
             Shawn.tailEnd.setPower(0);
-            Thread.sleep(100);
-            Shawn.tailEnd.setPower(1);
-            Thread.sleep(100);
+            Thread.sleep(700);
+            Shawn.tailServo.setPosition(0.6);
+            Thread.sleep(200);
+            Shawn.tailEnd.setPower(0.25);
+            Thread.sleep(230);
             Shawn.tailEnd.setPower(0);
         }
-        Shawn.tailServo.setPosition(0);
+        Thread.sleep(1000);
 
-        gyroDrive(DRIVE_SPEED, 24, 0);
-        gyroTurn(TURN_SPEED, -45);
-        gyroHold(TURN_SPEED, -45, 0.5);
-        gyroDrive(DRIVE_SPEED, -36, -45);
-        gyroTurn(TURN_SPEED, 0);
-        gyroHold(TURN_SPEED, 0, 0.5);
-        gyroDrive(DRIVE_SPEED, -10, 0);
+//        gyroDrive(DRIVE_SPEED, 24, 0);
+//        gyroTurn(TURN_SPEED, -45);
+//        gyroHold(TURN_SPEED, -45, 0.5);
+//        gyroDrive(DRIVE_SPEED, -36, -45);
+//        gyroTurn(TURN_SPEED, 0);
+//        gyroHold(TURN_SPEED, 0, 0.5);
+//        gyroDrive(DRIVE_SPEED, -10, 0);
 
 //        if(false) {
 //            Shawn.armShoulder.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);

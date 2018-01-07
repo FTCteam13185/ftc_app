@@ -43,7 +43,7 @@ public class Shawn_TeleopDriveAndArm extends OpMode {
     public static final int TICKS_PER_DEGREE    = 4;
     public static final int MAX_ARM_INCREMENT   = TICKS_PER_DEGREE * 5;
     public static final double ARM_POWER        = 1;
-    public static final double ARM_INCREMENT    = 0.03;
+    public static final double ARM_INCREMENT    = 0.01;
     public static final int LOOP_WAIT           = 10;
 
     HardwareShawn Shawn = new HardwareShawn();   // Use a Shawn's hardware
@@ -69,12 +69,12 @@ public class Shawn_TeleopDriveAndArm extends OpMode {
 
         initArmElbow = Shawn.armElbow.getCurrentPosition();
         initArmShoulder = Shawn.armShoulder.getCurrentPosition();
-
-        Shawn.armServo.setPosition(0);
-        armPosition = 0;
+//
+//        Shawn.armServo.setPosition(0);
+        armPosition = 1;
         initServoPos = Shawn.armServo.getPosition();
 
-        clawPosition = 0;
+        clawPosition = 0.5;
         Shawn.rightClaw.setPosition(clawPosition);
         Shawn.leftClaw.setPosition(1 - clawPosition);
 
@@ -100,15 +100,29 @@ public class Shawn_TeleopDriveAndArm extends OpMode {
         Shawn.leftDrive.setPower(leftPower);
         Shawn.rightDrive.setPower(rightPower);
 
+        // code for mecanum wheels:
+//        double r = Math.hypot(gamepad1.left_stick_x, gamepad1.left_stick_y);
+//        double robotAngle = Math.atan2(gamepad1.left_stick_y, gamepad1.left_stick_x) - Math.PI / 4;
+//        double rightX = gamepad1.right_stick_x;
+//        final double v1 = r * Math.cos(robotAngle) + rightX;
+//        final double v2 = r * Math.sin(robotAngle) - rightX;
+//        final double v3 = r * Math.sin(robotAngle) + rightX;
+//        final double v4 = r * Math.cos(robotAngle) - rightX;
+//
+//        Shawn.leftFront.setPower(v1);
+//        Shawn.rightFront.setPower(v2);
+//        Shawn.leftRear.setPower(v3);
+//        Shawn.rightRear.setPower(v4);
+
         if (numLoops == LOOP_WAIT) {
-            if (-gamepad2.left_stick_y > 0) {
+            if (-gamepad2.left_stick_y < 0) {
                 if (armPosition < 1) {
                     armPosition += ARM_INCREMENT;
                     if (armPosition > 1) {
                         armPosition = 1;
                     }
                 }
-            } else if (-gamepad2.left_stick_y < 0) {
+            } else if (-gamepad2.left_stick_y > 0) {
                 if (armPosition > 0) {
                     armPosition -= ARM_INCREMENT;
                     if (armPosition < 0) {
@@ -127,14 +141,14 @@ public class Shawn_TeleopDriveAndArm extends OpMode {
         if (numLoops == LOOP_WAIT) {
             if (gamepad2.dpad_left) {
                 if (clawPosition < 1) {
-                    clawPosition += ARM_INCREMENT;
+                    clawPosition += ARM_INCREMENT*3;
                     if (clawPosition > 1) {
                         clawPosition = 1;
                     }
                 }
             } else if (gamepad2.dpad_right) {
                 if (clawPosition > 0) {
-                    clawPosition -= ARM_INCREMENT;
+                    clawPosition -= ARM_INCREMENT*3;
                     if (clawPosition < 0) {
                         clawPosition = 0;
                     }
@@ -147,7 +161,7 @@ public class Shawn_TeleopDriveAndArm extends OpMode {
             clawPosition = 0;
         }
 
-        Shawn.rightClaw.setPosition(clawPosition);
+        Shawn.rightClaw.setPosition(clawPosition - 0.05);
         Shawn.leftClaw.setPosition(1 - clawPosition);
 
         numLoops += 1;
