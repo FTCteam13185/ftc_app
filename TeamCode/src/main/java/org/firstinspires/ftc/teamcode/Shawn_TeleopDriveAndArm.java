@@ -93,7 +93,7 @@ public class Shawn_TeleopDriveAndArm extends OpMode {
         double rightStick;
 
         double drive = -gamepad1.left_stick_y;
-        double turn = (gamepad1.right_stick_x)/2;
+        double turn = (-gamepad1.right_stick_x)/2;
 
         leftPower = Range.clip(drive + turn, -1.0, 1.0);
         rightPower = Range.clip(drive - turn, -1.0, 1.0);
@@ -139,14 +139,14 @@ public class Shawn_TeleopDriveAndArm extends OpMode {
         telemetry.addData("armPosition: ", "%4.2f", armPosition);
 
         if (numLoops == LOOP_WAIT) {
-            if (gamepad2.dpad_left) {
+            if (gamepad2.right_stick_x > 0) {
                 if (clawPosition < 1) {
                     clawPosition += ARM_INCREMENT*3;
                     if (clawPosition > 1) {
                         clawPosition = 1;
                     }
                 }
-            } else if (gamepad2.dpad_right) {
+            } else if (gamepad2.right_stick_x < 0) {
                 if (clawPosition > 0) {
                     clawPosition -= ARM_INCREMENT*3;
                     if (clawPosition < 0) {
