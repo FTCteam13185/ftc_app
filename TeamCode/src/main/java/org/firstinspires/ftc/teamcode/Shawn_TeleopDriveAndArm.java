@@ -71,10 +71,8 @@ public class Shawn_TeleopDriveAndArm extends OpMode {
         initArmShoulder = Shawn.armShoulder.getCurrentPosition();
 //
 //        Shawn.armServo.setPosition(0);
-        armPosition = 1;
         initServoPos = Shawn.armServo.getPosition();
 
-        clawPosition = 0.5;
         Shawn.rightClaw.setPosition(clawPosition);
         Shawn.leftClaw.setPosition(1 - clawPosition);
 

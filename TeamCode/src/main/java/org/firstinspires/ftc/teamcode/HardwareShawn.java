@@ -161,8 +161,6 @@ public class HardwareShawn
 //        leftRear.setDirection(DcMotorSimple.Direction.FORWARD);
 //        rightRear.setDirection(DcMotorSimple.Direction.FORWARD);
 
-   //     armClaw.setDirection(CRServo.Direction.REVERSE);
-
         // Set all motors to zero power
         leftDrive.setPower(0);
         rightDrive.setPower(0);
