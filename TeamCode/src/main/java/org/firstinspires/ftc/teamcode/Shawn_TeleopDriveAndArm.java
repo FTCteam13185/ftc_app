@@ -57,7 +57,7 @@ public class Shawn_TeleopDriveAndArm extends OpMode {
 
     final int ticksPerRotation = 1440;
 
-    double armPosition;
+    double armPosition = 1;
     double clawPosition;
 
     int numLoops = 0;
@@ -69,8 +69,8 @@ public class Shawn_TeleopDriveAndArm extends OpMode {
 
         initArmElbow = Shawn.armElbow.getCurrentPosition();
         initArmShoulder = Shawn.armShoulder.getCurrentPosition();
-//
-//        Shawn.armServo.setPosition(0);
+
+        Shawn.armServo.setPosition(armPosition);
         initServoPos = Shawn.armServo.getPosition();
 
         Shawn.rightClaw.setPosition(clawPosition);
