@@ -176,7 +176,7 @@ public class Shawn_AutonomousRed extends LinearOpMode {
         gyroDrive(DRIVE_SPEED, 40, 50);
         gyroTurn(TURN_SPEED, 0);
         gyroHold(TURN_SPEED, 0, 0.5);
-        gyroDrive(DRIVE_SPEED, 15, 0);
+        gyroDrive(DRIVE_SPEED, 10, 0);
         telemetry.addData("Path", "Complete");
         telemetry.update();
 
