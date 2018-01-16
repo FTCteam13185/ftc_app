@@ -63,10 +63,10 @@ import java.io.File;
 public class HardwareShawn
 {
     /* Public OpMode members. */
-    public DcMotor  leftDrive   = null;
-    public DcMotor  rightDrive  = null;
-    public DcMotor  armElbow    = null;
-    public DcMotor armShoulder = null;
+//    public DcMotor  leftDrive   = null;
+//    public DcMotor  rightDrive  = null;
+//    public DcMotor  armElbow    = null;
+//    public DcMotor armShoulder = null;
     public BNO055IMU imu = null;
   //  public CRServo armClaw = null;
     public Servo armServo = null;
@@ -132,10 +132,10 @@ public class HardwareShawn
         }
 
         // Define and Initialize Motors
-        leftDrive   = hwMap.get(DcMotor.class, "left_drive");
-        rightDrive  = hwMap.get(DcMotor.class, "right_drive");
-        armElbow    = hwMap.get(DcMotor.class, "arm_elbow");
-        armShoulder = hwMap.get(DcMotor.class, "arm_shoulder");
+//        leftDrive   = hwMap.get(DcMotor.class, "left_drive");
+//        rightDrive  = hwMap.get(DcMotor.class, "right_drive");
+//        armElbow    = hwMap.get(DcMotor.class, "arm_elbow");
+//        armShoulder = hwMap.get(DcMotor.class, "arm_shoulder");
    //     armClaw     = hwMap.get(CRServo.class, "armClaw");
         armServo    = hwMap.get(Servo.class, "armServo");
         leftClaw    = hwMap.get(Servo.class, "leftClaw");
@@ -143,61 +143,61 @@ public class HardwareShawn
         tailServo   = hwMap.get(Servo.class, "tailServo");
         tailEnd     = hwMap.get(Servo.class, "tailEnd");
 
-//        leftFront   = hwMap.get(DcMotor.class, "leftFront");
-//        rightFront  = hwMap.get(DcMotor.class, "rightFront");
-//        leftRear    = hwMap.get(DcMotor.class, "leftRear");
-//        rightRear   = hwMap.get(DcMotor.class, "rightRear");
+        leftFront   = hwMap.get(DcMotor.class, "leftFront");
+        rightFront  = hwMap.get(DcMotor.class, "rightFront");
+        leftRear    = hwMap.get(DcMotor.class, "leftRear");
+        rightRear   = hwMap.get(DcMotor.class, "rightRear");
 
         colorSensor = hwMap.get(ColorSensor.class, "sensor_color");
 
         imu = hwMap.get(BNO055IMU.class, "imu");
-        leftDrive.setDirection(DcMotor.Direction.REVERSE); // Set to REVERSE if using AndyMark motors
-        rightDrive.setDirection(DcMotor.Direction.FORWARD);// Set to FORWARD if using AndyMark motors
-        armElbow.setDirection(DcMotor.Direction.FORWARD);
-        armShoulder.setDirection(DcMotor.Direction.FORWARD);
+//        leftDrive.setDirection(DcMotor.Direction.REVERSE); // Set to REVERSE if using AndyMark motors
+//        rightDrive.setDirection(DcMotor.Direction.FORWARD);// Set to FORWARD if using AndyMark motors
+//        armElbow.setDirection(DcMotor.Direction.FORWARD);
+//        armShoulder.setDirection(DcMotor.Direction.FORWARD);
 
-//        leftFront.setDirection(DcMotorSimple.Direction.FORWARD);
-//        rightFront.setDirection(DcMotorSimple.Direction.FORWARD);
-//        leftRear.setDirection(DcMotorSimple.Direction.FORWARD);
-//        rightRear.setDirection(DcMotorSimple.Direction.FORWARD);
+        leftFront.setDirection(DcMotorSimple.Direction.REVERSE);
+        rightFront.setDirection(DcMotorSimple.Direction.FORWARD);
+        leftRear.setDirection(DcMotorSimple.Direction.FORWARD);
+        rightRear.setDirection(DcMotorSimple.Direction.REVERSE);
 
         // Set all motors to zero power
-        leftDrive.setPower(0);
-        rightDrive.setPower(0);
-        armElbow.setPower(0);
-        armShoulder.setPower(0);
+//        leftDrive.setPower(0);
+//        rightDrive.setPower(0);
+//        armElbow.setPower(0);
+//        armShoulder.setPower(0);
 
-//        leftFront.setPower(0);
-//        rightFront.setPower(0);
-//        leftRear.setPower(0);
-//        rightRear.setPower(0);
+        leftFront.setPower(0);
+        rightFront.setPower(0);
+        leftRear.setPower(0);
+        rightRear.setPower(0);
            //     armClaw.setPower(0);
 
         // Set all motors to run without encoders.
         // May want to use RUN_USING_ENCODERS if encoders are installed.
 
-        armShoulder.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        armElbow.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+//        armShoulder.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+//        armElbow.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
-        leftDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        rightDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        armElbow.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        armShoulder.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+//        leftDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+//        rightDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+//        armElbow.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+//        armShoulder.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-//        leftFront.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-//        rightFront.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-//        leftRear.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-//        rightRear.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        leftFront.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        rightFront.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        leftRear.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        rightRear.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
-        rightDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        leftDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        armElbow.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        armShoulder.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+//        rightDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+//        leftDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+//        armElbow.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+//        armShoulder.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-//        leftFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-//        rightFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-//        leftRear.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-//        rightRear.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        leftFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        rightFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        leftRear.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        rightRear.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
     }
 

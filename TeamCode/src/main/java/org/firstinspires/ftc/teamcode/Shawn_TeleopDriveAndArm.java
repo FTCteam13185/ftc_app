@@ -44,7 +44,7 @@ public class Shawn_TeleopDriveAndArm extends OpMode {
     public static final int MAX_ARM_INCREMENT   = TICKS_PER_DEGREE * 5;
     public static final double ARM_POWER        = 1;
     public static final double ARM_INCREMENT    = 0.01;
-    public static final int LOOP_WAIT           = 10;
+    public static final int LOOP_WAIT           = 5;
 
     HardwareShawn Shawn = new HardwareShawn();   // Use a Shawn's hardware
 
@@ -67,9 +67,6 @@ public class Shawn_TeleopDriveAndArm extends OpMode {
 
         Shawn.init(hardwareMap, false);
 
-        initArmElbow = Shawn.armElbow.getCurrentPosition();
-        initArmShoulder = Shawn.armShoulder.getCurrentPosition();
-
         Shawn.armServo.setPosition(armPosition);
         initServoPos = Shawn.armServo.getPosition();
 
@@ -90,13 +87,13 @@ public class Shawn_TeleopDriveAndArm extends OpMode {
         double leftStick;
         double rightStick;
 
-        double drive = -gamepad1.left_stick_y;
-        double turn = (-gamepad1.right_stick_x)/2;
+//        double drive = -gamepad1.left_stick_y;
+//        double turn = (-gamepad1.right_stick_x)/2;
 
-        leftPower = Range.clip(drive + turn, -1.0, 1.0);
-        rightPower = Range.clip(drive - turn, -1.0, 1.0);
-        Shawn.leftDrive.setPower(leftPower);
-        Shawn.rightDrive.setPower(rightPower);
+//        leftPower = Range.clip(drive + turn, -1.0, 1.0);
+//        rightPower = Range.clip(drive - turn, -1.0, 1.0);
+//        Shawn.leftDrive.setPower(leftPower);
+//        Shawn.rightDrive.setPower(rightPower);
 
         // code for mecanum wheels:
 //        double r = Math.hypot(gamepad1.left_stick_x, gamepad1.left_stick_y);
@@ -111,6 +108,39 @@ public class Shawn_TeleopDriveAndArm extends OpMode {
 //        Shawn.rightFront.setPower(v2);
 //        Shawn.leftRear.setPower(v3);
 //        Shawn.rightRear.setPower(v4);
+
+        double lsy = gamepad1.left_stick_y;
+        double lsx = gamepad1.left_stick_x;
+
+        if (Math.abs(lsy) > Math.abs(lsx)) {
+            lsx = 0;
+        } else {
+            lsy = 0;
+        }
+
+        double lf = lsy + lsx;
+        double lr = lsy - lsx;
+        double rf = gamepad1.right_stick_y - lsx;
+        double rr = gamepad1.right_stick_y + lsx;
+
+        int control = 1;
+
+        if (gamepad1.right_bumper) {
+            control = 2;
+        }
+        if (gamepad1.left_bumper) {
+            control = 4;
+        }
+
+        lf = Range.clip(lf, -1, 1);
+        lr = Range.clip(lr, -1, 1);
+        rf = Range.clip(rf, -1, 1);
+        rr = Range.clip(rr, -1, 1);
+
+        Shawn.leftFront.setPower(lf / control);
+        Shawn.leftRear.setPower(lr / control);
+        Shawn.rightFront.setPower(rf / control);
+        Shawn.rightRear.setPower(rr / control);
 
         if (numLoops == LOOP_WAIT) {
             if (-gamepad2.left_stick_y < 0) {
