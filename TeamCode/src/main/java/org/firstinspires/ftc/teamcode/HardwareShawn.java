@@ -31,8 +31,6 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
-import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cColorSensor;
-import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -75,10 +73,10 @@ public class HardwareShawn
     public Servo tailServo = null;
     public Servo tailEnd = null;
 
-    public DcMotor leftFront = null;
-    public DcMotor rightFront = null;
     public DcMotor leftRear = null;
     public DcMotor rightRear = null;
+    public DcMotor leftFront = null;
+    public DcMotor rightFront = null;
 
     public ColorSensor colorSensor = null;
 
@@ -143,61 +141,37 @@ public class HardwareShawn
         tailServo   = hwMap.get(Servo.class, "tailServo");
         tailEnd     = hwMap.get(Servo.class, "tailEnd");
 
-        leftFront   = hwMap.get(DcMotor.class, "leftFront");
-        rightFront  = hwMap.get(DcMotor.class, "rightFront");
-        leftRear    = hwMap.get(DcMotor.class, "leftRear");
-        rightRear   = hwMap.get(DcMotor.class, "rightRear");
+        leftRear = hwMap.get(DcMotor.class, "leftRear");
+        rightRear = hwMap.get(DcMotor.class, "rightRear");
+        leftFront = hwMap.get(DcMotor.class, "leftFront");
+        rightFront = hwMap.get(DcMotor.class, "rightFront");
 
         colorSensor = hwMap.get(ColorSensor.class, "sensor_color");
 
         imu = hwMap.get(BNO055IMU.class, "imu");
-//        leftDrive.setDirection(DcMotor.Direction.REVERSE); // Set to REVERSE if using AndyMark motors
-//        rightDrive.setDirection(DcMotor.Direction.FORWARD);// Set to FORWARD if using AndyMark motors
-//        armElbow.setDirection(DcMotor.Direction.FORWARD);
-//        armShoulder.setDirection(DcMotor.Direction.FORWARD);
 
-        leftFront.setDirection(DcMotorSimple.Direction.REVERSE);
-        rightFront.setDirection(DcMotorSimple.Direction.FORWARD);
-        leftRear.setDirection(DcMotorSimple.Direction.FORWARD);
-        rightRear.setDirection(DcMotorSimple.Direction.REVERSE);
+        leftRear.setDirection(DcMotorSimple.Direction.REVERSE);
+        rightRear.setDirection(DcMotorSimple.Direction.FORWARD);
+        leftFront.setDirection(DcMotorSimple.Direction.FORWARD);
+        rightFront.setDirection(DcMotorSimple.Direction.REVERSE);
 
-        // Set all motors to zero power
-//        leftDrive.setPower(0);
-//        rightDrive.setPower(0);
-//        armElbow.setPower(0);
-//        armShoulder.setPower(0);
-
-        leftFront.setPower(0);
-        rightFront.setPower(0);
         leftRear.setPower(0);
         rightRear.setPower(0);
-           //     armClaw.setPower(0);
+        leftFront.setPower(0);
+        rightFront.setPower(0);
 
         // Set all motors to run without encoders.
         // May want to use RUN_USING_ENCODERS if encoders are installed.
 
-//        armShoulder.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-//        armElbow.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
-//        leftDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-//        rightDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-//        armElbow.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-//        armShoulder.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-        leftFront.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        rightFront.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         leftRear.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         rightRear.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        leftFront.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        rightFront.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
-//        rightDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-//        leftDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-//        armElbow.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-//        armShoulder.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-
-        leftFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        rightFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         leftRear.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rightRear.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        leftFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        rightFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
     }
 

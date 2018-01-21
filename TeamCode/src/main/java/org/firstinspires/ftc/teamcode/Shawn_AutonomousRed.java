@@ -89,7 +89,7 @@
 //    static final double     COUNTS_PER_INCH         = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) /
 //                                                      (WHEEL_DIAMETER_INCHES * 3.1415);
 //
-//    // These constants define the desired driving/control characteristics
+//    // These constants define the desired driving/controlType characteristics
 //    // They can/should be tweaked to suite the specific Shawn drive train.
 //    static final double     DRIVE_SPEED             = 0.6;     // Nominal speed for better accuracy.
 //    static final double     TURN_SPEED              = 0.5;     // Nominal half speed for better accuracy.
@@ -319,7 +319,7 @@
 //    }
 //
 //    /**
-//     * Perform one cycle of closed loop heading control.
+//     * Perform one cycle of closed loop heading controlType.
 //     *
 //     * @param speed     Desired speed of turn.
 //     * @param angle     Absolute Angle (in Degrees) relative to last gyro reset.
