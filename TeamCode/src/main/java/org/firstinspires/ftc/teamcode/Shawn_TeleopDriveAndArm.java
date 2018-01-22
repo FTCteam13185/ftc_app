@@ -96,7 +96,7 @@ public class Shawn_TeleopDriveAndArm extends OpMode {
             control = 4;
         }
 
-        if (controlType) {
+        if (controlType) { // y controls
             // Left stick's y direction is used to control left wheels'
             // forward and revers movement
             double lsy = gamepad1.left_stick_y;
@@ -135,7 +135,7 @@ public class Shawn_TeleopDriveAndArm extends OpMode {
             rf = Range.clip(rf, -1, 1);
             rr = Range.clip(rr, -1, 1);
 
-        } else {
+        } else { // x control
 
             if (-gamepad1.left_stick_y != 0) {
                 lf = gamepad1.left_stick_y;
@@ -145,34 +145,52 @@ public class Shawn_TeleopDriveAndArm extends OpMode {
             }
 
             if (gamepad1.right_stick_x != 0) {
-                if (control == 1) {
-                    if (gamepad1.right_stick_x >= 0) {
-                        lf = gamepad1.right_stick_x  * rightStrafeControl;
-                        rf = -gamepad1.right_stick_x * rightStrafeControl;
-                    }
-                    else{
-                        lf = gamepad1.right_stick_x  * leftStrafeControl;
-                        rf = -gamepad1.right_stick_x * leftStrafeControl;
-                    }
-                }
-                else {
-                    lf = gamepad1.right_stick_x;
-                    rf = -gamepad1.right_stick_x;
-                }
+                lf = -gamepad1.right_stick_x;
                 lr = -gamepad1.right_stick_x;
+                rf = gamepad1.right_stick_x;
                 rr = gamepad1.right_stick_x;
+
             }
 
             if (gamepad1.left_trigger != 0) {
-                lf = 1;
+
+                if (control == 1) {
+                    lf = -1 * leftStrafeControl;
+                    rf = 1 * leftStrafeControl;
+                } else {
+                    lf = -1;
+                    rf = 1;
+                }
                 lr = 1;
-                rf = -1;
                 rr = -1;
+
+//                if (control == 1) {
+//                    if (gamepad1.right_stick_x >= 0) {
+//                        lf = gamepad1.right_stick_x  * rightStrafeControl;
+//                        rf = -gamepad1.right_stick_x * rightStrafeControl;
+//                    }
+//                    else{
+//                        lf = gamepad1.right_stick_x  * leftStrafeControl;
+//                        rf = -gamepad1.right_stick_x * leftStrafeControl;
+//                    }
+//                }
+//                else {
+//                    lf = gamepad1.right_stick_x;
+//                    rf = -gamepad1.right_stick_x;
+//                }
+//                lr = -1;
+//                rr = 1;
+
             }
             if (gamepad1.right_trigger != 0) {
-                lf = -1;
+                if (control == 1) {
+                    lf = 1 * rightStrafeControl;
+                    rf = -1 * rightStrafeControl;
+                } else {
+                    lf = 1;
+                    rf = -1;
+                }
                 lr = -1;
-                rf = 1;
                 rr = 1;
             }
 
