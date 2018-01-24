@@ -176,7 +176,6 @@ public class Shawn_AutonomousBlue extends LinearOpMode {
         gyroDrive(DRIVE_SPEED, 40, -50);
         gyroTurn(TURN_SPEED, 180);
         gyroHold(TURN_SPEED, 180, 0.5);
-        gyroDrive(DRIVE_SPEED, 5, 180);
 
         Shawn.armServo.setPosition(0.03);
         Shawn.rightClaw.setPosition(0.5);
