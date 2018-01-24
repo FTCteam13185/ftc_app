@@ -265,14 +265,12 @@ public class Shawn_TeleopDriveAndArm extends OpMode {
             numLoops = 0;
         }
 
-        if (gamepad2.x) {
-            clawPosition = 0;
-        }
-
         Shawn.rightClaw.setPosition(clawPosition - 0.05);
         Shawn.leftClaw.setPosition(1 - clawPosition);
 
-        numLoops += 1;
+        if (numLoops < 10) {
+            numLoops += 1;
+        }
 
     }
 
