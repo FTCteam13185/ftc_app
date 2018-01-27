@@ -173,13 +173,30 @@ public class Shawn_AutonomousBlue extends LinearOpMode {
         gyroDrive(DRIVE_SPEED, -36, 0);
         gyroTurn(TURN_SPEED, -50);
         gyroHold(TURN_SPEED, -50, 0.5);
-        gyroDrive(DRIVE_SPEED, 40, -50);
+        gyroDrive(DRIVE_SPEED, 45, -50);
         gyroTurn(TURN_SPEED, 180);
         gyroHold(TURN_SPEED, 180, 0.5);
 
-        Shawn.armServo.setPosition(0.03);
-        Shawn.rightClaw.setPosition(0.5);
-        Shawn.leftClaw.setPosition(0.45);
+        gyroDrive(DRIVE_SPEED / 2, -9, 180);
+        Thread.sleep(500);
+
+        Shawn.armServo.setPosition(0.85);
+        Thread.sleep(500);
+
+        Shawn.rightClaw.setPosition(1);
+        Shawn.leftClaw.setPosition(0);
+        Thread.sleep(1000);
+
+        gyroDrive(DRIVE_SPEED, 4, 180);
+
+        Shawn.rightClaw.setPosition(0);
+        Shawn.leftClaw.setPosition(1);
+        Thread.sleep(1000);
+
+        gyroDrive(DRIVE_SPEED, -5, 180);
+        Thread.sleep(1000);
+
+        gyroDrive(DRIVE_SPEED/2, 2, 180);
 
         telemetry.addData("Path", "Complete");
         telemetry.update();
