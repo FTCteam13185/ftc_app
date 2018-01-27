@@ -40,10 +40,8 @@ public class Shawn_TeleopDriveAndArm extends OpMode {
 
     /* Declare OpMode members. */
 
-    public static final int TICKS_PER_DEGREE      = 4;
-    public static final int MAX_ARM_INCREMENT     = TICKS_PER_DEGREE * 5;
-    public static final double ARM_POWER          = 1;
     public static final double ARM_INCREMENT      = 0.01;
+    public static final double CLAW_INCREMENT     = 0.03;
     public static final int LOOP_WAIT             = 5;
     public static final double rightStrafeControl = 0.875;
     public static final double leftStrafeControl  = 0.885;
@@ -214,7 +212,6 @@ public class Shawn_TeleopDriveAndArm extends OpMode {
         Shawn.rightRear.setPower(rf / control);
         Shawn.rightFront.setPower(rr/ control);
 
-
         if (gamepad1.x) {
             controlType = false;
         }
@@ -222,17 +219,26 @@ public class Shawn_TeleopDriveAndArm extends OpMode {
             controlType = true;
         }
 
+        int clawControl = 1;
+
+        if (gamepad2.right_bumper) {
+            clawControl = 2;
+        }
+        if (gamepad2.left_bumper) {
+            clawControl = 4;
+        }
+
         if (numLoops == LOOP_WAIT) {
             if (-gamepad2.left_stick_y < 0) {
                 if (armPosition < 1) {
-                    armPosition += ARM_INCREMENT;
+                    armPosition += ARM_INCREMENT/clawControl;
                     if (armPosition > 1) {
                         armPosition = 1;
                     }
                 }
             } else if (-gamepad2.left_stick_y > 0) {
                 if (armPosition > 0) {
-                    armPosition -= ARM_INCREMENT;
+                    armPosition -= ARM_INCREMENT/clawControl;
                     if (armPosition < 0) {
                         armPosition = 0;
                     }
@@ -249,14 +255,14 @@ public class Shawn_TeleopDriveAndArm extends OpMode {
         if (numLoops == LOOP_WAIT) {
             if (gamepad2.right_stick_x > 0) {
                 if (clawPosition < 1) {
-                    clawPosition += ARM_INCREMENT*3;
+                    clawPosition += CLAW_INCREMENT/clawControl;
                     if (clawPosition > 1) {
                         clawPosition = 1;
                     }
                 }
             } else if (gamepad2.right_stick_x < 0) {
                 if (clawPosition > 0) {
-                    clawPosition -= ARM_INCREMENT*3;
+                    clawPosition -= CLAW_INCREMENT/clawControl;
                     if (clawPosition < 0) {
                         clawPosition = 0;
                     }
