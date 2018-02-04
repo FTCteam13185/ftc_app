@@ -176,10 +176,10 @@ public class Shawn_AutonomousRed extends LinearOpMode {
         gyroTurn(TURN_SPEED, 180);
         gyroHold(TURN_SPEED, 180, 0.5);
 
-        gyroDrive(DRIVE_SPEED / 2, -9, 180);
+        Shawn.armServo.setPosition(0.85);
         Thread.sleep(500);
 
-        Shawn.armServo.setPosition(0.85);
+        gyroDrive(DRIVE_SPEED / 2, -9, 180);
         Thread.sleep(500);
 
         Shawn.rightClaw.setPosition(1);
@@ -188,6 +188,7 @@ public class Shawn_AutonomousRed extends LinearOpMode {
 
         gyroDrive(DRIVE_SPEED, 4, 180);
 
+        Shawn.armServo.setPosition(0.9);
         Shawn.rightClaw.setPosition(0);
         Shawn.leftClaw.setPosition(1);
         Thread.sleep(1000);

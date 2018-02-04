@@ -177,78 +177,79 @@ public class Shawn_AutonomousBlue extends LinearOpMode {
         //fff
         RelicRecoveryVuMark vuMark = RelicRecoveryVuMark.from(relicTemplate);
 
-//        if (vuMark != RelicRecoveryVuMark.UNKNOWN) {
-//            telemetry.addData("VuMark", "%s visible", vuMark);
-//            if (vuMark == RelicRecoveryVuMark.RIGHT) {
-//                key = 1;
-//            } else if (vuMark == RelicRecoveryVuMark.CENTER) {
-//                key = 2;
-//            } else if (vuMark == RelicRecoveryVuMark.LEFT) {
-//                key = 3;
-//            }
-//        } else {
-//            telemetry.addData("VuMark", "not visible");
-//        }
-//        Thread.sleep(3000);
+        if (vuMark != RelicRecoveryVuMark.UNKNOWN) {
+            telemetry.addData("VuMark", "%s visible", vuMark);
+            if (vuMark == RelicRecoveryVuMark.RIGHT) {
+                key = 1;
+            } else if (vuMark == RelicRecoveryVuMark.CENTER) {
+                key = 2;
+            } else if (vuMark == RelicRecoveryVuMark.LEFT) {
+                key = 3;
+            }
+        } else {
+            telemetry.addData("VuMark", "not visible");
+        }
+        Thread.sleep(3000);
 
-//        Shawn.tailServo.setPosition(0.02);
-//        Thread.sleep(1000);
-//        if (!cSensor.isBlue(Shawn.colorSensor)) {
-//            telemetry.addLine("red");
-//            telemetry.update();
-//            Thread.sleep(1000);
-//            Shawn.tailEnd.setPosition(0);
-//            Thread.sleep(200);
-//            Shawn.tailServo.setPosition(0.7);
-//            Thread.sleep(200);
-//            Shawn.tailEnd.setPosition(0.37);
-//        } else {
-//            telemetry.addLine("blue");
-//            telemetry.update();
-//            Thread.sleep(1000);
-//            Shawn.tailEnd.setPosition(1);
-//            Thread.sleep(200);
-//            Shawn.tailServo.setPosition(0.7);
-//            Thread.sleep(200);
-//            Shawn.tailEnd.setPosition(0.37);
-//        }
-//        Thread.sleep(500);
-//
-//        Shawn.rightClaw.setPosition(0.5);
-//        Shawn.leftClaw.setPosition(0.45);
-//        Thread.sleep(500);
-//        Shawn.armServo.setPosition(0.5);
-//        Thread.sleep(1000);
+        Shawn.tailServo.setPosition(0.02);
+        Thread.sleep(1000);
+        if (!cSensor.isBlue(Shawn.colorSensor)) {
+            telemetry.addLine("red");
+            telemetry.update();
+            Thread.sleep(1000);
+            Shawn.tailEnd.setPosition(0);
+            Thread.sleep(200);
+            Shawn.tailServo.setPosition(0.7);
+            Thread.sleep(200);
+            Shawn.tailEnd.setPosition(0.37);
+        } else {
+            telemetry.addLine("blue");
+            telemetry.update();
+            Thread.sleep(1000);
+            Shawn.tailEnd.setPosition(1);
+            Thread.sleep(200);
+            Shawn.tailServo.setPosition(0.7);
+            Thread.sleep(200);
+            Shawn.tailEnd.setPosition(0.37);
+        }
+        Thread.sleep(500);
 
-//        gyroDrive(DRIVE_SPEED, -36, 0);
-//        gyroTurn(TURN_SPEED, -50);
-//        gyroHold(TURN_SPEED, -50, 0.5);
-//        gyroDrive(DRIVE_SPEED, 45, -50);
-//        gyroTurn(TURN_SPEED, 180);
-//        gyroHold(TURN_SPEED, 180, 0.5);
+        Shawn.rightClaw.setPosition(0.5);
+        Shawn.leftClaw.setPosition(0.45);
+        Thread.sleep(500);
+        Shawn.armServo.setPosition(0.5);
+        Thread.sleep(1000);
 
-        strafe(0.4, -8000);
+        gyroDrive(DRIVE_SPEED, -36, 0);
+        gyroTurn(TURN_SPEED, -50);
+        gyroHold(TURN_SPEED, -50, 0.5);
+        gyroDrive(DRIVE_SPEED, 45, -50);
+        gyroTurn(TURN_SPEED, 180);
+        gyroHold(TURN_SPEED, 180, 0.5);
 
-//        Shawn.armServo.setPosition(0.85);
-//        Thread.sleep(500);
-//
-//        gyroDrive(DRIVE_SPEED/2, -8, 180);
-//        Thread.sleep(500);
-//
-//        Shawn.rightClaw.setPosition(1);
-//        Shawn.leftClaw.setPosition(0);
-//        Thread.sleep(1000);
-//
-//        gyroDrive(DRIVE_SPEED/2, 5, 180);
-//
-//        Shawn.rightClaw.setPosition(0);
-//        Shawn.leftClaw.setPosition(1);
-//        Thread.sleep(1000);
-//
-//        gyroDrive(DRIVE_SPEED, -6, 180);
-//        Thread.sleep(1000);
-//
-//        gyroDrive(DRIVE_SPEED/2, 3, 180);
+//        strafe(0.4, -8000);
+
+        Shawn.armServo.setPosition(0.85);
+        Thread.sleep(500);
+
+        gyroDrive(DRIVE_SPEED/2, -8, 180);
+        Thread.sleep(500);
+
+        Shawn.rightClaw.setPosition(1);
+        Shawn.leftClaw.setPosition(0);
+        Thread.sleep(1000);
+
+        gyroDrive(DRIVE_SPEED/2, 5, 180);
+
+        Shawn.armServo.setPosition(0.9);
+        Shawn.rightClaw.setPosition(0);
+        Shawn.leftClaw.setPosition(1);
+        Thread.sleep(1000);
+
+        gyroDrive(DRIVE_SPEED, -6, 180);
+        Thread.sleep(1000);
+
+        gyroDrive(DRIVE_SPEED/2, 3, 180);
 
         telemetry.addData("Path", "Complete");
         telemetry.update();
