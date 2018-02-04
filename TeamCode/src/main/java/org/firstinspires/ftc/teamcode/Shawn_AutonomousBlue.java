@@ -37,10 +37,16 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
+import org.firstinspires.ftc.robotcore.external.ClassFactory;
+import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
+import org.firstinspires.ftc.robotcore.external.navigation.RelicRecoveryVuMark;
+import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
+import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
+import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
 
 import static java.lang.Math.abs;
 
@@ -104,6 +110,14 @@ public class Shawn_AutonomousBlue extends LinearOpMode {
 
     Shawn_SensorMRColor cSensor = new Shawn_SensorMRColor();
 
+    VuforiaLocalizer vuforia;
+
+    public static final String TAG = "Vuforia VuMark Sample";
+
+    OpenGLMatrix lastLocation = null;
+
+    int key = 0;
+
     @Override
     public void runOpMode() throws InterruptedException {
 
@@ -120,6 +134,23 @@ public class Shawn_AutonomousBlue extends LinearOpMode {
         Shawn.leftFront.setDirection(DcMotorSimple.Direction.REVERSE);
         Shawn.rightFront.setDirection(DcMotorSimple.Direction.FORWARD);
 
+        //vuforia
+        int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
+        VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters(cameraMonitorViewId);
+
+        parameters.vuforiaLicenseKey = "AdC2UuL/////AAAAmbSzzw4/ykWZk7KXU2Ee5ktIYR7RAtJsPrHto/zr/+Lbg1yivLyOllic76kSLHyg2pVgyK+O1gc28/qTWiKCP8WOCzNZ6cq1WMeHspqwVy2jAEN2uR/L/knOn6MO2mqToCJX4zwu15GGIlEyAdbkYKC996Rl3vWD1gtojsWjbAsiVeWVTcfRpENlJA4B/jKsoQHnrzvHIbBV+K5cFh2nYU12jwN8UyM0gUdPPGvspDPVeti8gTKXl+RGddwkIgoLJD0W+Qy0VlCq0j/85C1b72E2yAbFYsIs5GSuOtuYJZw09a+sssGGnbUEXBeUT2mPi607EIU4ga0gcI4gLEo4Ry/qxLBX6v056cXpZrx2JOQW\n";
+
+        parameters.cameraDirection = VuforiaLocalizer.CameraDirection.FRONT;
+
+        this.vuforia = ClassFactory.createVuforiaLocalizer(parameters);
+
+        VuforiaTrackables relicTrackables = this.vuforia.loadTrackablesFromAsset("RelicVuMark");
+        VuforiaTrackable relicTemplate = relicTrackables.get(0);
+        relicTemplate.setName("relicVuMarkTemplate"); // can help in debugging; otherwise not necessary
+
+        telemetry.addData(">", "Press Play to start");
+        telemetry.update();
+
         telemetry.addData(">", "Calibrating Gyro");    //
         telemetry.update();
 
@@ -135,68 +166,89 @@ public class Shawn_AutonomousBlue extends LinearOpMode {
             telemetry.addData(">", "Robot Heading = %f", Shawn.imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle);
             telemetry.update();
         }
+        waitForStart();
+
+        relicTrackables.activate();
 
         // Step through each leg of the path,
         // Note: Reverse movement is obtained by setting a negative distance (not speed)
         // Put a hold after each turn
 
         //fff
-        Shawn.tailServo.setPosition(0.02);
-        Thread.sleep(1000);
-        if (!cSensor.isBlue(Shawn.colorSensor)) {
-            telemetry.addLine("red");
-            telemetry.update();
-            Thread.sleep(1000);
-            Shawn.tailEnd.setPosition(0);
-            Thread.sleep(200);
-            Shawn.tailServo.setPosition(0.7);
-            Thread.sleep(200);
-            Shawn.tailEnd.setPosition(0.37);
-        } else {
-            telemetry.addLine("blue");
-            telemetry.update();
-            Thread.sleep(1000);
-            Shawn.tailEnd.setPosition(1);
-            Thread.sleep(200);
-            Shawn.tailServo.setPosition(0.7);
-            Thread.sleep(200);
-            Shawn.tailEnd.setPosition(0.37);
-        }
-        Thread.sleep(500);
+        RelicRecoveryVuMark vuMark = RelicRecoveryVuMark.from(relicTemplate);
 
-        Shawn.rightClaw.setPosition(0.5);
-        Shawn.leftClaw.setPosition(0.45);
-        Thread.sleep(500);
-        Shawn.armServo.setPosition(0.5);
-        Thread.sleep(1000);
+//        if (vuMark != RelicRecoveryVuMark.UNKNOWN) {
+//            telemetry.addData("VuMark", "%s visible", vuMark);
+//            if (vuMark == RelicRecoveryVuMark.RIGHT) {
+//                key = 1;
+//            } else if (vuMark == RelicRecoveryVuMark.CENTER) {
+//                key = 2;
+//            } else if (vuMark == RelicRecoveryVuMark.LEFT) {
+//                key = 3;
+//            }
+//        } else {
+//            telemetry.addData("VuMark", "not visible");
+//        }
+//        Thread.sleep(3000);
 
-        gyroDrive(DRIVE_SPEED, -36, 0);
-        gyroTurn(TURN_SPEED, -50);
-        gyroHold(TURN_SPEED, -50, 0.5);
-        gyroDrive(DRIVE_SPEED, 45, -50);
-        gyroTurn(TURN_SPEED, 180);
-        gyroHold(TURN_SPEED, 180, 0.5);
+//        Shawn.tailServo.setPosition(0.02);
+//        Thread.sleep(1000);
+//        if (!cSensor.isBlue(Shawn.colorSensor)) {
+//            telemetry.addLine("red");
+//            telemetry.update();
+//            Thread.sleep(1000);
+//            Shawn.tailEnd.setPosition(0);
+//            Thread.sleep(200);
+//            Shawn.tailServo.setPosition(0.7);
+//            Thread.sleep(200);
+//            Shawn.tailEnd.setPosition(0.37);
+//        } else {
+//            telemetry.addLine("blue");
+//            telemetry.update();
+//            Thread.sleep(1000);
+//            Shawn.tailEnd.setPosition(1);
+//            Thread.sleep(200);
+//            Shawn.tailServo.setPosition(0.7);
+//            Thread.sleep(200);
+//            Shawn.tailEnd.setPosition(0.37);
+//        }
+//        Thread.sleep(500);
+//
+//        Shawn.rightClaw.setPosition(0.5);
+//        Shawn.leftClaw.setPosition(0.45);
+//        Thread.sleep(500);
+//        Shawn.armServo.setPosition(0.5);
+//        Thread.sleep(1000);
 
-        Shawn.armServo.setPosition(0.85);
-        Thread.sleep(500);
+//        gyroDrive(DRIVE_SPEED, -36, 0);
+//        gyroTurn(TURN_SPEED, -50);
+//        gyroHold(TURN_SPEED, -50, 0.5);
+//        gyroDrive(DRIVE_SPEED, 45, -50);
+//        gyroTurn(TURN_SPEED, 180);
+//        gyroHold(TURN_SPEED, 180, 0.5);
 
-        gyroDrive(DRIVE_SPEED/2, -8, 180);
-        Thread.sleep(500);
+        strafe(0.4, -8000);
 
-        Shawn.rightClaw.setPosition(1);
-        Shawn.leftClaw.setPosition(0);
-        Thread.sleep(1000);
-
-        gyroDrive(DRIVE_SPEED/2, 5, 180);
-
-        Shawn.rightClaw.setPosition(0);
-        Shawn.leftClaw.setPosition(1);
-        Thread.sleep(1000);
-
-        gyroDrive(DRIVE_SPEED, -6, 180);
-        Thread.sleep(1000);
-
-        gyroDrive(DRIVE_SPEED/2, 3, 180);
+//        Shawn.armServo.setPosition(0.85);
+//        Thread.sleep(500);
+//
+//        gyroDrive(DRIVE_SPEED/2, -8, 180);
+//        Thread.sleep(500);
+//
+//        Shawn.rightClaw.setPosition(1);
+//        Shawn.leftClaw.setPosition(0);
+//        Thread.sleep(1000);
+//
+//        gyroDrive(DRIVE_SPEED/2, 5, 180);
+//
+//        Shawn.rightClaw.setPosition(0);
+//        Shawn.leftClaw.setPosition(1);
+//        Thread.sleep(1000);
+//
+//        gyroDrive(DRIVE_SPEED, -6, 180);
+//        Thread.sleep(1000);
+//
+//        gyroDrive(DRIVE_SPEED/2, 3, 180);
 
         telemetry.addData("Path", "Complete");
         telemetry.update();
@@ -310,6 +362,43 @@ public class Shawn_AutonomousBlue extends LinearOpMode {
             Shawn.leftRear.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             Shawn.rightRear.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         }
+    }
+
+    public void strafe(double speed, double distance) {
+
+        int leftTarget = Shawn.leftRear.getCurrentPosition() + (int)distance;
+        int rightTarget = Shawn.rightRear.getCurrentPosition() + (int)distance;
+
+        Shawn.leftRear.setTargetPosition(-leftTarget);
+        Shawn.rightRear.setTargetPosition(rightTarget);
+
+        Shawn.leftRear.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        Shawn.rightRear.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        Shawn.leftRear.setPower(-speed);
+        Shawn.rightRear.setPower(speed);
+        if (distance > 0) {
+            Shawn.leftFront.setPower(-speed / 1.4);
+            Shawn.rightFront.setPower(speed / 1.4);
+        } else if (distance < 0) {
+            Shawn.leftFront.setPower(speed / 1.3);
+            Shawn.rightFront.setPower(-speed / 1.3);
+        }
+
+        while (opModeIsActive() && Shawn.leftRear.isBusy() && Shawn.rightRear.isBusy()) {
+
+        }
+
+        // Stop all motion;
+        Shawn.leftRear.setPower(0);
+        Shawn.rightRear.setPower(0);
+        Shawn.leftFront.setPower(0);
+        Shawn.rightFront.setPower(0);
+
+        // Turn off RUN_TO_POSITION
+        Shawn.leftRear.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        Shawn.rightRear.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
     }
 
     /**
