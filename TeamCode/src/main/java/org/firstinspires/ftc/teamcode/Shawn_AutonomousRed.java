@@ -172,7 +172,7 @@ public class Shawn_AutonomousRed extends LinearOpMode {
         gyroDrive(DRIVE_SPEED, -36, 0);
         gyroTurn(TURN_SPEED, 50);
         gyroHold(TURN_SPEED, 50, 0.5);
-        gyroDrive(DRIVE_SPEED, 43, 50);
+        gyroDrive(DRIVE_SPEED, 40, 50);
         gyroTurn(TURN_SPEED, 180);
         gyroHold(TURN_SPEED, 180, 0.5);
 
