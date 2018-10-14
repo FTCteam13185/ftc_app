@@ -31,7 +31,7 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.Range;
 
 @TeleOp(name = "Test: TeleOp Drive & Arm", group = "Motors")
@@ -40,18 +40,15 @@ public class Shawn_TeleopDriveAndArm extends OpMode {
 
     /* Declare OpMode members. */
 
-    public static final int TICKS_PER_DEGREE    = 4;
-    public static final int MAX_ARM_INCREMENT   = TICKS_PER_DEGREE * 5;
-    public static final double ARM_POWER        = 1;
-    public static final double ARM_INCREMENT    = 0.01;
-    public static final int LOOP_WAIT           = 5;
+    public static final double ARM_INCREMENT      = 0.01;
+    public static final double CLAW_INCREMENT     = 0.03;
+    public static final int LOOP_WAIT             = 5;
+    public static final double rightStrafeControl = 0.875;
+    public static final double leftStrafeControl  = 0.885;
 
     HardwareShawn Shawn = new HardwareShawn();   // Use a Shawn's hardware
 
     boolean drive = true;
-
-    int initArmElbow;
-    int initArmShoulder;
 
     double initServoPos;
 
@@ -61,6 +58,8 @@ public class Shawn_TeleopDriveAndArm extends OpMode {
     double clawPosition;
 
     int numLoops = 0;
+
+    boolean controlType = true;
 
     @Override
     public void init() {
@@ -81,49 +80,12 @@ public class Shawn_TeleopDriveAndArm extends OpMode {
     @Override
     public void loop() {
 
-        double rightPower;
-        double leftPower;
-        double clawPower;
-        double leftStick;
-        double rightStick;
-
-//        double drive = -gamepad1.left_stick_y;
-//        double turn = (-gamepad1.right_stick_x)/2;
-
-//        leftPower = Range.clip(drive + turn, -1.0, 1.0);
-//        rightPower = Range.clip(drive - turn, -1.0, 1.0);
-//        Shawn.leftDrive.setPower(leftPower);
-//        Shawn.rightDrive.setPower(rightPower);
-
-        // code for mecanum wheels:
-//        double r = Math.hypot(gamepad1.left_stick_x, gamepad1.left_stick_y);
-//        double robotAngle = Math.atan2(gamepad1.left_stick_y, gamepad1.left_stick_x) - Math.PI / 4;
-//        double rightX = gamepad1.right_stick_x;
-//        final double v1 = r * Math.cos(robotAngle) + rightX;
-//        final double v2 = r * Math.sin(robotAngle) - rightX;
-//        final double v3 = r * Math.sin(robotAngle) + rightX;
-//        final double v4 = r * Math.cos(robotAngle) - rightX;
-//
-//        Shawn.leftFront.setPower(v1);
-//        Shawn.rightFront.setPower(v2);
-//        Shawn.leftRear.setPower(v3);
-//        Shawn.rightRear.setPower(v4);
-
-        double lsy = gamepad1.left_stick_y;
-        double lsx = gamepad1.left_stick_x;
-
-        if (Math.abs(lsy) > Math.abs(lsx)) {
-            lsx = 0;
-        } else {
-            lsy = 0;
-        }
-
-        double lf = lsy + lsx;
-        double lr = lsy - lsx;
-        double rf = gamepad1.right_stick_y - lsx;
-        double rr = gamepad1.right_stick_y + lsx;
-
         int control = 1;
+
+        double lf = 0;
+        double lr = 0;
+        double rf = 0;
+        double rr = 0;
 
         if (gamepad1.right_bumper) {
             control = 2;
@@ -132,27 +94,151 @@ public class Shawn_TeleopDriveAndArm extends OpMode {
             control = 4;
         }
 
-        lf = Range.clip(lf, -1, 1);
-        lr = Range.clip(lr, -1, 1);
-        rf = Range.clip(rf, -1, 1);
-        rr = Range.clip(rr, -1, 1);
+        if (controlType) { // y controls
+            // Left stick's y direction is used to control left wheels'
+            // forward and revers movement
+            double lsy = gamepad1.left_stick_y;
 
-        Shawn.leftFront.setPower(lf / control);
-        Shawn.leftRear.setPower(lr / control);
-        Shawn.rightFront.setPower(rf / control);
-        Shawn.rightRear.setPower(rr / control);
+            // Left stick's x direction is used for strafing
+            double lsx = gamepad1.left_stick_x;
+
+            if (Math.abs(lsy) > Math.abs(lsx)) {
+                lsx = 0;
+            } else {
+                lsy = 0;
+            }
+
+            lf = lsy + lsx;
+            lr = lsy - lsx;
+
+            // Right stick's y direction is used to control right wheels'
+            // forward and reverse movement
+            rf = gamepad1.right_stick_y - lsx;
+            rr = gamepad1.right_stick_y + lsx;
+
+            // Adjusting front wheel powers, depending on which direction
+            // the robot is strafing, to make it strafe "straight"
+            if (control == 1) {
+                if (lsx >= 0) {
+                    lf *= rightStrafeControl;
+                    rf *= rightStrafeControl;
+                } else {
+                    lf *= leftStrafeControl;
+                    rf *= leftStrafeControl;
+                }
+            }
+
+            lf = Range.clip(lf, -1, 1);
+            lr = Range.clip(lr, -1, 1);
+            rf = Range.clip(rf, -1, 1);
+            rr = Range.clip(rr, -1, 1);
+
+        } else { // x control
+
+            if (-gamepad1.left_stick_y != 0) {
+                lf = gamepad1.left_stick_y;
+                lr = gamepad1.left_stick_y;
+                rf = gamepad1.left_stick_y;
+                rr = gamepad1.left_stick_y;
+            }
+
+            if (gamepad1.right_stick_x != 0) {
+                lf = -gamepad1.right_stick_x;
+                lr = -gamepad1.right_stick_x;
+                rf = gamepad1.right_stick_x;
+                rr = gamepad1.right_stick_x;
+
+            }
+
+            if (gamepad1.left_trigger != 0) {
+
+                if (control == 1) {
+                    lf = -1 * leftStrafeControl;
+                    rf = 1 * leftStrafeControl;
+                } else {
+                    lf = -1;
+                    rf = 1;
+                }
+                lr = 1;
+                rr = -1;
+
+//                if (control == 1) {
+//                    if (gamepad1.right_stick_x >= 0) {
+//                        lf = gamepad1.right_stick_x  * rightStrafeControl;
+//                        rf = -gamepad1.right_stick_x * rightStrafeControl;
+//                    }
+//                    else{
+//                        lf = gamepad1.right_stick_x  * leftStrafeControl;
+//                        rf = -gamepad1.right_stick_x * leftStrafeControl;
+//                    }
+//                }
+//                else {
+//                    lf = gamepad1.right_stick_x;
+//                    rf = -gamepad1.right_stick_x;
+//                }
+//                lr = -1;
+//                rr = 1;
+
+            }
+            if (gamepad1.right_trigger != 0) {
+                if (control == 1) {
+                    lf = 1 * rightStrafeControl;
+                    rf = -1 * rightStrafeControl;
+                } else {
+                    lf = 1;
+                    rf = -1;
+                }
+                lr = -1;
+                rr = 1;
+            }
+
+        }
+
+        if (gamepad2.x) {
+            Shawn.leftRear.setPower(1);
+        }
+        if (gamepad2.y) {
+            Shawn.leftFront.setPower(1);
+        }
+        if (gamepad2.a) {
+            Shawn.rightRear.setPower(1);
+        }
+        if (gamepad2.b) {
+            Shawn.rightFront.setPower(1);
+        }
+
+        Shawn.leftRear.setPower(lf / control);
+        Shawn.leftFront.setPower(lr / control);
+        Shawn.rightRear.setPower(rf / control);
+        Shawn.rightFront.setPower(rr/ control);
+
+        if (gamepad1.x) {
+            controlType = false;
+        }
+        if (gamepad1.y) {
+            controlType = true;
+        }
+
+        int clawControl = 1;
+
+        if (gamepad2.right_bumper) {
+            clawControl = 2;
+        }
+        if (gamepad2.left_bumper) {
+            clawControl = 4;
+        }
 
         if (numLoops == LOOP_WAIT) {
             if (-gamepad2.left_stick_y < 0) {
                 if (armPosition < 1) {
-                    armPosition += ARM_INCREMENT;
+                    armPosition += ARM_INCREMENT/clawControl;
                     if (armPosition > 1) {
                         armPosition = 1;
                     }
                 }
             } else if (-gamepad2.left_stick_y > 0) {
                 if (armPosition > 0) {
-                    armPosition -= ARM_INCREMENT;
+                    armPosition -= ARM_INCREMENT/clawControl;
                     if (armPosition < 0) {
                         armPosition = 0;
                     }
@@ -169,14 +255,14 @@ public class Shawn_TeleopDriveAndArm extends OpMode {
         if (numLoops == LOOP_WAIT) {
             if (gamepad2.right_stick_x > 0) {
                 if (clawPosition < 1) {
-                    clawPosition += ARM_INCREMENT*3;
+                    clawPosition += CLAW_INCREMENT/clawControl;
                     if (clawPosition > 1) {
                         clawPosition = 1;
                     }
                 }
             } else if (gamepad2.right_stick_x < 0) {
                 if (clawPosition > 0) {
-                    clawPosition -= ARM_INCREMENT*3;
+                    clawPosition -= CLAW_INCREMENT/clawControl;
                     if (clawPosition < 0) {
                         clawPosition = 0;
                     }
@@ -185,14 +271,12 @@ public class Shawn_TeleopDriveAndArm extends OpMode {
             numLoops = 0;
         }
 
-        if (gamepad2.x) {
-            clawPosition = 0;
-        }
-
         Shawn.rightClaw.setPosition(clawPosition - 0.05);
         Shawn.leftClaw.setPosition(1 - clawPosition);
 
-        numLoops += 1;
+        if (numLoops < 10) {
+            numLoops += 1;
+        }
 
     }
 
