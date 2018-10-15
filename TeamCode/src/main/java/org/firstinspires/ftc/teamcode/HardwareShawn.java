@@ -65,14 +65,14 @@ public class HardwareShawn
 //    public DcMotor  rightDrive  = null;
 //    public DcMotor  armElbow    = null;
 //    public DcMotor armShoulder = null;
+
     public BNO055IMU imu = null;
-  //  public CRServo armClaw = null;
+    //  public CRServo armClaw = null;
     public Servo armServo = null;
     public Servo leftClaw = null;
     public Servo rightClaw = null;
     public Servo tailServo = null;
     public Servo tailEnd = null;
-
     public DcMotor leftRear = null;
     public DcMotor rightRear = null;
     public DcMotor leftFront = null;
@@ -95,7 +95,7 @@ public class HardwareShawn
     /* Constructor */
     public HardwareShawn(){
 
-}
+    }
 
     /* Initialize standard Hardware interfaces */
     public void init(HardwareMap ahwMap, boolean gyro) {
@@ -141,21 +141,21 @@ public class HardwareShawn
         tailServo   = hwMap.get(Servo.class, "tailServo");
         tailEnd     = hwMap.get(Servo.class, "tailEnd");
 
-        leftRear = hwMap.get(DcMotor.class, "leftRear");
-        rightRear = hwMap.get(DcMotor.class, "rightRear");
-        leftFront = hwMap.get(DcMotor.class, "leftFront");
-        rightFront = hwMap.get(DcMotor.class, "rightFront");
+        leftRear    = hwMap.get(DcMotor.class, "leftRear");
+        rightRear   = hwMap.get(DcMotor.class, "rightRear");
+        leftFront   = hwMap.get(DcMotor.class, "leftFront");
+        rightFront  = hwMap.get(DcMotor.class, "rightFront");
 
         colorSensor = hwMap.get(ColorSensor.class, "sensor_color");
-
-        imu = hwMap.get(BNO055IMU.class, "imu");
-
-        leftRear.setDirection(DcMotorSimple.Direction.REVERSE);
         rightRear.setDirection(DcMotorSimple.Direction.FORWARD);
         leftFront.setDirection(DcMotorSimple.Direction.FORWARD);
         rightFront.setDirection(DcMotorSimple.Direction.REVERSE);
 
         leftRear.setPower(0);
+
+        imu = hwMap.get(BNO055IMU.class, "imu");
+
+        leftRear.setDirection(DcMotorSimple.Direction.REVERSE);
         rightRear.setPower(0);
         leftFront.setPower(0);
         rightFront.setPower(0);

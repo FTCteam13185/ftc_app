@@ -46,7 +46,7 @@ public class Shawn_TeleopDriveAndArm extends OpMode {
     public static final double rightStrafeControl = 0.875;
     public static final double leftStrafeControl  = 0.885;
 
-    HardwareShawn Shawn = new HardwareShawn();   // Use a Shawn's hardware
+    HardwareShawn Shawn = new HardwareShawn();   // Use Shawn's hardware
 
     boolean drive = true;
 
@@ -94,21 +94,21 @@ public class Shawn_TeleopDriveAndArm extends OpMode {
             control = 4;
         }
 
-        if (controlType) { // y controls
-            // Left stick's y direction is used to control left wheels'
-            // forward and revers movement
-            double lsy = gamepad1.left_stick_y;
+            if (controlType) { // y controls
+                // Left stick's y direction is used to control left wheels'
+                // forward and reverse movement
+                double lsy = gamepad1.left_stick_y;
 
-            // Left stick's x direction is used for strafing
-            double lsx = gamepad1.left_stick_x;
+                // Left stick's x direction is used for strafing
+                double lsx = gamepad1.left_stick_x;
 
-            if (Math.abs(lsy) > Math.abs(lsx)) {
-                lsx = 0;
-            } else {
-                lsy = 0;
-            }
+                if (Math.abs(lsy) > Math.abs(lsx)) {
+                    lsx = 0;
+                } else {
+                    lsy = 0;
+                }
 
-            lf = lsy + lsx;
+                lf = lsy + lsx;
             lr = lsy - lsx;
 
             // Right stick's y direction is used to control right wheels'
@@ -194,6 +194,7 @@ public class Shawn_TeleopDriveAndArm extends OpMode {
 
         }
 
+        // for debugging
         if (gamepad2.x) {
             Shawn.leftRear.setPower(1);
         }
@@ -277,6 +278,8 @@ public class Shawn_TeleopDriveAndArm extends OpMode {
         if (numLoops < 10) {
             numLoops += 1;
         }
+
+
 
     }
 
