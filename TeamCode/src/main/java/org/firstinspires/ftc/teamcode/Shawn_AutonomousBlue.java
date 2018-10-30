@@ -84,7 +84,7 @@ import static java.lang.Math.abs;
  */
 
 @Autonomous(name="Shawn: Autonomous Blue", group="Pushbot")
-//@Disabled
+@Disabled
 public class Shawn_AutonomousBlue extends LinearOpMode {
 
     /* Declare OpMode members. */
@@ -128,7 +128,7 @@ public class Shawn_AutonomousBlue extends LinearOpMode {
         Shawn.init(hardwareMap, true);
 
         // Ensure the Shawn it stationary, then reset the encoders and calibrate the gyro.
-        Shawn.leftRear.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        Shawn.actuator.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         Shawn.rightRear.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         Shawn.leftFront.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -157,7 +157,7 @@ public class Shawn_AutonomousBlue extends LinearOpMode {
         telemetry.addData(">", "Robot Ready.");    //
         telemetry.update();
 
-        Shawn.leftRear.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        Shawn.actuator.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         Shawn.rightRear.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         // Wait for the game to start (Display Gyro value), and reset gyro before we move..
@@ -191,60 +191,60 @@ public class Shawn_AutonomousBlue extends LinearOpMode {
         }
         Thread.sleep(3000);
 
-        Shawn.tailServo.setPosition(0.02);
-        Thread.sleep(1000);
-        if (!cSensor.isBlue(Shawn.colorSensor)) {
-            telemetry.addLine("red");
-            telemetry.update();
-            Thread.sleep(1000);
-            Shawn.tailEnd.setPosition(0);
-            Thread.sleep(200);
-            Shawn.tailServo.setPosition(0.7);
-            Thread.sleep(200);
-            Shawn.tailEnd.setPosition(0.37);
-        } else {
-            telemetry.addLine("blue");
-            telemetry.update();
-            Thread.sleep(1000);
-            Shawn.tailEnd.setPosition(1);
-            Thread.sleep(200);
-            Shawn.tailServo.setPosition(0.7);
-            Thread.sleep(200);
-            Shawn.tailEnd.setPosition(0.37);
-        }
-        Thread.sleep(500);
-
-        Shawn.rightClaw.setPosition(0.5);
-        Shawn.leftClaw.setPosition(0.45);
-        Thread.sleep(500);
-        Shawn.armServo.setPosition(0.5);
-        Thread.sleep(1000);
-
-        gyroDrive(DRIVE_SPEED, -36, 0);
-        gyroTurn(TURN_SPEED, -50);
-        gyroHold(TURN_SPEED, -50, 0.5);
-        gyroDrive(DRIVE_SPEED, 45, -50);
-        gyroTurn(TURN_SPEED, 180);
-        gyroHold(TURN_SPEED, 180, 0.5);
-
-//        strafe(0.4, -8000);
-
-        Shawn.armServo.setPosition(0.85);
-        Thread.sleep(500);
-
-        gyroDrive(DRIVE_SPEED/2, -8, 180);
-        Thread.sleep(500);
-
-        Shawn.rightClaw.setPosition(1);
-        Shawn.leftClaw.setPosition(0);
-        Thread.sleep(1000);
-
-        gyroDrive(DRIVE_SPEED/2, 5, 180);
-
-        Shawn.armServo.setPosition(0.9);
-        Shawn.rightClaw.setPosition(0);
-        Shawn.leftClaw.setPosition(1);
-        Thread.sleep(1000);
+//        Shawn.tailServo.setPosition(0.02);
+//        Thread.sleep(1000);
+//        if (!cSensor.isBlue(Shawn.colorSensor)) {
+//            telemetry.addLine("red");
+//            telemetry.update();
+//            Thread.sleep(1000);
+//            Shawn.tailEnd.setPosition(0);
+//            Thread.sleep(200);
+//            Shawn.tailServo.setPosition(0.7);
+//            Thread.sleep(200);
+//            Shawn.tailEnd.setPosition(0.37);
+//        } else {
+//            telemetry.addLine("blue");
+//            telemetry.update();
+//            Thread.sleep(1000);
+//            Shawn.tailEnd.setPosition(1);
+//            Thread.sleep(200);
+//            Shawn.tailServo.setPosition(0.7);
+//            Thread.sleep(200);
+//            Shawn.tailEnd.setPosition(0.37);
+//        }
+//        Thread.sleep(500);
+//
+//        Shawn.rightClaw.setPosition(0.5);
+//        Shawn.leftClaw.setPosition(0.45);
+//        Thread.sleep(500);
+//        Shawn.armServo.setPosition(0.5);
+//        Thread.sleep(1000);
+//
+//        gyroDrive(DRIVE_SPEED, -36, 0);
+//        gyroTurn(TURN_SPEED, -50);
+//        gyroHold(TURN_SPEED, -50, 0.5);
+//        gyroDrive(DRIVE_SPEED, 45, -50);
+//        gyroTurn(TURN_SPEED, 180);
+//        gyroHold(TURN_SPEED, 180, 0.5);
+//
+////        strafe(0.4, -8000);
+//
+//        Shawn.armServo.setPosition(0.85);
+//        Thread.sleep(500);
+//
+//        gyroDrive(DRIVE_SPEED/2, -8, 180);
+//        Thread.sleep(500);
+//
+//        Shawn.rightClaw.setPosition(1);
+//        Shawn.leftClaw.setPosition(0);
+//        Thread.sleep(1000);
+//
+//        gyroDrive(DRIVE_SPEED/2, 5, 180);
+//
+//        Shawn.armServo.setPosition(0.9);
+//        Shawn.rightClaw.setPosition(0);
+//        Shawn.leftClaw.setPosition(1);
+//        Thread.sleep(1000);
 
         gyroDrive(DRIVE_SPEED, -6, 180);
         Thread.sleep(1000);
@@ -285,19 +285,19 @@ public class Shawn_AutonomousBlue extends LinearOpMode {
 
             // Determine new target armPosition, and pass to motor controller
             moveCounts = (int)(distance * COUNTS_PER_INCH);
-            newLeftTarget = Shawn.leftRear.getCurrentPosition() + moveCounts;
+            newLeftTarget = Shawn.actuator.getCurrentPosition() + moveCounts;
             newRightTarget = Shawn.rightRear.getCurrentPosition() + moveCounts;
 
             // Set Target and Turn On RUN_TO_POSITION
-            Shawn.leftRear.setTargetPosition(newLeftTarget);
+            Shawn.actuator.setTargetPosition(newLeftTarget);
             Shawn.rightRear.setTargetPosition(newRightTarget);
 
-            Shawn.leftRear.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            Shawn.actuator.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             Shawn.rightRear.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
             // start motion.
             speed = Range.clip(abs(speed), 0.0, 1.0);
-            Shawn.leftRear.setPower(speed);
+            Shawn.actuator.setPower(speed);
             Shawn.rightRear.setPower(speed);
             if (distance < 0) {
                 Shawn.leftFront.setPower(speed);
@@ -310,7 +310,7 @@ public class Shawn_AutonomousBlue extends LinearOpMode {
 
             // keep looping while we are still active, and BOTH motors are running.
             while (opModeIsActive() &&
-                   (Shawn.leftRear.isBusy() && Shawn.rightRear.isBusy())) {
+                   (Shawn.actuator.isBusy() && Shawn.rightRear.isBusy())) {
 
                 // adjust relative speed based on heading error.
                 error = getError(angle);
@@ -333,7 +333,7 @@ public class Shawn_AutonomousBlue extends LinearOpMode {
                     rightSpeed /= max;
                 }
 
-                Shawn.leftRear.setPower(leftSpeed);
+                Shawn.actuator.setPower(leftSpeed);
                 Shawn.rightRear.setPower(rightSpeed);
                 if (distance < 0) {
                     Shawn.leftFront.setPower(leftSpeed);
@@ -347,36 +347,36 @@ public class Shawn_AutonomousBlue extends LinearOpMode {
                 // Display drive status for the driver.
                 telemetry.addData("Err/St",  "%5.1f/%5.1f",  error, steer);
                 telemetry.addData("Target",  "%7d:%7d",      newLeftTarget,  newRightTarget);
-                telemetry.addData("Actual",  "%7d:%7d",      Shawn.leftRear.getCurrentPosition(),
+                telemetry.addData("Actual",  "%7d:%7d",      Shawn.actuator.getCurrentPosition(),
                                                              Shawn.rightRear.getCurrentPosition());
                 telemetry.addData("L&R Speed", "%5.2f:%5.2f",  leftSpeed, rightSpeed);
                 telemetry.update();
             }
 
             // Stop all motion;
-            Shawn.leftRear.setPower(0);
+            Shawn.actuator.setPower(0);
             Shawn.rightRear.setPower(0);
             Shawn.leftFront.setPower(0);
             Shawn.rightFront.setPower(0);
 
             // Turn off RUN_TO_POSITION
-            Shawn.leftRear.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            Shawn.actuator.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             Shawn.rightRear.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         }
     }
 
     public void strafe(double speed, double distance) {
 
-        int leftTarget = Shawn.leftRear.getCurrentPosition() + (int)distance;
+        int leftTarget = Shawn.actuator.getCurrentPosition() + (int)distance;
         int rightTarget = Shawn.rightRear.getCurrentPosition() + (int)distance;
 
-        Shawn.leftRear.setTargetPosition(-leftTarget);
+        Shawn.actuator.setTargetPosition(-leftTarget);
         Shawn.rightRear.setTargetPosition(rightTarget);
 
-        Shawn.leftRear.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        Shawn.actuator.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         Shawn.rightRear.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-        Shawn.leftRear.setPower(-speed);
+        Shawn.actuator.setPower(-speed);
         Shawn.rightRear.setPower(speed);
         if (distance > 0) {
             Shawn.leftFront.setPower(-speed / 1.4);
@@ -386,18 +386,18 @@ public class Shawn_AutonomousBlue extends LinearOpMode {
             Shawn.rightFront.setPower(-speed / 1.3);
         }
 
-        while (opModeIsActive() && Shawn.leftRear.isBusy() && Shawn.rightRear.isBusy()) {
+        while (opModeIsActive() && Shawn.actuator.isBusy() && Shawn.rightRear.isBusy()) {
 
         }
 
         // Stop all motion;
-        Shawn.leftRear.setPower(0);
+        Shawn.actuator.setPower(0);
         Shawn.rightRear.setPower(0);
         Shawn.leftFront.setPower(0);
         Shawn.rightFront.setPower(0);
 
         // Turn off RUN_TO_POSITION
-        Shawn.leftRear.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        Shawn.actuator.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         Shawn.rightRear.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
     }
@@ -445,7 +445,7 @@ public class Shawn_AutonomousBlue extends LinearOpMode {
         }
 
         // Stop all motion;
-        Shawn.leftRear.setPower(0);
+        Shawn.actuator.setPower(0);
         Shawn.rightRear.setPower(0);
         Shawn.leftFront.setPower(0);
         Shawn.rightFront.setPower(0);
@@ -484,7 +484,7 @@ public class Shawn_AutonomousBlue extends LinearOpMode {
         }
 
         // Send desired speeds to motors.
-        Shawn.leftRear.setPower(-leftSpeed);
+        Shawn.actuator.setPower(-leftSpeed);
         Shawn.rightRear.setPower(-rightSpeed);
         Shawn.leftFront.setPower(leftSpeed);
         Shawn.rightFront.setPower(rightSpeed);

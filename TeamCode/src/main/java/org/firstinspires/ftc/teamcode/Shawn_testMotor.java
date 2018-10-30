@@ -31,7 +31,7 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.util.Range;
+import com.qualcomm.robotcore.hardware.DcMotor;
 
 @TeleOp(name = "Test: TestMotor", group = "Motors")
 //@Disabled
@@ -60,69 +60,92 @@ public class Shawn_testMotor extends OpMode {
 
     boolean controlType = true;
 
-
-
     final int GB_TICKS_PER_ROTATION = 384;
     final int SUB_ROTATION = 4;
     final int MAX_GB_TICKS = 9600;
-    final int MIN_GB_TICKS = 383;
+    final int MIN_GB_TICKS = 0;
     int GBTicks = 0;
 
+    int sweep = 0;
 
+    double lr = 0;
+    double rr = 0;
+    double lf = 0;
+    double rf = 0;
 
     @Override
     public void init() {
 
         Shawn.init(hardwareMap, false);
 
-        GBTicks = Shawn.leftRear.getCurrentPosition();
+        Shawn.actuator.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        Shawn.actuator.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        GBTicks = Shawn.actuator.getCurrentPosition();
 
         telemetry.addData("Status", "Initialized");
         telemetry.addData("Initial Ticks", GBTicks);
         telemetry.update();
 
-        Shawn.leftRear.setTargetPosition(GBTicks);
-        Shawn.leftRear.setPower(1);
+        Shawn.actuator.setTargetPosition(GBTicks);
+        Shawn.actuator.setPower(1);
 
     }
 
     @Override
     public void loop() {
 
-
-        if (gamepad1.x && GBTicks < MAX_GB_TICKS) {
-            GBTicks += GB_TICKS_PER_ROTATION/SUB_ROTATION;
+        //ACTUATOR ACTUATOR ACTUATOR ACTUATOR ACTUATOR ACTUATOR
+        if (gamepad1.y) {
+            GBTicks = MAX_GB_TICKS;
         }
 
-        if (gamepad1.y && GBTicks > MIN_GB_TICKS) {
-            GBTicks -= GB_TICKS_PER_ROTATION/SUB_ROTATION;
+        if (gamepad1.a) {
+            GBTicks = MIN_GB_TICKS;
         }
 
-        Shawn.leftRear.setTargetPosition(GBTicks);
-//        while(Shawn.leftRear.isBusy()){}
+        Shawn.actuator.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        Shawn.actuator.setTargetPosition(GBTicks);
+        Shawn.actuator.setPower(1);
+//
+//        while(Shawn.actuator.isBusy()){}
+//        Shawn.actuator.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
         telemetry.addData("Ticks set to", GBTicks);
-        telemetry.addData("Ticks Reached", Shawn.leftRear.getCurrentPosition());
+        telemetry.addData("Ticks Reached", Shawn.actuator.getCurrentPosition());
         telemetry.update();
 
-//        if (gamepad1.dpad_up) {
-//            Shawn.leftRear.setPower(1);
-//        } else if (gamepad1.dpad_down) {
-//            Shawn.leftRear.setPower(-1);
-//        } else {
-//            Shawn.leftRear.setPower(0);
-//        }
 
-//        if(gamepad1.x) {
-//            Shawn.hub1Motor.setPower(1);
-//        } else {
-//            Shawn.hub1Motor.setPower(0);
-//        }
-//
-//        if(gamepad1.y) {
-//            Shawn.hub2Motor.setPower(1);
-//        } else {
-//            Shawn.hub2Motor.setPower(0);
-//        }
+        // SWEEPY THINGY SWEEPY THINGY SWEEPY THINGY SWEEPY THINGY
+        if (gamepad1.x && gamepad1.b) {
+            sweep = 2;
+        } else if (gamepad1.x) {
+            sweep = 1;
+        } else if (gamepad1.b) {
+            sweep = 0;
+        }
+
+        if (sweep == 2) {
+            Shawn.sweepy.setPower(1);
+        } else if (sweep == 1) {
+            Shawn.sweepy.setPower(-1);
+        } else {
+            Shawn.sweepy.setPower(0);
+        }
+
+
+        //DRIVE DRIVE DRIVE DRIVE DRIVE DRIVE DRIVE DRIVE DRIVE DRIVE
+        if (-gamepad1.left_stick_y != 0) {
+            lr = -gamepad1.left_stick_y;
+            lf = -gamepad1.left_stick_y;
+            rr = -gamepad1.left_stick_y;
+            rf = -gamepad1.left_stick_y;
+        } else if (gamepad1.right_stick_y != 0) {
+            lr = gamepad1.left_stick_x;
+            lf = gamepad1.left_stick_x;
+            rr = -gamepad1.left_stick_x;
+            rf = -gamepad1.left_stick_x;
+        }
+
 
     }
 

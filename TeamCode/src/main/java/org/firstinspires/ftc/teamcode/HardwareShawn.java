@@ -61,22 +61,16 @@ import java.io.File;
 public class HardwareShawn
 {
     /* Public OpMode members. */
-//    public DcMotor  leftDrive   = null;
-//    public DcMotor  rightDrive  = null;
-//    public DcMotor  armElbow    = null;
-//    public DcMotor armShoulder = null;
 
     public BNO055IMU imu = null;
     //  public CRServo armClaw = null;
-    public Servo armServo = null;
-    public Servo leftClaw = null;
-    public Servo rightClaw = null;
-    public Servo tailServo = null;
-    public Servo tailEnd = null;
     public DcMotor leftRear = null;
     public DcMotor rightRear = null;
     public DcMotor leftFront = null;
     public DcMotor rightFront = null;
+
+    public DcMotor actuator = null;
+    public DcMotor sweepy = null;
 
     public ColorSensor colorSensor = null;
 
@@ -84,14 +78,6 @@ public class HardwareShawn
     public DcMotor hub2Motor = null;
 
     public MegaMotor newMotor = null;
-
-//    public DcMotor  leftArm     = null;
-//    public Servo    leftClaw    = null;
-//    public Servo    rightClaw   = null;
-//
-//    public static final double MID_SERVO       =  0.5 ;
-//    public static final double ARM_UP_POWER    =  0.45 ;
-//    public static final double ARM_DOWN_POWER  = -0.45 ;
 
     /* local OpMode members. */
     HardwareMap hwMap           =  null;
@@ -135,41 +121,24 @@ public class HardwareShawn
         }
 
         // Define and Initialize Motors
-//        leftDrive   = hwMap.get(DcMotor.class, "left_drive");
-//        rightDrive  = hwMap.get(DcMotor.class, "right_drive");
-//        armElbow    = hwMap.get(DcMotor.class, "arm_elbow");
-//        armShoulder = hwMap.get(DcMotor.class, "arm_shoulder");
-   //     armClaw     = hwMap.get(CRServo.class, "armClaw");
 
+        actuator = hwMap.get(DcMotor.class, "actuator");
+        sweepy = hwMap.get(DcMotor.class, "sweepy");
 
-//        armServo    = hwMap.get(Servo.class, "armServo");
-//        leftClaw    = hwMap.get(Servo.class, "leftClaw");
-//        rightClaw   = hwMap.get(Servo.class, "rightClaw");
-//        tailServo   = hwMap.get(Servo.class, "tailServo");
-//        tailEnd     = hwMap.get(Servo.class, "tailEnd");
-//
-   //     newMotor    = new MegaMotor("AwesomeMotor", 2450);
-        leftRear    = hwMap.get(DcMotor.class, "leftRear");
+//        leftRear    = hwMap.get(DcMotor.class, "leftRear");
 //        rightRear   = hwMap.get(DcMotor.class, "rightRear");
 //        leftFront   = hwMap.get(DcMotor.class, "leftFront");
 //        rightFront  = hwMap.get(DcMotor.class, "rightFront");
 
-
-//        hub1Motor   = hwMap.get(DcMotor.class, "hub1Motor");
-//        hub2Motor   = hwMap.get(DcMotor.class, "hub2Motor");
-
-
-//        colorSensor = hwMap.get(ColorSensor.class, "sensor_color");
-//        rightRear.setDirection(DcMotorSimple.Direction.FORWARD);
-//        leftFront.setDirection(DcMotorSimple.Direction.FORWARD);
-//        rightFront.setDirection(DcMotorSimple.Direction.REVERSE);
-//
-    //    newMotor.myMotor.setPower(0);
-        leftRear.setPower(0);
+        actuator.setPower(0);
+        sweepy.setPower(0);
 //
 //        imu = hwMap.get(BNO055IMU.class, "imu");
 //
-        leftRear.setDirection(DcMotorSimple.Direction.FORWARD);
+        actuator.setDirection(DcMotorSimple.Direction.FORWARD);
+        sweepy.setDirection(DcMotorSimple.Direction.FORWARD);
+
+//        leftRear.setPower(0);
 //        rightRear.setPower(0);
 //        leftFront.setPower(0);
 //        rightFront.setPower(0);
@@ -177,17 +146,22 @@ public class HardwareShawn
 //        // Set all motors to run without encoders.
 //        // May want to use RUN_USING_ENCODERS if encoders are installed.
 //
-        //leftRear.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        //actuator.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
      //   newMotor.myMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
      //   newMotor.myMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        leftRear.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        leftRear.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-//        rightRear.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-//        leftFront.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-//        rightFront.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        actuator.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        actuator.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        sweepy.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+//        leftRear.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+//        rightRear.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+//        leftFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+//        rightFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 //
-     //   newMotor.myMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        leftRear.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        actuator.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        sweepy.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+//        leftRear.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 //        rightRear.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 //        leftFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 //        rightFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
