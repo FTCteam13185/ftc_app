@@ -32,9 +32,8 @@ package org.firstinspires.ftc.teamcode;
 import android.graphics.Color;
 
 import com.qualcomm.hardware.ams.AMSColorSensor;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 /*
@@ -50,13 +49,14 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
  * Use Android Studio to Copy this Class, and Paste it into your team's code folder with a new name.
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
-public class Shawn_ColorSorter {
+public class Shawn_SweepControl {
 
   AMSColorSensor colorSensor;    // Hardware Device Object
- // DistanceSensor sensorDistance;
+
+  public DcMotor sweepy = null;
 
 
-  // Variables to hold the color values
+    // Variables to hold the color values
   float red;
   float green;
   float blue;
@@ -80,13 +80,22 @@ public class Shawn_ColorSorter {
  // int relativeLayoutId = hardwareMap.appContext.getResources().getIdentifier("RelativeLayout", "id", hardwareMap.appContext.getPackageName());
   //final View relativeLayout = ((Activity) hardwareMap.appContext).findViewById(relativeLayoutId);
 
-  public Shawn_ColorSorter(HardwareMap hwmap ) {
+  public Shawn_SweepControl(HardwareMap hwmap ) {
 
     // get a reference to our ColorSensor object.
     colorSensor = hwmap.get(AMSColorSensor.class, "colorSensor");
 
     // Turning on color sensor light
     colorSensor.enableLed(true);
+
+    sweepy = hwmap.get(DcMotor.class, "sweepy");
+
+    sweepy.setDirection(DcMotorSimple.Direction.REVERSE);
+    sweepy.setPower(0);
+    sweepy.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+    sweepy.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+
   }
 
   public boolean White () {
@@ -109,13 +118,24 @@ public class Shawn_ColorSorter {
 
       // Sending Driver station true or false based on the color white
       //if (percentR > 0.85/3 && percentB > 0.85/3 && percentG > 0.85/3) {
-      if (hsvValues[1]>.2 && hsvValues[1]<.4 && hsvValues[0] > 130 && hsvValues[2]>5) {
+      if ( hsvValues[0] > 115 && hsvValues[0] < 175 ) {
           return true;
       }
       else return false;
     }
 
+    public void sweepyOp (int pow) {
+        if (this.White()) {
+            sweepy.setPower(0);
+        }
+        else{
+            sweepy.setPower(pow);
+        }
+
+    }
+
   }
+
 
 
 

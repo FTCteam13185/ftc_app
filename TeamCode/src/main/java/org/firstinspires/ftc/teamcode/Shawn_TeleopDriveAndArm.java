@@ -31,9 +31,6 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.util.Range;
 
 @TeleOp(name = "Test: TeleOp Drive & Arm", group = "Motors")
 //@Disabled
@@ -61,7 +58,7 @@ public class Shawn_TeleopDriveAndArm extends OpMode {
     int numLoops = 0;
 
     boolean controlType = true;
-    Shawn_ColorSorter colorSorter = null;
+    Shawn_SweepControl sweeper = null;
 
     @Override
     public void init() {
@@ -69,7 +66,7 @@ public class Shawn_TeleopDriveAndArm extends OpMode {
         Shawn.init(hardwareMap, false);
 
 
-        colorSorter = new Shawn_ColorSorter(Shawn.hwMap);
+        sweeper = new Shawn_SweepControl(Shawn.hwMap);
 
 
 
@@ -79,29 +76,26 @@ public class Shawn_TeleopDriveAndArm extends OpMode {
     @Override
     public void loop() {
 
-        if (colorSorter.White()) {
-            Shawn.leftRear.setPower(0);
+        if (gamepad1.dpad_up) {
+            sweeper.sweepyOp(1);
+        } else if (gamepad1.dpad_down) {
+            sweeper.sweepyOp(-1);
+        } else {
+            sweeper.sweepyOp(0);
+        }
 
-            telemetry.addLine("It is White");
-
+        if(sweeper.White()){
+            telemetry.addLine("It is white!");
         }
         else{
-                if (gamepad1.dpad_up) {
-                    Shawn.leftRear.setPower(1);
-                } else if (gamepad1.dpad_down) {
-                    Shawn.leftRear.setPower(-1);
-                } else {
-                    Shawn.leftRear.setPower(0);
-                }
-
-                telemetry.addLine("It is not White");
+            telemetry.addLine("It is not white.");
         }
-        telemetry.addData("Red  ", colorSorter.red);
-        telemetry.addData("Green", colorSorter.green);
-        telemetry.addData("Blue ", colorSorter.blue);
-        telemetry.addData("Hue", colorSorter.hsvValues[0]);
-        telemetry.addData("Saturation", colorSorter.hsvValues[1]);
-        telemetry.addData("Value", colorSorter.hsvValues[2]);
+        telemetry.addData("Red  ", sweeper.red);
+        telemetry.addData("Green", sweeper.green);
+        telemetry.addData("Blue ", sweeper.blue);
+        telemetry.addData("Hue", sweeper.hsvValues[0]);
+        telemetry.addData("Saturation", sweeper.hsvValues[1]);
+        telemetry.addData("Value", sweeper.hsvValues[2]);
 
     }
 }
