@@ -31,11 +31,14 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.ReadWriteFile;
 
@@ -71,7 +74,9 @@ public class HardwareShawn
 
     public DcMotor actuator = null;
     public DcMotor sweepy = null;
+    public CRServo claw = null;
 
+    public DigitalChannel touchSensor = null;
     public ColorSensor colorSensor = null;
 
     public DcMotor hub1Motor = null;
@@ -124,25 +129,36 @@ public class HardwareShawn
 
         actuator = hwMap.get(DcMotor.class, "actuator");
         sweepy = hwMap.get(DcMotor.class, "sweepy");
+        claw = hwMap.get(CRServo.class, "claw");
 
-//        leftRear    = hwMap.get(DcMotor.class, "leftRear");
-//        rightRear   = hwMap.get(DcMotor.class, "rightRear");
-//        leftFront   = hwMap.get(DcMotor.class, "leftFront");
-//        rightFront  = hwMap.get(DcMotor.class, "rightFront");
+        leftRear = hwMap.get(DcMotor.class, "leftRear");
+        rightRear = hwMap.get(DcMotor.class, "rightRear");
+        leftFront = hwMap.get(DcMotor.class, "leftFront");
+        rightFront = hwMap.get(DcMotor.class, "rightFront");
+
+        touchSensor = hwMap.get(DigitalChannel.class, "touchSensor");
+        touchSensor.setMode(DigitalChannel.Mode.INPUT);
 
         actuator.setPower(0);
         sweepy.setPower(0);
+        claw.setPower(0);
+
+        leftRear.setPower(0);
+        rightRear.setPower(0);
+        leftFront.setPower(0);
+        rightFront.setPower(0);
 //
 //        imu = hwMap.get(BNO055IMU.class, "imu");
 //
         actuator.setDirection(DcMotorSimple.Direction.FORWARD);
         sweepy.setDirection(DcMotorSimple.Direction.FORWARD);
+        claw.setDirection(DcMotorSimple.Direction.FORWARD);
 
-//        leftRear.setPower(0);
-//        rightRear.setPower(0);
-//        leftFront.setPower(0);
-//        rightFront.setPower(0);
-//
+        leftRear.setDirection(DcMotorSimple.Direction.FORWARD);
+        rightRear.setDirection(DcMotorSimple.Direction.FORWARD);
+        leftFront.setDirection(DcMotorSimple.Direction.REVERSE);
+        rightFront.setDirection(DcMotorSimple.Direction.FORWARD);
+
 //        // Set all motors to run without encoders.
 //        // May want to use RUN_USING_ENCODERS if encoders are installed.
 //
@@ -153,18 +169,18 @@ public class HardwareShawn
         actuator.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         sweepy.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
-//        leftRear.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-//        rightRear.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-//        leftFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-//        rightFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-//
+        leftRear.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        rightRear.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        leftFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        rightFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
         actuator.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         sweepy.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-//        leftRear.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-//        rightRear.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-//        leftFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-//        rightFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        leftRear.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        rightRear.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        leftFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        rightFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
     }
 

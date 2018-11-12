@@ -108,7 +108,7 @@ public class Shawn_TeleopDriveAndArm extends OpMode {
 //                    lsy = 0;
 //                }
 //
-//                lf = lsy + lsx;
+//            lf = lsy + lsx;
 //            lr = lsy - lsx;
 //
 //            // Right stick's y direction is used to control right wheels'

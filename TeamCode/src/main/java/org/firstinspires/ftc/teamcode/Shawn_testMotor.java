@@ -32,6 +32,7 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.ftccommon.SoundPlayer;
 
 @TeleOp(name = "Test: TestMotor", group = "Motors")
 //@Disabled
@@ -73,6 +74,8 @@ public class Shawn_testMotor extends OpMode {
     double lf = 0;
     double rf = 0;
 
+    int control = 1;
+
     @Override
     public void init() {
 
@@ -94,6 +97,13 @@ public class Shawn_testMotor extends OpMode {
     @Override
     public void loop() {
 
+        control = 1;
+
+        lr = 0;
+        rr = 0;
+        lf = 0;
+        rf = 0;
+
         //ACTUATOR ACTUATOR ACTUATOR ACTUATOR ACTUATOR ACTUATOR
         if (gamepad1.y) {
             GBTicks = MAX_GB_TICKS;
@@ -106,14 +116,28 @@ public class Shawn_testMotor extends OpMode {
         Shawn.actuator.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         Shawn.actuator.setTargetPosition(GBTicks);
         Shawn.actuator.setPower(1);
-//
+
 //        while(Shawn.actuator.isBusy()){}
 //        Shawn.actuator.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
-        telemetry.addData("Ticks set to", GBTicks);
-        telemetry.addData("Ticks Reached", Shawn.actuator.getCurrentPosition());
-        telemetry.update();
 
+        // CLAW CLAW CLAW CLAW CLAW CLAW CLAW CLAW CLAW CLAW CLAW CLAW
+        if (gamepad1.dpad_right) {
+            while (Shawn.touchSensor.getState()) {
+                Shawn.claw.setPower(1);
+            }
+        } else if (gamepad1.dpad_left) {
+            Shawn.claw.setPower(-1);
+        } else {
+            Shawn.claw.setPower(0);
+        }
+
+        if (Shawn.touchSensor.getState() == false) {
+            telemetry.addLine("PRESSED!!!!!");
+        } else {
+            telemetry.addLine("NOT PRESSED!! >:(");
+        }
+//        telemetry.update();
 
         // SWEEPY THINGY SWEEPY THINGY SWEEPY THINGY SWEEPY THINGY
         if (gamepad1.x && gamepad1.b) {
@@ -139,12 +163,41 @@ public class Shawn_testMotor extends OpMode {
             lf = -gamepad1.left_stick_y;
             rr = -gamepad1.left_stick_y;
             rf = -gamepad1.left_stick_y;
-        } else if (gamepad1.right_stick_y != 0) {
-            lr = gamepad1.left_stick_x;
-            lf = gamepad1.left_stick_x;
-            rr = -gamepad1.left_stick_x;
-            rf = -gamepad1.left_stick_x;
+
+            telemetry.addLine("Y");
+
+        } else if (gamepad1.right_stick_x != 0) {
+            lr = gamepad1.right_stick_x;
+            lf = gamepad1.right_stick_x;
+            rr = -gamepad1.right_stick_x;
+            rf = -gamepad1.right_stick_x;
+
+            telemetry.addLine("X");
+            telemetry.addData("gamepad1.left_stick_x", gamepad1.left_stick_x);
+
         }
+
+        telemetry.update();
+
+
+        //STRAFE STRAFE STRAFE STRAFE STRAFE STRAFE STRAFE STRAFE STRAFE
+        if (gamepad1.right_trigger != 0) {
+            lf = 1;
+            rf = -1;
+            lr = -1;
+            rr = 1;
+        } else if (gamepad1.left_trigger != 0) {
+            lf = -1;
+            rf = 1;
+            lr = 1;
+            rr = -1;
+        }
+
+
+        Shawn.leftRear.setPower(lr / control);
+        Shawn.leftFront.setPower(lf / control);
+        Shawn.rightRear.setPower(rr / control);
+        Shawn.rightFront.setPower(rf / control);
 
 
     }
