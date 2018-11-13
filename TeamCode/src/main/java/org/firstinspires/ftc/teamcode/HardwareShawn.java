@@ -156,7 +156,7 @@ public class HardwareShawn
 
         leftRear.setDirection(DcMotorSimple.Direction.FORWARD);
         rightRear.setDirection(DcMotorSimple.Direction.FORWARD);
-        leftFront.setDirection(DcMotorSimple.Direction.REVERSE);
+        leftFront.setDirection(DcMotorSimple.Direction.REVERSE);    // reverse for some reason???
         rightFront.setDirection(DcMotorSimple.Direction.FORWARD);
 
 //        // Set all motors to run without encoders.
@@ -183,6 +183,5 @@ public class HardwareShawn
         rightFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
     }
-
 
  }

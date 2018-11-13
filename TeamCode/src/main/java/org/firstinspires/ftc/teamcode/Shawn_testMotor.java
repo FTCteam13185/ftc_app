@@ -34,6 +34,9 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.ftccommon.SoundPlayer;
 
+import java.io.File;
+
+
 @TeleOp(name = "Test: TestMotor", group = "Motors")
 //@Disabled
 public class Shawn_testMotor extends OpMode {
@@ -47,6 +50,8 @@ public class Shawn_testMotor extends OpMode {
 //    public static final double leftStrafeControl  = 0.885;
 
     HardwareShawn Shawn = new HardwareShawn();   // Use Shawn's hardware
+
+    SoundPlayer sPlayer = new SoundPlayer(1,256*1024);
 
     boolean drive = true;
 
@@ -92,7 +97,14 @@ public class Shawn_testMotor extends OpMode {
         Shawn.actuator.setTargetPosition(GBTicks);
         Shawn.actuator.setPower(1);
 
-    }
+        File musicFile = new File("/Music/LightsaverTurnOn.mp3");
+
+        if (musicFile != null) {
+            sPlayer.preload(this.hardwareMap.appContext, musicFile);
+            sPlayer.startPlaying(this.hardwareMap.appContext, musicFile);
+        }
+
+     }
 
     @Override
     public void loop() {

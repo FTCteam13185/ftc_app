@@ -29,6 +29,7 @@
 
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.ftccommon.SoundPlayer;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -83,18 +84,18 @@ import static java.lang.Math.abs;
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 
-@Autonomous(name = "Shawn: Autonomous Blue", group = "Pushbot")
-@Disabled
-public class Shawn_AutonomousBlue extends LinearOpMode {
+@Autonomous(name = "Shawn: Autonomous", group = "Pushbot")
+//@Disabled
+public class Shawn_Autonomous extends LinearOpMode {
 
     /* Declare OpMode members. */
     HardwareShawn Shawn = new HardwareShawn();   // Use a Shawn's hardware
 
-    static final double COUNTS_PER_MOTOR_REV = 1440;    // eg: TETRIX Motor Encoder
-    static final double DRIVE_GEAR_REDUCTION = 1.0;     // This is < 1.0 if geared UP
+    static final double COUNTS_PER_MOTOR_REV = 537.6;    // goBILDA motor
+    static final double DRIVE_GEAR_REDUCTION = 2.0;     // This is < 1.0 if geared UP
     static final double WHEEL_DIAMETER_INCHES = 4.0;     // For figuring circumference
     static final double COUNTS_PER_INCH = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) /
-            (WHEEL_DIAMETER_INCHES * 3.1415);
+            (WHEEL_DIAMETER_INCHES * 3.141592653589793238462643383279);
 
     // These constants define the desired driving/controlType characteristics
     // They can/should be tweaked to suite the specific Shawn drive train.
@@ -130,11 +131,17 @@ public class Shawn_AutonomousBlue extends LinearOpMode {
         // Ensure the Shawn it stationary, then reset the encoders and calibrate the gyro.
         Shawn.leftRear.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         Shawn.rightRear.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        Shawn.leftFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        Shawn.rightFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
+        Shawn.leftRear.setDirection(DcMotorSimple.Direction.FORWARD);
+        Shawn.rightRear.setDirection(DcMotorSimple.Direction.FORWARD);
         Shawn.leftFront.setDirection(DcMotorSimple.Direction.REVERSE);
         Shawn.rightFront.setDirection(DcMotorSimple.Direction.FORWARD);
 
+
         //vuforia
+/*
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters(cameraMonitorViewId);
 
@@ -147,7 +154,7 @@ public class Shawn_AutonomousBlue extends LinearOpMode {
         VuforiaTrackables relicTrackables = this.vuforia.loadTrackablesFromAsset("RelicVuMark");
         VuforiaTrackable relicTemplate = relicTrackables.get(0);
         relicTemplate.setName("relicVuMarkTemplate"); // can help in debugging; otherwise not necessary
-
+*/
         telemetry.addData(">", "Press Play to start");
         telemetry.update();
 
@@ -157,8 +164,10 @@ public class Shawn_AutonomousBlue extends LinearOpMode {
         telemetry.addData(">", "Robot Ready.");    //
         telemetry.update();
 
-        Shawn.actuator.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        Shawn.leftRear.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         Shawn.rightRear.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        Shawn.leftFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        Shawn.rightFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         // Wait for the game to start (Display Gyro value), and reset gyro before we move..
         while (!isStarted()) {
@@ -168,13 +177,14 @@ public class Shawn_AutonomousBlue extends LinearOpMode {
         }
         waitForStart();
 
-        relicTrackables.activate();
+        //   relicTrackables.activate();
 
         // Step through each leg of the path,
         // Note: Reverse movement is obtained by setting a negative distance (not speed)
         // Put a hold after each turn
 
         //fff
+/*
         RelicRecoveryVuMark vuMark = RelicRecoveryVuMark.from(relicTemplate);
 
         if (vuMark != RelicRecoveryVuMark.UNKNOWN) {
@@ -190,73 +200,15 @@ public class Shawn_AutonomousBlue extends LinearOpMode {
             telemetry.addData("VuMark", "not visible");
         }
         Thread.sleep(3000);
+*/
 
-/*
-        Shawn.tailServo.setPosition(0.02);
-        Thread.sleep(1000);
-        if (!cSensor.isBlue(Shawn.colorSensor)) {
-        telemetry.addLine("red");
-        telemetry.update();
-        Thread.sleep(1000);
-        Shawn.tailEnd.setPosition(0);
-        Thread.sleep(200);
-        Shawn.tailServo.setPosition(0.7);
-        Thread.sleep(200);
-        Shawn.tailEnd.setPosition(0.37);
-        } else {
-        telemetry.addLine("blue");
-        telemetry.update();
-        Thread.sleep(1000);
-        Shawn.tailEnd.setPosition(1);
-        Thread.sleep(200);
-        Shawn.tailServo.setPosition(0.7);
-        Thread.sleep(200);
-        Shawn.tailEnd.setPosition(0.37);
-        }
-        Thread.sleep(500);
-
-        Shawn.rightClaw.setPosition(0.5);
-        Shawn.leftClaw.setPosition(0.45);
-        Thread.sleep(500);
-        Shawn.armServo.setPosition(0.5);
-        Thread.sleep(1000);
-
-        gyroDrive(DRIVE_SPEED, -36, 0);
-        gyroTurn(TURN_SPEED, -50);
-        gyroHold(TURN_SPEED, -50, 0.5);
-        gyroDrive(DRIVE_SPEED, 45, -50);
-        gyroTurn(TURN_SPEED, 180);
-        gyroHold(TURN_SPEED, 180, 0.5);
-
-        //        strafe(0.4, -8000);
-
-        Shawn.armServo.setPosition(0.85);
-        Thread.sleep(500);
-
-        gyroDrive(DRIVE_SPEED/2, -8, 180);
-        Thread.sleep(500);
-
-        Shawn.rightClaw.setPosition(1);
-        Shawn.leftClaw.setPosition(0);
-        Thread.sleep(1000);
-
-        gyroDrive(DRIVE_SPEED/2, 5, 180);
-
-        Shawn.armServo.setPosition(0.9);
-        Shawn.rightClaw.setPosition(0);
-        Shawn.leftClaw.setPosition(1);
-        Thread.sleep(1000);
-
-
-        gyroDrive(DRIVE_SPEED, -6, 180);
-        Thread.sleep(1000);
-
-        gyroDrive(DRIVE_SPEED / 2, 3, 180);
+        gyroDrive(DRIVE_SPEED, 12, 0);
+        gyroHold(TURN_SPEED, 0, 1);
 
         telemetry.addData("Path", "Complete");
         telemetry.update();
 
-*/
+
     }
 
 
@@ -272,10 +224,12 @@ public class Shawn_AutonomousBlue extends LinearOpMode {
      *                 0 = fwd. +ve is CCW from fwd. -ve is CW from forward.
      *                 If a relative angle is required, add/subtract from current heading.
      */
-    public void gyroDrive(double speed, double distance, double angle) {
+    public void gyroDrive(double speed, double distance, double angle) {                                                // GYRO DRIVE GYRO DRIVE GYRO DRIVE
 
-        int newLeftTarget;
-        int newRightTarget;
+        int newLeftRearTarget;
+        int newLeftFrontTarget;
+        int newRightRearTarget;
+        int newRightFrontTarget;
         int moveCounts;
         double max;
         double error;
@@ -288,42 +242,43 @@ public class Shawn_AutonomousBlue extends LinearOpMode {
 
             // Determine new target armPosition, and pass to motor controller
             moveCounts = (int) (distance * COUNTS_PER_INCH);
-            newLeftTarget = Shawn.leftRear.getCurrentPosition() + moveCounts;
-            newRightTarget = Shawn.rightRear.getCurrentPosition() + moveCounts;
+            newLeftRearTarget = Shawn.leftRear.getCurrentPosition() + moveCounts;
+            newLeftFrontTarget = Shawn.leftFront.getCurrentPosition() + moveCounts;
+            newRightRearTarget = Shawn.rightRear.getCurrentPosition() + moveCounts;
+            newRightFrontTarget = Shawn.rightFront.getCurrentPosition() + moveCounts;
 
             // Set Target and Turn On RUN_TO_POSITION
-            Shawn.leftRear.setTargetPosition(newLeftTarget);
-            Shawn.rightRear.setTargetPosition(newRightTarget);
+            Shawn.leftRear.setTargetPosition(newLeftRearTarget);
+            Shawn.leftFront.setTargetPosition(newLeftFrontTarget);
+            Shawn.rightRear.setTargetPosition(newRightRearTarget);
+            Shawn.rightFront.setTargetPosition(newRightFrontTarget);
 
             Shawn.leftRear.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             Shawn.rightRear.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            Shawn.leftFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            Shawn.rightFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
             // start motion.
             speed = Range.clip(abs(speed), 0.0, 1.0);
             Shawn.leftRear.setPower(speed);
             Shawn.rightRear.setPower(speed);
-            if (distance < 0) {
-                Shawn.leftFront.setPower(speed);
-                Shawn.rightFront.setPower(speed);
-            } else {
-                Shawn.leftFront.setPower(-speed);
-                Shawn.rightFront.setPower(-speed);
-            }
+            Shawn.leftFront.setPower(speed);
+            Shawn.leftFront.setPower(speed);
 
             // keep looping while we are still active, and BOTH motors are running.
             while (opModeIsActive() &&
-                    (Shawn.actuator.isBusy() && Shawn.rightRear.isBusy())) {
+                    (Shawn.leftRear.isBusy() && Shawn.rightRear.isBusy() &&
+                            Shawn.leftFront.isBusy() && Shawn.rightFront.isBusy())) {
 
                 // adjust relative speed based on heading error.
                 error = getError(angle);
                 steer = getSteer(error, P_DRIVE_COEFF);
 
                 // if driving in reverse, the motor correction also needs to be reversed
-                if (distance < 0)
+                if (distance < 0) {
                     steer *= -1.0;
+                }
 
-//                leftSpeed = speed - steer;
-//                rightSpeed = speed + steer;
                 leftSpeed = speed + steer;
                 rightSpeed = speed - steer;
 
@@ -336,18 +291,13 @@ public class Shawn_AutonomousBlue extends LinearOpMode {
 
                 Shawn.leftRear.setPower(leftSpeed);
                 Shawn.rightRear.setPower(rightSpeed);
-                if (distance < 0) {
-                    Shawn.leftFront.setPower(leftSpeed);
-                    Shawn.rightFront.setPower(rightSpeed);
-                } else {
-                    Shawn.leftFront.setPower(-leftSpeed);
-                    Shawn.rightFront.setPower(-rightSpeed);
-                }
+                Shawn.leftFront.setPower(leftSpeed);
+                Shawn.rightFront.setPower(rightSpeed);
 
                 // Display drive status for the driver.
                 telemetry.addData("Err/St", "%5.1f/%5.1f", error, steer);
-                telemetry.addData("Target", "%7d:%7d", newLeftTarget, newRightTarget);
-                telemetry.addData("Actual", "%7d:%7d", Shawn.actuator.getCurrentPosition(),
+                telemetry.addData("Target", "%7d:%7d", newLeftRearTarget, newRightRearTarget);
+                telemetry.addData("Actual", "%7d:%7d", Shawn.leftRear.getCurrentPosition(),
                         Shawn.rightRear.getCurrentPosition());
                 telemetry.addData("L&R Speed", "%5.2f:%5.2f", leftSpeed, rightSpeed);
                 telemetry.update();
@@ -362,6 +312,8 @@ public class Shawn_AutonomousBlue extends LinearOpMode {
             // Turn off RUN_TO_POSITION
             Shawn.leftRear.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             Shawn.rightRear.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            Shawn.rightFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            Shawn.leftFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         }
     }
 
@@ -413,8 +365,7 @@ public class Shawn_AutonomousBlue extends LinearOpMode {
      *              0 = fwd. +ve is CCW from fwd. -ve is CW from forward.
      *              If a relative angle is required, add/subtract from current heading.
      */
-    public void gyroTurn(double speed, double angle) {
-
+    public void gyroTurn(double speed, double angle) {                                                                      // GYRO TURN GYRO TURN GYRO TURN
         // keep looping while we are still active, and not on heading.
         while (opModeIsActive() && !onHeading(speed, angle, P_TURN_COEFF)) {
             // Update telemetry & Allow time for other processes to run.
@@ -432,7 +383,7 @@ public class Shawn_AutonomousBlue extends LinearOpMode {
      *                 If a relative angle is required, add/subtract from current heading.
      * @param holdTime Length of time (in seconds) to hold the specified heading.
      */
-    public void gyroHold(double speed, double angle, double holdTime) {
+    public void gyroHold(double speed, double angle, double holdTime) {                                                     // GYRO HOLD GYRO HOLD GRYO HOLD GYRO HOLD
 
         ElapsedTime holdTimer = new ElapsedTime();
 
@@ -461,7 +412,7 @@ public class Shawn_AutonomousBlue extends LinearOpMode {
      * @param PCoeff Proportional Gain coefficient
      * @return
      */
-    boolean onHeading(double speed, double angle, double PCoeff) {
+    boolean onHeading(double speed, double angle, double PCoeff) {                                                          // ON HEADING ON HEADING ON HEADING ON HEADING ON HEADING
         double error;
         double steer;
         boolean onTarget = false;
@@ -483,8 +434,8 @@ public class Shawn_AutonomousBlue extends LinearOpMode {
         }
 
         // Send desired speeds to motors.
-        Shawn.actuator.setPower(-leftSpeed);
-        Shawn.rightRear.setPower(-rightSpeed);
+        Shawn.leftRear.setPower(leftSpeed);
+        Shawn.rightRear.setPower(rightSpeed);
         Shawn.leftFront.setPower(leftSpeed);
         Shawn.rightFront.setPower(rightSpeed);
 
@@ -503,7 +454,7 @@ public class Shawn_AutonomousBlue extends LinearOpMode {
      * @return error angle: Degrees in the range +/- 180. Centered on the Shawn's frame of reference
      * +ve error means the Shawn should turn LEFT (CCW) to reduce error.
      */
-    public double getError(double targetAngle) {
+    public double getError(double targetAngle) {                                                                                // GET ERROR GET ERROR GET ERROR GET ERROR
 
         double robotError;
 
