@@ -29,6 +29,8 @@
 
 package org.firstinspires.ftc.teamcode;
 
+import android.media.MediaPlayer;
+
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -51,7 +53,7 @@ public class Shawn_testMotor extends OpMode {
 
     HardwareShawn Shawn = new HardwareShawn();   // Use Shawn's hardware
 
-    SoundPlayer sPlayer = new SoundPlayer(1,256*1024);
+    //   SoundPlayer sPlayer = new SoundPlayer(1,256*1024);
 
     boolean drive = true;
 
@@ -68,7 +70,7 @@ public class Shawn_testMotor extends OpMode {
 
     final int GB_TICKS_PER_ROTATION = 384;
     final int SUB_ROTATION = 4;
-    final int MAX_GB_TICKS = 9600;
+    final int MAX_GB_TICKS = 9600 - GB_TICKS_PER_ROTATION;
     final int MIN_GB_TICKS = 0;
     int GBTicks = 0;
 
@@ -80,6 +82,9 @@ public class Shawn_testMotor extends OpMode {
     double rf = 0;
 
     int control = 1;
+
+    // SOUND STUFF
+    MediaPlayer lightsaber = null;
 
     @Override
     public void init() {
@@ -94,17 +99,14 @@ public class Shawn_testMotor extends OpMode {
         telemetry.addData("Initial Ticks", GBTicks);
         telemetry.update();
 
-        Shawn.actuator.setTargetPosition(GBTicks);
-        Shawn.actuator.setPower(1);
+//        Shawn.actuator.setTargetPosition(GBTicks);
+//        Shawn.actuator.setPower(1);
 
-        File musicFile = new File("/Music/LightsaverTurnOn.mp3");
+        //SOUND STUFF
+        lightsaber = MediaPlayer.create(this.hardwareMap.appContext, R.raw.lightsaber);
+        lightsaber.seekTo(0);
 
-        if (musicFile != null) {
-            sPlayer.preload(this.hardwareMap.appContext, musicFile);
-            sPlayer.startPlaying(this.hardwareMap.appContext, musicFile);
-        }
-
-     }
+    }
 
     @Override
     public void loop() {
@@ -116,12 +118,14 @@ public class Shawn_testMotor extends OpMode {
         lf = 0;
         rf = 0;
 
-        //ACTUATOR ACTUATOR ACTUATOR ACTUATOR ACTUATOR ACTUATOR
+        //ACTUATOR ACTUATOR ACTUATOR ACTUATOR ACTUATOR ACTUATOR ACTUATOR ACTUATOR ACTUATOR ACTUATOR ACTUATOR
         if (gamepad1.y) {
             GBTicks = MAX_GB_TICKS;
-        }
-
-        if (gamepad1.a) {
+            if (!lightsaber.isPlaying()) {
+                lightsaber.seekTo(0);
+                lightsaber.start();
+            }
+        } else if (gamepad1.a) {
             GBTicks = MIN_GB_TICKS;
         }
 
@@ -132,10 +136,11 @@ public class Shawn_testMotor extends OpMode {
 //        while(Shawn.actuator.isBusy()){}
 //        Shawn.actuator.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
-
-        // CLAW CLAW CLAW CLAW CLAW CLAW CLAW CLAW CLAW CLAW CLAW CLAW
+        // CLAW CLAW CLAW CLAW CLAW CLAW CLAW CLAW CLAW CLAW CLAW CLAW CLAW CLAW CLAW CLAW CLAW CLAW CLAW CLAW
         if (gamepad1.dpad_right) {
-            while (Shawn.touchSensor.getState()) {
+            telemetry.addLine("dpad right");
+            telemetry.update();
+            /*while*/ if (Shawn.touchSensor.getState()) {
                 Shawn.claw.setPower(1);
             }
         } else if (gamepad1.dpad_left) {
@@ -144,14 +149,12 @@ public class Shawn_testMotor extends OpMode {
             Shawn.claw.setPower(0);
         }
 
-        if (Shawn.touchSensor.getState() == false) {
+        if (!Shawn.touchSensor.getState()) {
             telemetry.addLine("PRESSED!!!!!");
         } else {
             telemetry.addLine("NOT PRESSED!! >:(");
         }
-//        telemetry.update();
-
-        // SWEEPY THINGY SWEEPY THINGY SWEEPY THINGY SWEEPY THINGY
+        //SWEEPY THINGY SWEEPY THINGY SWEEPY THINGY SWEEPY THINGY
         if (gamepad1.x && gamepad1.b) {
             sweep = 2;
         } else if (gamepad1.x) {

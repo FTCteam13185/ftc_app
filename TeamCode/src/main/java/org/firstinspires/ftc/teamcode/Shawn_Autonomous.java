@@ -49,7 +49,16 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static java.lang.Math.abs;
+import static org.firstinspires.ftc.robotcore.external.navigation.AngleUnit.DEGREES;
+import static org.firstinspires.ftc.robotcore.external.navigation.AxesOrder.XYZ;
+import static org.firstinspires.ftc.robotcore.external.navigation.AxesOrder.YZX;
+import static org.firstinspires.ftc.robotcore.external.navigation.AxesReference.EXTRINSIC;
+import static org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer.CameraDirection.BACK;
+import static org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer.CameraDirection.FRONT;
 
 /**
  * This file illustrates the concept of driving a path based on Gyro heading and encoder counts.
@@ -97,6 +106,9 @@ public class Shawn_Autonomous extends LinearOpMode {
     static final double COUNTS_PER_INCH = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) /
             (WHEEL_DIAMETER_INCHES * 3.141592653589793238462643383279);
 
+    final int MAX_GB_TICKS = 9600;
+    final int MIN_GB_TICKS = 0;
+
     // These constants define the desired driving/controlType characteristics
     // They can/should be tweaked to suite the specific Shawn drive train.
     static final double DRIVE_SPEED = 0.7;     // Nominal speed for better accuracy.
@@ -111,13 +123,21 @@ public class Shawn_Autonomous extends LinearOpMode {
 
     Shawn_SensorMRColor cSensor = new Shawn_SensorMRColor();
 
+    // VUFORIA VUFORIA VUFORIA VUFORIA VUFORIA VUFORIA VUFORIA VUFORIA VUFORIA VUFORIA VUFORIA VUFORIA VUFORIA
+
+    private static final String VUFORIA_KEY = "AdC2UuL/////AAAAmbSzzw4/ykWZk7KXU2Ee5ktIYR7RAtJsPrHto/zr/+Lbg1yivLyOllic76kSLHyg2pVgyK+O1gc28/qTWiKCP8WOCzNZ6cq1WMeHspqwVy2jAEN2uR/L/knOn6MO2mqToCJX4" +
+            "zwu15GGIlEyAdbkYKC996Rl3vWD1gtojsWjbAsiVeWVTcfRpENlJA4B/jKsoQHnrzvHIbBV+K5cFh2nYU12jwN8UyM0gUdPPGvspDPVeti8gTKXl+RGddwkIgoLJD0W+Qy0VlCq0j/85C1b72E2yAbFYsIs5GSuOtuYJZw09a+sssGGnbUEXBeU" +
+            "T2mPi607EIU4ga0gcI4gLEo4Ry/qxLBX6v056cXpZrx2JOQW";
+
+    private static final float mmPerInch = 25.4f;
+    private static final float mmFTCFieldWidth = (12 * 6) * mmPerInch;       // the width of the FTC field (from the center point to the outer panels)
+    private static final float mmTargetHeight = (6) * mmPerInch;          // the height of the center of the target image above the floor
+
+    private static final VuforiaLocalizer.CameraDirection CAMERA_CHOICE = BACK;
+    private OpenGLMatrix lastLocation = null;
+    private boolean targetVisible = false;
+
     VuforiaLocalizer vuforia;
-
-    public static final String TAG = "Vuforia VuMark Sample";
-
-    OpenGLMatrix lastLocation = null;
-
-    int key = 0;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -139,22 +159,72 @@ public class Shawn_Autonomous extends LinearOpMode {
         Shawn.leftFront.setDirection(DcMotorSimple.Direction.REVERSE);
         Shawn.rightFront.setDirection(DcMotorSimple.Direction.FORWARD);
 
+        Shawn.actuator.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        Shawn.actuator.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-        //vuforia
-/*
+        // VUFORIA VUFORIA VUFORIA VUFORIA VUFORIA VUFORIA VUFORIA VUFORIA VUFORIA VUFORIA VUFORIA VUFORIA VUFORIA VUFORIA VUFORIA VUFORIA
+
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters(cameraMonitorViewId);
+        parameters.vuforiaLicenseKey = VUFORIA_KEY;
+        parameters.cameraDirection = CAMERA_CHOICE;
 
-        parameters.vuforiaLicenseKey = "AdC2UuL/////AAAAmbSzzw4/ykWZk7KXU2Ee5ktIYR7RAtJsPrHto/zr/+Lbg1yivLyOllic76kSLHyg2pVgyK+O1gc28/qTWiKCP8WOCzNZ6cq1WMeHspqwVy2jAEN2uR/L/knOn6MO2mqToCJX4zwu15GGIlEyAdbkYKC996Rl3vWD1gtojsWjbAsiVeWVTcfRpENlJA4B/jKsoQHnrzvHIbBV+K5cFh2nYU12jwN8UyM0gUdPPGvspDPVeti8gTKXl+RGddwkIgoLJD0W+Qy0VlCq0j/85C1b72E2yAbFYsIs5GSuOtuYJZw09a+sssGGnbUEXBeUT2mPi607EIU4ga0gcI4gLEo4Ry/qxLBX6v056cXpZrx2JOQW\n";
+        //instantiate vuforia
+        vuforia = ClassFactory.getInstance().createVuforia(parameters);
 
-        parameters.cameraDirection = VuforiaLocalizer.CameraDirection.FRONT;
+        // Load the data sets that for the trackable objects. These particular data sets are stored in the 'assets' part of our application.
+        VuforiaTrackables targetsRoverRuckus = this.vuforia.loadTrackablesFromAsset("RoverRuckus");
+        VuforiaTrackable blueRover = targetsRoverRuckus.get(0);
+        blueRover.setName("Blue-Rover");
+        VuforiaTrackable redFootprint = targetsRoverRuckus.get(1);
+        redFootprint.setName("Red-Footprint");
+        VuforiaTrackable frontCraters = targetsRoverRuckus.get(2);
+        frontCraters.setName("Front-Craters");
+        VuforiaTrackable backSpace = targetsRoverRuckus.get(3);
+        backSpace.setName("Back-Space");
 
-        this.vuforia = ClassFactory.createVuforiaLocalizer(parameters);
+        // For convenience, gather together all the trackable objects in one easily-iterable collection */
+        List<VuforiaTrackable> allTrackables = new ArrayList<VuforiaTrackable>();
+        allTrackables.addAll(targetsRoverRuckus);
 
-        VuforiaTrackables relicTrackables = this.vuforia.loadTrackablesFromAsset("RelicVuMark");
-        VuforiaTrackable relicTemplate = relicTrackables.get(0);
-        relicTemplate.setName("relicVuMarkTemplate"); // can help in debugging; otherwise not necessary
-*/
+        // putting the targets on the walls (they are all originally at the point (0, 0), we must translate and
+        // rotate them to the positions they are on the actual field
+        // moving blue target (rover)
+        OpenGLMatrix blueRoverLocationOnField = OpenGLMatrix
+                .translation(0, mmFTCFieldWidth, mmTargetHeight)
+                .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0, 0));
+        blueRover.setLocation(blueRoverLocationOnField);
+        // moving red target (footprint)
+        OpenGLMatrix redFootprintLocationOnField = OpenGLMatrix
+                .translation(0, -mmFTCFieldWidth, mmTargetHeight)
+                .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0, 180));
+        redFootprint.setLocation(redFootprintLocationOnField);
+        // moving front target (craters)
+        OpenGLMatrix frontCratersLocationOnField = OpenGLMatrix
+                .translation(-mmFTCFieldWidth, 0, mmTargetHeight)
+                .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0, 90));
+        frontCraters.setLocation(frontCratersLocationOnField);
+        // moving back target (space)
+        OpenGLMatrix backSpaceLocationOnField = OpenGLMatrix
+                .translation(mmFTCFieldWidth, 0, mmTargetHeight)
+                .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0, -90));
+        backSpace.setLocation(backSpaceLocationOnField);
+
+        // translate camera position (originally in the middle of the robot) CAMERA CAMERA CAMERA CAMERA CAMERA CAMERA CAMERA CAMERA CAMERA CAMERA CAMERA CAMERA CAMERA
+        final int CAMERA_FORWARD_DISPLACEMENT = 110;   // eg: Camera is 110 mm in front of robot center
+        final int CAMERA_VERTICAL_DISPLACEMENT = 200;   // eg: Camera is 200 mm above ground
+        final int CAMERA_LEFT_DISPLACEMENT = 0;     // eg: Camera is ON the robot's center line
+
+        OpenGLMatrix phoneLocationOnRobot = OpenGLMatrix
+                .translation(CAMERA_FORWARD_DISPLACEMENT, CAMERA_LEFT_DISPLACEMENT, CAMERA_VERTICAL_DISPLACEMENT)
+                .multiplied(Orientation.getRotationMatrix(EXTRINSIC, YZX, DEGREES,
+                        CAMERA_CHOICE == FRONT ? 90 : -90, 0, 0));
+
+        telemetry.addLine("Vuforia Done");
+        telemetry.update();
+
+        // BREADY BREADY BREADY BREADY BREADY BREADY BREADY BREADY BREADY BREADY BREADY BREADY BREADY BREADY BREADY BREADY BREADY BREADY BREADY BREADY BREADY BREADY BREADY
+
         telemetry.addData(">", "Press Play to start");
         telemetry.update();
 
@@ -163,11 +233,6 @@ public class Shawn_Autonomous extends LinearOpMode {
 
         telemetry.addData(">", "Robot Ready.");    //
         telemetry.update();
-
-        Shawn.leftRear.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        Shawn.rightRear.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        Shawn.leftFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        Shawn.rightFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         // Wait for the game to start (Display Gyro value), and reset gyro before we move..
         while (!isStarted()) {
@@ -202,8 +267,50 @@ public class Shawn_Autonomous extends LinearOpMode {
         Thread.sleep(3000);
 */
 
-        gyroDrive(DRIVE_SPEED, 12, 0);
-        gyroHold(TURN_SPEED, 0, 1);
+//        gyroDrive(DRIVE_SPEED, 12, 0);
+//        gyroHold(TURN_SPEED, 0, 1);
+
+        // UNLOCK AND LOWER UNLOCK AND LOWER UNLOCK AND LOWER UNLOCK AND LOWER UNLOCK AND LOWER UNLOCK AND LOWER UNLOCK AND LOWER
+
+        telemetry.addLine("ready to move actuator");
+        telemetry.update();
+
+        Shawn.actuator.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        Shawn.actuator.setTargetPosition(MAX_GB_TICKS);
+        Shawn.actuator.setPower(1);
+
+        telemetry.addLine("moving actuator");
+        telemetry.update();
+
+        while(Shawn.actuator.isBusy()) {}
+
+        Shawn.actuator.setPower(0);
+
+        telemetry.addLine("actuator moved");
+        telemetry.update();
+
+        Shawn.claw.setPower(-1);
+        Thread.sleep(1500);
+
+        Shawn.claw.setPower(0);
+
+        Shawn.actuator.setTargetPosition(MIN_GB_TICKS);
+        Shawn.actuator.setPower(1);
+
+        while (Shawn.actuator.isBusy()) {}
+
+        Shawn.actuator.setPower(0);
+
+        while (Shawn.touchSensor.getState()) {
+            Shawn.claw.setPower(1);
+        }
+        Shawn.claw.setPower(0);
+
+        // MOVING MOVING MOVING MOVING MOVING MOVING MOVING MOVING MOVING MOVING MOVING MOVING MOVING MOVING MOVING MOVING MOVING
+//        gyroDrive(DRIVE_SPEED, 12, 0);
+//        gyroHold(TURN_SPEED, 0, 1);
+//        gyroTurn(TURN_SPEED, 90);
+//        gyroHold(TURN_SPEED, 90, 1);
 
         telemetry.addData("Path", "Complete");
         telemetry.update();

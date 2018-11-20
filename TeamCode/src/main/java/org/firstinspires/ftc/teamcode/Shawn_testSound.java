@@ -32,6 +32,8 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.ftccommon.SoundPlayer;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+
+// Imports Android's MediaPlayer class
 import android.media.MediaPlayer;
 
 import java.io.File;
@@ -45,6 +47,9 @@ public class Shawn_testSound extends OpMode {
 //    SoundPlayer sPlayer = new SoundPlayer(1,4*1024*1024);
 //    File lightsaber = new File("/sdcard/Music/LightsaberTurnOn.mp3");
 //    SoundPlayer.PlaySoundParams playerParam = new SoundPlayer.PlaySoundParams();
+
+    // Declaring the two MediaPlayer class instances to be used by the two media files
+    // that we'd like to play back
     MediaPlayer imperialMarch = null;
     MediaPlayer lightsaber = null;
 
@@ -72,6 +77,13 @@ public class Shawn_testSound extends OpMode {
 //            playerParam.waitForNonLoopingSoundsToFinish = true;
 //        }
 
+        // Initializes the two instances of MediaPlayer class to use the current context and to
+        // load the media files placed in resource/raw directory under "TeamCode"
+        //   Note: The file names need to be all lower case and the full path is
+        //   C:\Users\Kids\Documents\FTC13185\ftc_app\TeamCode\src\main\res\raw
+        //
+        // The seekTo method moves the pointer to the point in the file specified by the
+        // "msec" value
         imperialMarch = MediaPlayer.create(this.hardwareMap.appContext,R.raw.imperialmarch);
         imperialMarch.seekTo(0);
         lightsaber = MediaPlayer.create(this.hardwareMap.appContext,R.raw.lightsaber);
@@ -94,6 +106,10 @@ public class Shawn_testSound extends OpMode {
 
     @Override
     public void loop() {
+
+        // If the X button on the gamebad is pressed, and the media file used by the "lightsaber"
+        // instance of MediaPlayer is not already playing, move the pointer to the beginning of the
+        // sound file and start playing it.
         if (gamepad1.x && !lightsaber.isPlaying()) {
 //            sPlayer.preload(this.hardwareMap.appContext, lightsaber);
 //            sPlayer.play(this.hardwareMap.appContext, lightsaber, 2,0,1);
@@ -102,9 +118,17 @@ public class Shawn_testSound extends OpMode {
         }
 
         if (imperialMarch.isPlaying()) {
+            // If the media file used by the "imperialMarch" instance of the MediaPlayer class is
+            // already playing, update the Control Station phone with the following message and
+            // the current playback location in msec
             telemetry.addLine("Imperial March is playing!!!");
-            telemetry.addData("Current position: ", imperialMarch.getAudioSessionId());
+            telemetry.addData("Current position: ", imperialMarch.getCurrentPosition());
             telemetry.update();
+
+            // If the sound file is already playing and the A button is pressed on the gamepad,
+            // or if the sound file is passed the 5sec point, pause the sound file and rewind
+            // to the beginning. (This is to effectively stop to file. Cannot use the stop method
+            // because the media file would have to be reset again.)
             if (gamepad1.a || (imperialMarch.getCurrentPosition() >= 50000)) {
 //            sPlayer.preload(this.hardwareMap.appContext, imperialMarch);
 //            sPlayer.play(this.hardwareMap.appContext, imperialMarch, 2,0,1);
@@ -113,6 +137,9 @@ public class Shawn_testSound extends OpMode {
             }
         }
         else {
+            // If the media file is not currently playing, and the Y button is pressed on the
+            // gamepad, start playing the media file used by the imperialMarch instance of the
+            // MediaPlayer class.
             telemetry.addLine("Imperial March is not playing");
             if (gamepad1.y) {
 //            sPlayer.preload(this.hardwareMap.appContext, imperialMarch);
