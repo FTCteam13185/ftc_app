@@ -143,6 +143,11 @@ public class HardwareShawn
         sweepy.setPower(0);
         claw.setPower(0);
 
+        leftRear.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightRear.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        leftFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
         leftRear.setPower(0);
         rightRear.setPower(0);
         leftFront.setPower(0);
@@ -150,14 +155,14 @@ public class HardwareShawn
 //
 //        imu = hwMap.get(BNO055IMU.class, "imu");
 //
-        actuator.setDirection(DcMotorSimple.Direction.FORWARD);
-        sweepy.setDirection(DcMotorSimple.Direction.FORWARD);
-        claw.setDirection(DcMotorSimple.Direction.FORWARD);
+        actuator.setDirection(DcMotor.Direction.FORWARD);
+        sweepy.setDirection(DcMotor.Direction.FORWARD);
+        claw.setDirection(DcMotor.Direction.FORWARD);
 
-        leftRear.setDirection(DcMotorSimple.Direction.FORWARD);
-        rightRear.setDirection(DcMotorSimple.Direction.FORWARD);
-        leftFront.setDirection(DcMotorSimple.Direction.REVERSE);    // reverse for some reason???
-        rightFront.setDirection(DcMotorSimple.Direction.FORWARD);
+        leftRear.setDirection(DcMotor.Direction.REVERSE);
+        rightRear.setDirection(DcMotor.Direction.FORWARD);
+        leftFront.setDirection(DcMotor.Direction.FORWARD);
+        rightFront.setDirection(DcMotor.Direction.FORWARD);
 
 //        // Set all motors to run without encoders.
 //        // May want to use RUN_USING_ENCODERS if encoders are installed.
@@ -169,10 +174,16 @@ public class HardwareShawn
         actuator.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         sweepy.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
+//        leftRear.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+//        rightRear.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+//        leftFront.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+//        rightFront.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         leftRear.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         rightRear.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         leftFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        rightFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+    //    rightFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        rightFront.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         actuator.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         sweepy.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);

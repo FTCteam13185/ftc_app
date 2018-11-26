@@ -31,10 +31,12 @@ package org.firstinspires.ftc.teamcode;
 
 import android.media.MediaPlayer;
 
+import com.qualcomm.hardware.motors.TetrixMotor;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.ftccommon.SoundPlayer;
+import com.qualcomm.robotcore.util.Range;
 
 import java.io.File;
 
@@ -140,7 +142,7 @@ public class Shawn_testMotor extends OpMode {
         if (gamepad1.dpad_right) {
             telemetry.addLine("dpad right");
             telemetry.update();
-            /*while*/ if (Shawn.touchSensor.getState()) {
+            if (Shawn.touchSensor.getState()) {
                 Shawn.claw.setPower(1);
             }
         } else if (gamepad1.dpad_left) {
@@ -180,6 +182,7 @@ public class Shawn_testMotor extends OpMode {
             rf = -gamepad1.left_stick_y;
 
             telemetry.addLine("Y");
+            telemetry.addData("gamepad1.left_stick_y", gamepad1.left_stick_y);
 
         } else if (gamepad1.right_stick_x != 0) {
             lr = gamepad1.right_stick_x;
@@ -191,8 +194,6 @@ public class Shawn_testMotor extends OpMode {
             telemetry.addData("gamepad1.left_stick_x", gamepad1.left_stick_x);
 
         }
-
-        telemetry.update();
 
 
         //STRAFE STRAFE STRAFE STRAFE STRAFE STRAFE STRAFE STRAFE STRAFE
@@ -208,12 +209,21 @@ public class Shawn_testMotor extends OpMode {
             rr = -1;
         }
 
+        // FINE CONTROL FINE CONTROL FINE CONTROL FINE CONTROL FINE CONTROL FINE CONTROL
+        if (gamepad1.left_bumper) {
+            control = 2;
+        } else if (gamepad1.right_bumper){
+            control = 4;
+        }
 
         Shawn.leftRear.setPower(lr / control);
         Shawn.leftFront.setPower(lf / control);
         Shawn.rightRear.setPower(rr / control);
         Shawn.rightFront.setPower(rf / control);
 
+        telemetry.addData("RF power = ",Shawn.rightFront.getPower());
+        telemetry.addData("RF position = ",Shawn.rightFront.getCurrentPosition());
+        telemetry.update();
 
     }
 

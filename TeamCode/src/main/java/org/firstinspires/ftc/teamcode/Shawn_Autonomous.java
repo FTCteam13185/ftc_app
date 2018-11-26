@@ -29,6 +29,8 @@
 
 package org.firstinspires.ftc.teamcode;
 
+import android.media.MediaPlayer;
+
 import com.qualcomm.ftccommon.SoundPlayer;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
@@ -93,7 +95,7 @@ import static org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocaliz
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 
-@Autonomous(name = "Shawn: Autonomous", group = "Pushbot")
+@Autonomous(name = "Shawn: Autonomous Depot", group = "Pushbot")
 //@Disabled
 public class Shawn_Autonomous extends LinearOpMode {
 
@@ -106,7 +108,8 @@ public class Shawn_Autonomous extends LinearOpMode {
     static final double COUNTS_PER_INCH = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) /
             (WHEEL_DIAMETER_INCHES * 3.141592653589793238462643383279);
 
-    final int MAX_GB_TICKS = 9600;
+    final double TICKS_PER_GB_ROTATION = 537.6;
+    final int MAX_GB_TICKS = 9600 - (int) (TICKS_PER_GB_ROTATION * 1);
     final int MIN_GB_TICKS = 0;
 
     // These constants define the desired driving/controlType characteristics
@@ -122,6 +125,10 @@ public class Shawn_Autonomous extends LinearOpMode {
     public static final double ARM_POWER = 1;
 
     Shawn_SensorMRColor cSensor = new Shawn_SensorMRColor();
+
+    // SOUND SOUND SOUND SOUND SOUND SOUND SOUND SOUND SOUND SOUND SOUND SOUND SOUND SOUND SOUND SOUND SOUND
+    MediaPlayer lightsaber = null;
+    MediaPlayer march = null;
 
     // VUFORIA VUFORIA VUFORIA VUFORIA VUFORIA VUFORIA VUFORIA VUFORIA VUFORIA VUFORIA VUFORIA VUFORIA VUFORIA
 
@@ -148,15 +155,22 @@ public class Shawn_Autonomous extends LinearOpMode {
          */
         Shawn.init(hardwareMap, true);
 
+        // SOUND SOUND SOUND
+        lightsaber = MediaPlayer.create(this.hardwareMap.appContext, R.raw.lightsaber);
+        lightsaber.seekTo(0);
+
+        march = MediaPlayer.create(this.hardwareMap.appContext, R.raw.imperialmarch);
+        march.seekTo(9350);
+
         // Ensure the Shawn it stationary, then reset the encoders and calibrate the gyro.
         Shawn.leftRear.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         Shawn.rightRear.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         Shawn.leftFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         Shawn.rightFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
-        Shawn.leftRear.setDirection(DcMotorSimple.Direction.FORWARD);
+        Shawn.leftFront.setDirection(DcMotorSimple.Direction.FORWARD);
         Shawn.rightRear.setDirection(DcMotorSimple.Direction.FORWARD);
-        Shawn.leftFront.setDirection(DcMotorSimple.Direction.REVERSE);
+        Shawn.leftRear.setDirection(DcMotorSimple.Direction.REVERSE);
         Shawn.rightFront.setDirection(DcMotorSimple.Direction.FORWARD);
 
         Shawn.actuator.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -238,6 +252,7 @@ public class Shawn_Autonomous extends LinearOpMode {
         while (!isStarted()) {
             Thread.sleep(10);
             telemetry.addData(">", "Robot Heading = %f", Shawn.imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle);
+            telemetry.addData(">", "Heading Error = %f", getError(0));
             telemetry.update();
         }
         waitForStart();
@@ -272,54 +287,103 @@ public class Shawn_Autonomous extends LinearOpMode {
 
         // UNLOCK AND LOWER UNLOCK AND LOWER UNLOCK AND LOWER UNLOCK AND LOWER UNLOCK AND LOWER UNLOCK AND LOWER UNLOCK AND LOWER
 
-        telemetry.addLine("ready to move actuator");
-        telemetry.update();
 
+        // raising actuator
         Shawn.actuator.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         Shawn.actuator.setTargetPosition(MAX_GB_TICKS);
         Shawn.actuator.setPower(1);
 
-        telemetry.addLine("moving actuator");
-        telemetry.update();
+        // playing lightsaber noise
+        lightsaber.start();
 
+        // wait until actuator reaches final position
         while(Shawn.actuator.isBusy()) {}
 
+        // stop actuator
         Shawn.actuator.setPower(0);
 
-        telemetry.addLine("actuator moved");
-        telemetry.update();
-
+        // open claw for 1.5 seconds
+        march.start();          //march start
         Shawn.claw.setPower(-1);
         Thread.sleep(1500);
-
         Shawn.claw.setPower(0);
 
+        // lowering actuator
         Shawn.actuator.setTargetPosition(MIN_GB_TICKS);
         Shawn.actuator.setPower(1);
 
+        // MOVING MOVING MOVING MOVING MOVING MOVING MOVING MOVING MOVING MOVING MOVING MOVING MOVING MOVING MOVING MOVING MOVING
+
+        // move away from the lander
+//        gyroDrive(DRIVE_SPEED, 3, 0);
+//        gyroHold(TURN_SPEED, 0, 1);
+
+        // move away from the lander
+        gyroDrive(DRIVE_SPEED, 3, 0);
+        gyroHold(TURN_SPEED, 0, 1);
+
+//        // turn towards the friendly alliance wall
+//        gyroTurn(TURN_SPEED, -45);
+//        gyroHold(TURN_SPEED, -45, 1);
+
+        // turn towards the far wall
+        gyroTurn(TURN_SPEED, 45);
+        gyroHold(TURN_SPEED, 45, 1);
+
+//        // drive towards the friendly alliance wall
+//        gyroDrive(DRIVE_SPEED, 43, -45);
+//        gyroHold(TURN_SPEED, -45, 1);
+
+        // drive towards the far wall
+        gyroDrive(DRIVE_SPEED, 48, 45);
+        gyroHold(TURN_SPEED, 45, 1);
+
+
+        // wait for actuator to stop
         while (Shawn.actuator.isBusy()) {}
 
+        // set actuator power to 0
         Shawn.actuator.setPower(0);
 
+        // move claw until it touches the sensor
         while (Shawn.touchSensor.getState()) {
             Shawn.claw.setPower(1);
         }
         Shawn.claw.setPower(0);
 
-        // MOVING MOVING MOVING MOVING MOVING MOVING MOVING MOVING MOVING MOVING MOVING MOVING MOVING MOVING MOVING MOVING MOVING
-//        gyroDrive(DRIVE_SPEED, 12, 0);
-//        gyroHold(TURN_SPEED, 0, 1);
-//        gyroTurn(TURN_SPEED, 90);
-//        gyroHold(TURN_SPEED, 90, 1);
+
+        // turn the back of the robot towards the depot
+//        gyroTurn(TURN_SPEED, -135);
+//        gyroHold(TURN_SPEED, -135, 1);
+
+        // turn the back of the robot towards the depot
+        gyroTurn(TURN_SPEED, 135);
+        gyroHold(TURN_SPEED, 135, 1);
+
+        // reverse to the depot
+//        gyroDrive(DRIVE_SPEED, -36, -135);
+//        gyroHold(TURN_SPEED, -135, 1);
+
+        // reverse to the depot
+        gyroDrive(DRIVE_SPEED, -28, 135);
+        gyroHold(TURN_SPEED, 135, 1);
+
+        // this is where we would barf up the marker
+        gyroHold(TURN_SPEED, 135, 2);
+
+        while (march.getCurrentPosition() < 23700) {}
+        march.pause();
+
+        gyroDrive(DRIVE_SPEED, 18, 135);
+        gyroHold(TURN_SPEED, 135, 3);
 
         telemetry.addData("Path", "Complete");
         telemetry.update();
 
-
     }
 
 
-    /**
+    /*
      * Method to drive on a fixed compass bearing (angle), based on encoder counts.
      * Move will stop if either of these conditions occur:
      * 1) Move gets to the desired armPosition
@@ -352,30 +416,31 @@ public class Shawn_Autonomous extends LinearOpMode {
             newLeftRearTarget = Shawn.leftRear.getCurrentPosition() + moveCounts;
             newLeftFrontTarget = Shawn.leftFront.getCurrentPosition() + moveCounts;
             newRightRearTarget = Shawn.rightRear.getCurrentPosition() + moveCounts;
-            newRightFrontTarget = Shawn.rightFront.getCurrentPosition() + moveCounts;
+    //        newRightFrontTarget = Shawn.rightFront.getCurrentPosition() + moveCounts;
 
             // Set Target and Turn On RUN_TO_POSITION
             Shawn.leftRear.setTargetPosition(newLeftRearTarget);
             Shawn.leftFront.setTargetPosition(newLeftFrontTarget);
             Shawn.rightRear.setTargetPosition(newRightRearTarget);
-            Shawn.rightFront.setTargetPosition(newRightFrontTarget);
+    //        Shawn.rightFront.setTargetPosition(newRightFrontTarget);
 
             Shawn.leftRear.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             Shawn.rightRear.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             Shawn.leftFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            Shawn.rightFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+    //        Shawn.rightFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            Shawn.rightFront.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
             // start motion.
             speed = Range.clip(abs(speed), 0.0, 1.0);
             Shawn.leftRear.setPower(speed);
             Shawn.rightRear.setPower(speed);
             Shawn.leftFront.setPower(speed);
-            Shawn.leftFront.setPower(speed);
+            Shawn.rightFront.setPower(speed);
 
             // keep looping while we are still active, and BOTH motors are running.
             while (opModeIsActive() &&
                     (Shawn.leftRear.isBusy() && Shawn.rightRear.isBusy() &&
-                            Shawn.leftFront.isBusy() && Shawn.rightFront.isBusy())) {
+                            Shawn.leftFront.isBusy() /* && Shawn.rightFront.isBusy()*/)) {
 
                 // adjust relative speed based on heading error.
                 error = getError(angle);
@@ -384,10 +449,13 @@ public class Shawn_Autonomous extends LinearOpMode {
                 // if driving in reverse, the motor correction also needs to be reversed
                 if (distance < 0) {
                     steer *= -1.0;
+                    Shawn.rightFront.setDirection(DcMotorSimple.Direction.REVERSE);
+                } else {
+                    Shawn.rightFront.setDirection(DcMotorSimple.Direction.FORWARD);
                 }
 
-                leftSpeed = speed + steer;
-                rightSpeed = speed - steer;
+                leftSpeed = speed - steer;
+                rightSpeed = speed + steer;
 
                 // Normalize speeds if either one exceeds +/- 1.0;
                 max = Math.max(abs(leftSpeed), abs(rightSpeed));
@@ -419,8 +487,12 @@ public class Shawn_Autonomous extends LinearOpMode {
             // Turn off RUN_TO_POSITION
             Shawn.leftRear.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             Shawn.rightRear.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            Shawn.rightFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+         //   Shawn.rightFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            Shawn.rightFront.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
             Shawn.leftFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
         }
     }
 
@@ -503,7 +575,7 @@ public class Shawn_Autonomous extends LinearOpMode {
         }
 
         // Stop all motion;
-        Shawn.actuator.setPower(0);
+        Shawn.leftRear.setPower(0);
         Shawn.rightRear.setPower(0);
         Shawn.leftFront.setPower(0);
         Shawn.rightFront.setPower(0);
@@ -581,7 +653,7 @@ public class Shawn_Autonomous extends LinearOpMode {
      * @param PCoeff Proportional Gain Coefficient
      * @return
      */
-    public double getSteer(double error, double PCoeff) {
+    public double getSteer(double error, double PCoeff) {                                                                        // GET STEER GET STEER GET STEER GET STEER
         return Range.clip(error * PCoeff, -1, 1);
     }
 
