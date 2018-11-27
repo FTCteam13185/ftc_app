@@ -31,9 +31,7 @@ package org.firstinspires.ftc.teamcode;
 
 import android.media.MediaPlayer;
 
-import com.qualcomm.ftccommon.SoundPlayer;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -46,7 +44,6 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
-import org.firstinspires.ftc.robotcore.external.navigation.RelicRecoveryVuMark;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
@@ -95,9 +92,9 @@ import static org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocaliz
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 
-@Autonomous(name = "Shawn: Autonomous Depot", group = "Pushbot")
+@Autonomous(name = "Shawn: Autonomous Crater", group = "Pushbot")
 //@Disabled
-public class Shawn_Autonomous extends LinearOpMode {
+public class Shawn_AutonomousCrater extends LinearOpMode {
 
     /* Declare OpMode members. */
     HardwareShawn Shawn = new HardwareShawn();   // Use a Shawn's hardware
@@ -315,28 +312,12 @@ public class Shawn_Autonomous extends LinearOpMode {
         // MOVING MOVING MOVING MOVING MOVING MOVING MOVING MOVING MOVING MOVING MOVING MOVING MOVING MOVING MOVING MOVING MOVING
 
         // move away from the lander
-//        gyroDrive(DRIVE_SPEED, 3, 0);
-//        gyroHold(TURN_SPEED, 0, 1);
-
-        // move away from the lander
-        gyroDrive(DRIVE_SPEED, 3, 0);
+        gyroDrive(DRIVE_SPEED, 16, 0);
         gyroHold(TURN_SPEED, 0, 1);
 
-//        // turn towards the friendly alliance wall
-//        gyroTurn(TURN_SPEED, -45);
-//        gyroHold(TURN_SPEED, -45, 1);
-
-        // turn towards the far wall
-        gyroTurn(TURN_SPEED, 45);
-        gyroHold(TURN_SPEED, 45, 1);
-
-//        // drive towards the friendly alliance wall
-//        gyroDrive(DRIVE_SPEED, 43, -45);
-//        gyroHold(TURN_SPEED, -45, 1);
-
-        // drive towards the far wall
-        gyroDrive(DRIVE_SPEED, 48, 45);
-        gyroHold(TURN_SPEED, 45, 1);
+        // turn to face the friendly alliance wall
+        gyroTurn(TURN_SPEED, -90);
+        gyroHold(TURN_SPEED, -90, 1);
 
 
         // wait for actuator to stop
@@ -352,30 +333,29 @@ public class Shawn_Autonomous extends LinearOpMode {
         Shawn.claw.setPower(0);
 
 
-        // turn the back of the robot towards the depot
-//        gyroTurn(TURN_SPEED, -135);
-//        gyroHold(TURN_SPEED, -135, 1);
+        // drive to the wall
+        gyroDrive(DRIVE_SPEED, -51.5, -90);
+        gyroHold(TURN_SPEED, -90, 1);
 
-        // turn the back of the robot towards the depot
+        // turn towards depot
+        gyroTurn(TURN_SPEED, -45);
+        gyroHold(TURN_SPEED, -45, 1);
+
+        // reverse towards depot
+        gyroDrive(DRIVE_SPEED, -35, -45);
+        gyroHold(TURN_SPEED, -46, 2);
+
+        // SPIT OUT MARKER
+
+        // turn around
         gyroTurn(TURN_SPEED, 135);
         gyroHold(TURN_SPEED, 135, 1);
 
-        // reverse to the depot
-//        gyroDrive(DRIVE_SPEED, -36, -135);
-//        gyroHold(TURN_SPEED, -135, 1);
-
-        // reverse to the depot
-        gyroDrive(DRIVE_SPEED, -28, 135);
-        gyroHold(TURN_SPEED, 135, 1);
-
-        // this is where we would barf up the marker
-        gyroHold(TURN_SPEED, 135, 2);
+        // skedaddle to the crater
+        gyroDrive(DRIVE_SPEED, -75, 135);
 
         while (march.getCurrentPosition() < 23700) {}
         march.pause();
-
-        gyroDrive(DRIVE_SPEED, 18, 135);
-        gyroHold(TURN_SPEED, 135, 3);
 
         telemetry.addData("Path", "Complete");
         telemetry.update();
@@ -449,9 +429,9 @@ public class Shawn_Autonomous extends LinearOpMode {
                 // if driving in reverse, the motor correction also needs to be reversed
                 if (distance < 0) {
                     steer *= -1.0;
-                    Shawn.rightFront.setDirection(DcMotorSimple.Direction.REVERSE);
+                    Shawn.rightFront.setDirection(DcMotorSimple.Direction.REVERSE);             // **** TAKE OUT WHEN WE HAVE THE GOOD MOTOR
                 } else {
-                    Shawn.rightFront.setDirection(DcMotorSimple.Direction.FORWARD);
+                    Shawn.rightFront.setDirection(DcMotorSimple.Direction.FORWARD);             // **** TAKE OUT WHEN WE HAVE THE GOOD MOTOR
                 }
 
                 leftSpeed = speed - steer;
@@ -488,10 +468,13 @@ public class Shawn_Autonomous extends LinearOpMode {
             Shawn.leftRear.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             Shawn.rightRear.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-         //   Shawn.rightFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            // Shawn.rightFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             Shawn.rightFront.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
             Shawn.leftFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+            // Reset the rightFront wheel direction back to "Forward" before exiting.
+            Shawn.rightFront.setDirection(DcMotorSimple.Direction.FORWARD);             // **** TAKE OUT WHEN WE HAVE THE GOOD MOTOR
 
         }
     }
@@ -612,11 +595,22 @@ public class Shawn_Autonomous extends LinearOpMode {
             leftSpeed = -rightSpeed;
         }
 
+        // CHANGE ALL MODES TO RUN_WITHOUT_ENCODER              // REMOVE WHEN WE HAVE GOOD MOTOR
+        Shawn.leftRear.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        Shawn.leftFront.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        Shawn.rightRear.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        Shawn.rightFront.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
         // Send desired speeds to motors.
         Shawn.leftRear.setPower(leftSpeed);
         Shawn.rightRear.setPower(rightSpeed);
         Shawn.leftFront.setPower(leftSpeed);
         Shawn.rightFront.setPower(rightSpeed);
+
+        // CHANGE ALL MODES TO RUN_USING_ENCODER              // REMOVE WHEN WE HAVE GOOD MOTOR
+        Shawn.leftRear.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        Shawn.leftFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        Shawn.rightRear.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         // Display it for the driver.
         telemetry.addData("Target", "%5.2f", angle);
