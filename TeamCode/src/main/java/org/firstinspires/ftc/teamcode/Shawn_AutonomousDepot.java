@@ -317,26 +317,14 @@ public class Shawn_AutonomousDepot extends LinearOpMode {
         // MOVING MOVING MOVING MOVING MOVING MOVING MOVING MOVING MOVING MOVING MOVING MOVING MOVING MOVING MOVING MOVING MOVING
 
         // move away from the lander
-//        gyroDrive(DRIVE_SPEED, 3, 0);
-//        gyroHold(TURN_SPEED, 0, 1);
-
-        // move away from the lander
         targetHeading = 0;
         gyroDrive(DRIVE_SPEED, 3, targetHeading);
         gyroHold(TURN_SPEED, targetHeading, 1);
-
-//        // turn towards the friendly alliance wall
-//        gyroTurn(TURN_SPEED, -45);
-//        gyroHold(TURN_SPEED, -45, 1);
 
         // turn towards the far wall
         targetHeading = 45;
         gyroTurn(TURN_SPEED, targetHeading);
         gyroHold(TURN_SPEED, targetHeading, 1);
-
-//        // drive towards the friendly alliance wall
-//        gyroDrive(DRIVE_SPEED, 43, -45);
-//        gyroHold(TURN_SPEED, -45, 1);
 
         // drive towards the far wall
         gyroDrive(DRIVE_SPEED, 47.5, targetHeading);
@@ -357,24 +345,15 @@ public class Shawn_AutonomousDepot extends LinearOpMode {
 
 
         // turn the back of the robot towards the depot
-//        gyroTurn(TURN_SPEED, -135);
-//        gyroHold(TURN_SPEED, -135, 1);
-
-        // turn the back of the robot towards the depot
         targetHeading = 130;
         gyroTurn(TURN_SPEED, targetHeading);
         gyroHold(TURN_SPEED, targetHeading, 2);
-
-        // reverse to the depot
-//        gyroDrive(DRIVE_SPEED, -36, -135);
-//        gyroHold(TURN_SPEED, -135, 1);
 
         // reverse to the depot
         gyroDrive(DRIVE_SPEED, -28, targetHeading);
         gyroHold(TURN_SPEED, targetHeading, 1);
 
         // this is where we would barf up the marker
-//        curHeading = 133;
         gyroHold(TURN_SPEED, targetHeading, 1);
 
         // turn around to face away from the crater
