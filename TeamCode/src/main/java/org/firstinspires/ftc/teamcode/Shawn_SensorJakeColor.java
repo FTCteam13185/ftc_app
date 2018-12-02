@@ -32,9 +32,12 @@ package org.firstinspires.ftc.teamcode;
 import android.graphics.Color;
 
 import com.qualcomm.hardware.ams.AMSColorSensor;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.ColorSensor;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
 import com.qualcomm.robotcore.hardware.SwitchableLight; import com.qualcomm.robotcore.hardware.NormalizedRGBA;
 import com.qualcomm.robotcore.hardware.HardwareDevice;
@@ -53,11 +56,10 @@ import com.qualcomm.robotcore.hardware.HardwareDevice;
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 @TeleOp(name = "Sensor: Jake Color", group = "Sensor")
-//@Disabled
+@Disabled
 public class Shawn_SensorJakeColor extends LinearOpMode {
 
   AMSColorSensor colorSensor;    // Hardware Device Object
- // DistanceSensor sensorDistance;
 
 
   @Override
@@ -92,12 +94,6 @@ public class Shawn_SensorJakeColor extends LinearOpMode {
     // get a reference to our ColorSensor object.
     colorSensor = hardwareMap.get(AMSColorSensor.class, "colorSensor");
 
-    // get a reference to the distance cSensor that shares the same name.
-  //  sensorDistance = hardwareMap.get(DistanceSensor.class, "sensor_color_distance");
-
-    // Set the LED in the beginning
-    //colorSensor.enableLed(true);
-
     // wait for the start button to be pressed.
     waitForStart();
 
@@ -122,7 +118,8 @@ public class Shawn_SensorJakeColor extends LinearOpMode {
           telemetry.addLine("It is white");
       }
       else telemetry.addLine("It is not white");
-     // Color.RGBToHSV(red, green, blue, hsvValues);
+      Color.RGBToHSV((int)red, (int)green, (int)blue, hsvValues);
+
 
       // send the info back to driver station using telemetry function.
       //telemetry.addData("Distance (cm)",
@@ -131,35 +128,18 @@ public class Shawn_SensorJakeColor extends LinearOpMode {
       telemetry.addData("Red  ", red);
       telemetry.addData("Green", green);
       telemetry.addData("Blue ", blue);
-     // telemetry.addData("Hue", hsvValues[0]);
-//      if((red>blue) && (red>green)){
-//        telemetry.addLine("It's red");
-//      }
-//      if((blue>red) && (blue>green)) {
-//        telemetry.addLine("It's blue");
-//      }
 
-      // change the background color to match the color detected by the RGB cSensor.
-      // pass a reference to the hue, saturation, and value array as an argument
-      // to the HSVToColor method.
-     /* relativeLayout.post(new Runnable() {
-        public void run() {
-          relativeLayout.setBackgroundColor(Color.HSVToColor(0xff, values));*/
+
+
        telemetry.update();
       }
 
 
     }
 
-    // Set the panel back to the default color
-//    relativeLayout.post(new Runnable() {
-//      public void run() {
-//        relativeLayout.setBackgroundColor(Color.WHITE);
-//      }
-//    });
+
 
   }
 
-  // thing
 
 

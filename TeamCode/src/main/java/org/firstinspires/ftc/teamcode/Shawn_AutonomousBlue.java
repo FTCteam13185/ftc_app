@@ -84,7 +84,7 @@ import static java.lang.Math.abs;
  */
 
 @Autonomous(name="Shawn: Autonomous Blue", group="Pushbot")
-//@Disabled
+@Disabled
 public class Shawn_AutonomousBlue extends LinearOpMode {
 
     /* Declare OpMode members. */

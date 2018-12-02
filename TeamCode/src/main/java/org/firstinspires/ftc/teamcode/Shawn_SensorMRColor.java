@@ -80,7 +80,7 @@ public class Shawn_SensorMRColor extends LinearOpMode {
 
     // sometimes it helps to multiply the raw RGB values with a scale factor
     // to amplify/attentuate the measured values.
-    final int SCALE_FACTOR = 50;
+    final int SCALE_FACTOR = 1;
 
     // get a reference to the RelativeLayout so we can change the background
     // color of the Robot Controller app to match the hue detected by the RGB cSensor.
@@ -148,9 +148,9 @@ public class Shawn_SensorMRColor extends LinearOpMode {
   // thing
 
   public boolean isBlue(ColorSensor sensor) {
-      int RED = sensor.red() * 50;
-      int BLUE = sensor.blue() * 50;
-      int GREEN = sensor.green() * 50;
+      int RED = sensor.red() * 1;
+      int BLUE = sensor.blue() * 1;
+      int GREEN = sensor.green() * 1;
       if (BLUE > RED && BLUE > GREEN){
           return true;
       } else {

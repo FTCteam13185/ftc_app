@@ -66,6 +66,8 @@ public class HardwareShawn
     public DcMotor  armElbow    = null;
     public DcMotor armShoulder = null;
     public BNO055IMU imu = null;
+    public DcMotor ArmRotation = null;
+    public DcMotor SprocketRotation = null;
 //    public CRServo armClaw = null;
     public Servo armServo = null;
     public Servo leftClaw = null;
@@ -130,7 +132,11 @@ public class HardwareShawn
         }
 
         // Define and Initialize Motors
-//        leftDrive   = hwMap.get(DcMotor.class, "left_drive");
+        ArmRotation = hwMap.get(DcMotor.class, "Arm_Rotation" ) ;
+        SprocketRotation = hwMap.get(DcMotor.class, "Sprocket_Rotation");
+        SprocketRotation.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        ArmRotation.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+// leftDrive   = hwMap.get(DcMotor.class, "left_drive");
 //        rightDrive  = hwMap.get(DcMotor.class, "right_drive");
 //        armElbow    = hwMap.get(DcMotor.class, "arm_elbow");
 //        armShoulder = hwMap.get(DcMotor.class, "arm_shoulder");
