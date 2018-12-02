@@ -162,7 +162,7 @@ public class HardwareShawn
         leftRear.setDirection(DcMotor.Direction.REVERSE);
         rightRear.setDirection(DcMotor.Direction.FORWARD);
         leftFront.setDirection(DcMotor.Direction.FORWARD);
-        rightFront.setDirection(DcMotor.Direction.FORWARD);
+        rightFront.setDirection(DcMotor.Direction.REVERSE);
 
 //        // Set all motors to run without encoders.
 //        // May want to use RUN_USING_ENCODERS if encoders are installed.
@@ -174,16 +174,11 @@ public class HardwareShawn
         actuator.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         sweepy.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
-//        leftRear.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-//        rightRear.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-//        leftFront.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-//        rightFront.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         leftRear.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         rightRear.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         leftFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
-    //    rightFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        rightFront.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        rightFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+    //    rightFront.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         actuator.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         sweepy.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);

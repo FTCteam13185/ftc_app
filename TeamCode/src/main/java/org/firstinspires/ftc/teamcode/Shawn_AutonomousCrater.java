@@ -168,13 +168,13 @@ public class Shawn_AutonomousCrater extends LinearOpMode {
         Shawn.leftFront.setDirection(DcMotorSimple.Direction.FORWARD);
         Shawn.rightRear.setDirection(DcMotorSimple.Direction.FORWARD);
         Shawn.leftRear.setDirection(DcMotorSimple.Direction.REVERSE);
-        Shawn.rightFront.setDirection(DcMotorSimple.Direction.FORWARD);
+        Shawn.rightFront.setDirection(DcMotorSimple.Direction.REVERSE);
 
         Shawn.actuator.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         Shawn.actuator.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         // VUFORIA VUFORIA VUFORIA VUFORIA VUFORIA VUFORIA VUFORIA VUFORIA VUFORIA VUFORIA VUFORIA VUFORIA VUFORIA VUFORIA VUFORIA VUFORIA
-
+/*
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters(cameraMonitorViewId);
         parameters.vuforiaLicenseKey = VUFORIA_KEY;
@@ -194,7 +194,7 @@ public class Shawn_AutonomousCrater extends LinearOpMode {
         VuforiaTrackable backSpace = targetsRoverRuckus.get(3);
         backSpace.setName("Back-Space");
 
-        // For convenience, gather together all the trackable objects in one easily-iterable collection */
+        // For convenience, gather together all the trackable objects in one easily-iterable collection
         List<VuforiaTrackable> allTrackables = new ArrayList<VuforiaTrackable>();
         allTrackables.addAll(targetsRoverRuckus);
 
@@ -233,6 +233,7 @@ public class Shawn_AutonomousCrater extends LinearOpMode {
 
         telemetry.addLine("Vuforia Done");
         telemetry.update();
+*/
 
         // BREADY BREADY BREADY BREADY BREADY BREADY BREADY BREADY BREADY BREADY BREADY BREADY BREADY BREADY BREADY BREADY BREADY BREADY BREADY BREADY BREADY BREADY BREADY
 
@@ -396,19 +397,19 @@ public class Shawn_AutonomousCrater extends LinearOpMode {
             newLeftRearTarget = Shawn.leftRear.getCurrentPosition() + moveCounts;
             newLeftFrontTarget = Shawn.leftFront.getCurrentPosition() + moveCounts;
             newRightRearTarget = Shawn.rightRear.getCurrentPosition() + moveCounts;
-    //        newRightFrontTarget = Shawn.rightFront.getCurrentPosition() + moveCounts;
+            newRightFrontTarget = Shawn.rightFront.getCurrentPosition() + moveCounts;
 
             // Set Target and Turn On RUN_TO_POSITION
             Shawn.leftRear.setTargetPosition(newLeftRearTarget);
             Shawn.leftFront.setTargetPosition(newLeftFrontTarget);
             Shawn.rightRear.setTargetPosition(newRightRearTarget);
-    //        Shawn.rightFront.setTargetPosition(newRightFrontTarget);
+            Shawn.rightFront.setTargetPosition(newRightFrontTarget);
 
             Shawn.leftRear.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             Shawn.rightRear.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             Shawn.leftFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-    //        Shawn.rightFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            Shawn.rightFront.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            Shawn.rightFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+    //        Shawn.rightFront.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
             // start motion.
             speed = Range.clip(abs(speed), 0.0, 1.0);
@@ -420,7 +421,7 @@ public class Shawn_AutonomousCrater extends LinearOpMode {
             // keep looping while we are still active, and BOTH motors are running.
             while (opModeIsActive() &&
                     (Shawn.leftRear.isBusy() && Shawn.rightRear.isBusy() &&
-                            Shawn.leftFront.isBusy() /* && Shawn.rightFront.isBusy()*/)) {
+                            Shawn.leftFront.isBusy()  && Shawn.rightFront.isBusy())) {
 
                 // adjust relative speed based on heading error.
                 error = getError(angle);
@@ -429,9 +430,9 @@ public class Shawn_AutonomousCrater extends LinearOpMode {
                 // if driving in reverse, the motor correction also needs to be reversed
                 if (distance < 0) {
                     steer *= -1.0;
-                    Shawn.rightFront.setDirection(DcMotorSimple.Direction.REVERSE);             // **** TAKE OUT WHEN WE HAVE THE GOOD MOTOR
+             //       Shawn.rightFront.setDirection(DcMotorSimple.Direction.REVERSE);             // **** TAKE OUT WHEN WE HAVE THE GOOD MOTOR
                 } else {
-                    Shawn.rightFront.setDirection(DcMotorSimple.Direction.FORWARD);             // **** TAKE OUT WHEN WE HAVE THE GOOD MOTOR
+             //       Shawn.rightFront.setDirection(DcMotorSimple.Direction.FORWARD);             // **** TAKE OUT WHEN WE HAVE THE GOOD MOTOR
                 }
 
                 leftSpeed = speed - steer;
@@ -468,13 +469,13 @@ public class Shawn_AutonomousCrater extends LinearOpMode {
             Shawn.leftRear.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             Shawn.rightRear.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-            // Shawn.rightFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            Shawn.rightFront.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            Shawn.rightFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            //Shawn.rightFront.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
             Shawn.leftFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
             // Reset the rightFront wheel direction back to "Forward" before exiting.
-            Shawn.rightFront.setDirection(DcMotorSimple.Direction.FORWARD);             // **** TAKE OUT WHEN WE HAVE THE GOOD MOTOR
+            //Shawn.rightFront.setDirection(DcMotorSimple.Direction.FORWARD);             // **** TAKE OUT WHEN WE HAVE THE GOOD MOTOR
 
         }
     }
