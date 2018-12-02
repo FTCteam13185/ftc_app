@@ -29,6 +29,9 @@
 
 package org.firstinspires.ftc.teamcode;
 
+import android.media.MediaPlayer;
+
+import com.qualcomm.ftccommon.SoundPlayer;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -48,7 +51,16 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static java.lang.Math.abs;
+import static org.firstinspires.ftc.robotcore.external.navigation.AngleUnit.DEGREES;
+import static org.firstinspires.ftc.robotcore.external.navigation.AxesOrder.XYZ;
+import static org.firstinspires.ftc.robotcore.external.navigation.AxesOrder.YZX;
+import static org.firstinspires.ftc.robotcore.external.navigation.AxesReference.EXTRINSIC;
+import static org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer.CameraDirection.BACK;
+import static org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer.CameraDirection.FRONT;
 
 /**
  * This file illustrates the concept of driving a path based on Gyro heading and encoder counts.
@@ -83,18 +95,22 @@ import static java.lang.Math.abs;
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 
-@Autonomous(name = "Shawn: Autonomous Blue", group = "Pushbot")
-@Disabled
-public class Shawn_AutonomousBlue extends LinearOpMode {
+@Autonomous(name = "Shawn: Autonomous Depot", group = "Pushbot")
+//@Disabled
+public class Shawn_AutonomousDepot extends LinearOpMode {
 
     /* Declare OpMode members. */
     HardwareShawn Shawn = new HardwareShawn();   // Use a Shawn's hardware
 
-    static final double COUNTS_PER_MOTOR_REV = 1440;    // eg: TETRIX Motor Encoder
-    static final double DRIVE_GEAR_REDUCTION = 1.0;     // This is < 1.0 if geared UP
+    static final double COUNTS_PER_MOTOR_REV = 537.6;    // goBILDA motor
+    static final double DRIVE_GEAR_REDUCTION = 2.0;     // This is < 1.0 if geared UP
     static final double WHEEL_DIAMETER_INCHES = 4.0;     // For figuring circumference
     static final double COUNTS_PER_INCH = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) /
-            (WHEEL_DIAMETER_INCHES * 3.1415);
+            (WHEEL_DIAMETER_INCHES * 3.141592653589793238462643383279);
+
+    final double TICKS_PER_GB_ROTATION = 537.6;
+    final int MAX_GB_TICKS = 9600 - (int) (TICKS_PER_GB_ROTATION * 1);
+    final int MIN_GB_TICKS = 0;
 
     // These constants define the desired driving/controlType characteristics
     // They can/should be tweaked to suite the specific Shawn drive train.
@@ -110,16 +126,30 @@ public class Shawn_AutonomousBlue extends LinearOpMode {
 
     Shawn_SensorMRColor cSensor = new Shawn_SensorMRColor();
 
+    // SOUND SOUND SOUND SOUND SOUND SOUND SOUND SOUND SOUND SOUND SOUND SOUND SOUND SOUND SOUND SOUND SOUND
+    MediaPlayer lightsaber = null;
+    MediaPlayer march = null;
+
+    // VUFORIA VUFORIA VUFORIA VUFORIA VUFORIA VUFORIA VUFORIA VUFORIA VUFORIA VUFORIA VUFORIA VUFORIA VUFORIA
+
+    private static final String VUFORIA_KEY = "AdC2UuL/////AAAAmbSzzw4/ykWZk7KXU2Ee5ktIYR7RAtJsPrHto/zr/+Lbg1yivLyOllic76kSLHyg2pVgyK+O1gc28/qTWiKCP8WOCzNZ6cq1WMeHspqwVy2jAEN2uR/L/knOn6MO2mqToCJX4" +
+            "zwu15GGIlEyAdbkYKC996Rl3vWD1gtojsWjbAsiVeWVTcfRpENlJA4B/jKsoQHnrzvHIbBV+K5cFh2nYU12jwN8UyM0gUdPPGvspDPVeti8gTKXl+RGddwkIgoLJD0W+Qy0VlCq0j/85C1b72E2yAbFYsIs5GSuOtuYJZw09a+sssGGnbUEXBeU" +
+            "T2mPi607EIU4ga0gcI4gLEo4Ry/qxLBX6v056cXpZrx2JOQW";
+
+    private static final float mmPerInch = 25.4f;
+    private static final float mmFTCFieldWidth = (12 * 6) * mmPerInch;       // the width of the FTC field (from the center point to the outer panels)
+    private static final float mmTargetHeight = (6) * mmPerInch;          // the height of the center of the target image above the floor
+
+    private static final VuforiaLocalizer.CameraDirection CAMERA_CHOICE = BACK;
+    private OpenGLMatrix lastLocation = null;
+    private boolean targetVisible = false;
+
     VuforiaLocalizer vuforia;
-
-    public static final String TAG = "Vuforia VuMark Sample";
-
-    OpenGLMatrix lastLocation = null;
-
-    int key = 0;
 
     @Override
     public void runOpMode() throws InterruptedException {
+
+        double targetHeading = 0;
 
         /*
          * Initialize the standard drive system variables.
@@ -127,26 +157,89 @@ public class Shawn_AutonomousBlue extends LinearOpMode {
          */
         Shawn.init(hardwareMap, true);
 
+        // SOUND SOUND SOUND
+        lightsaber = MediaPlayer.create(this.hardwareMap.appContext, R.raw.lightsaber);
+        lightsaber.seekTo(0);
+
+        march = MediaPlayer.create(this.hardwareMap.appContext, R.raw.imperialmarch);
+        march.seekTo(9350);
+
         // Ensure the Shawn it stationary, then reset the encoders and calibrate the gyro.
         Shawn.leftRear.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         Shawn.rightRear.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        Shawn.leftFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        Shawn.rightFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
-        Shawn.leftFront.setDirection(DcMotorSimple.Direction.REVERSE);
-        Shawn.rightFront.setDirection(DcMotorSimple.Direction.FORWARD);
+        Shawn.leftFront.setDirection(DcMotorSimple.Direction.FORWARD);
+        Shawn.rightRear.setDirection(DcMotorSimple.Direction.FORWARD);
+        Shawn.leftRear.setDirection(DcMotorSimple.Direction.REVERSE);
+        Shawn.rightFront.setDirection(DcMotorSimple.Direction.REVERSE);
 
-        //vuforia
+        Shawn.actuator.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        Shawn.actuator.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        // VUFORIA VUFORIA VUFORIA VUFORIA VUFORIA VUFORIA VUFORIA VUFORIA VUFORIA VUFORIA VUFORIA VUFORIA VUFORIA VUFORIA VUFORIA VUFORIA
+/*
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters(cameraMonitorViewId);
+        parameters.vuforiaLicenseKey = VUFORIA_KEY;
+        parameters.cameraDirection = CAMERA_CHOICE;
 
-        parameters.vuforiaLicenseKey = "AdC2UuL/////AAAAmbSzzw4/ykWZk7KXU2Ee5ktIYR7RAtJsPrHto/zr/+Lbg1yivLyOllic76kSLHyg2pVgyK+O1gc28/qTWiKCP8WOCzNZ6cq1WMeHspqwVy2jAEN2uR/L/knOn6MO2mqToCJX4zwu15GGIlEyAdbkYKC996Rl3vWD1gtojsWjbAsiVeWVTcfRpENlJA4B/jKsoQHnrzvHIbBV+K5cFh2nYU12jwN8UyM0gUdPPGvspDPVeti8gTKXl+RGddwkIgoLJD0W+Qy0VlCq0j/85C1b72E2yAbFYsIs5GSuOtuYJZw09a+sssGGnbUEXBeUT2mPi607EIU4ga0gcI4gLEo4Ry/qxLBX6v056cXpZrx2JOQW\n";
+        //instantiate vuforia
+        vuforia = ClassFactory.getInstance().createVuforia(parameters);
 
-        parameters.cameraDirection = VuforiaLocalizer.CameraDirection.FRONT;
+        // Load the data sets that for the trackable objects. These particular data sets are stored in the 'assets' part of our application.
+        VuforiaTrackables targetsRoverRuckus = this.vuforia.loadTrackablesFromAsset("RoverRuckus");
+        VuforiaTrackable blueRover = targetsRoverRuckus.get(0);
+        blueRover.setName("Blue-Rover");
+        VuforiaTrackable redFootprint = targetsRoverRuckus.get(1);
+        redFootprint.setName("Red-Footprint");
+        VuforiaTrackable frontCraters = targetsRoverRuckus.get(2);
+        frontCraters.setName("Front-Craters");
+        VuforiaTrackable backSpace = targetsRoverRuckus.get(3);
+        backSpace.setName("Back-Space");
 
-        this.vuforia = ClassFactory.createVuforiaLocalizer(parameters);
+        // For convenience, gather together all the trackable objects in one easily-iterable collection
+        List<VuforiaTrackable> allTrackables = new ArrayList<VuforiaTrackable>();
+        allTrackables.addAll(targetsRoverRuckus);
 
-        VuforiaTrackables relicTrackables = this.vuforia.loadTrackablesFromAsset("RelicVuMark");
-        VuforiaTrackable relicTemplate = relicTrackables.get(0);
-        relicTemplate.setName("relicVuMarkTemplate"); // can help in debugging; otherwise not necessary
+        // putting the targets on the walls (they are all originally at the point (0, 0), we must translate and
+        // rotate them to the positions they are on the actual field
+        // moving blue target (rover)
+        OpenGLMatrix blueRoverLocationOnField = OpenGLMatrix
+                .translation(0, mmFTCFieldWidth, mmTargetHeight)
+                .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0, 0));
+        blueRover.setLocation(blueRoverLocationOnField);
+        // moving red target (footprint)
+        OpenGLMatrix redFootprintLocationOnField = OpenGLMatrix
+                .translation(0, -mmFTCFieldWidth, mmTargetHeight)
+                .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0, 180));
+        redFootprint.setLocation(redFootprintLocationOnField);
+        // moving front target (craters)
+        OpenGLMatrix frontCratersLocationOnField = OpenGLMatrix
+                .translation(-mmFTCFieldWidth, 0, mmTargetHeight)
+                .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0, 90));
+        frontCraters.setLocation(frontCratersLocationOnField);
+        // moving back target (space)
+        OpenGLMatrix backSpaceLocationOnField = OpenGLMatrix
+                .translation(mmFTCFieldWidth, 0, mmTargetHeight)
+                .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0, -90));
+        backSpace.setLocation(backSpaceLocationOnField);
+
+        // translate camera position (originally in the middle of the robot) CAMERA CAMERA CAMERA CAMERA CAMERA CAMERA CAMERA CAMERA CAMERA CAMERA CAMERA CAMERA CAMERA
+        final int CAMERA_FORWARD_DISPLACEMENT = 110;   // eg: Camera is 110 mm in front of robot center
+        final int CAMERA_VERTICAL_DISPLACEMENT = 200;   // eg: Camera is 200 mm above ground
+        final int CAMERA_LEFT_DISPLACEMENT = 0;     // eg: Camera is ON the robot's center line
+
+        OpenGLMatrix phoneLocationOnRobot = OpenGLMatrix
+                .translation(CAMERA_FORWARD_DISPLACEMENT, CAMERA_LEFT_DISPLACEMENT, CAMERA_VERTICAL_DISPLACEMENT)
+                .multiplied(Orientation.getRotationMatrix(EXTRINSIC, YZX, DEGREES,
+                        CAMERA_CHOICE == FRONT ? 90 : -90, 0, 0));
+
+        telemetry.addLine("Vuforia Done");
+        telemetry.update();
+*/
+        // BREADY BREADY BREADY BREADY BREADY BREADY BREADY BREADY BREADY BREADY BREADY BREADY BREADY BREADY BREADY BREADY BREADY BREADY BREADY BREADY BREADY BREADY BREADY
 
         telemetry.addData(">", "Press Play to start");
         telemetry.update();
@@ -157,24 +250,23 @@ public class Shawn_AutonomousBlue extends LinearOpMode {
         telemetry.addData(">", "Robot Ready.");    //
         telemetry.update();
 
-        Shawn.actuator.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        Shawn.rightRear.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
         // Wait for the game to start (Display Gyro value), and reset gyro before we move..
         while (!isStarted()) {
             Thread.sleep(10);
             telemetry.addData(">", "Robot Heading = %f", Shawn.imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle);
+            telemetry.addData(">", "Heading Error = %f", getError(0));
             telemetry.update();
         }
         waitForStart();
 
-        relicTrackables.activate();
+        //   relicTrackables.activate();
 
         // Step through each leg of the path,
         // Note: Reverse movement is obtained by setting a negative distance (not speed)
         // Put a hold after each turn
 
         //fff
+/*
         RelicRecoveryVuMark vuMark = RelicRecoveryVuMark.from(relicTemplate);
 
         if (vuMark != RelicRecoveryVuMark.UNKNOWN) {
@@ -190,77 +282,100 @@ public class Shawn_AutonomousBlue extends LinearOpMode {
             telemetry.addData("VuMark", "not visible");
         }
         Thread.sleep(3000);
+*/
 
-/*
-        Shawn.tailServo.setPosition(0.02);
-        Thread.sleep(1000);
-        if (!cSensor.isBlue(Shawn.colorSensor)) {
-        telemetry.addLine("red");
-        telemetry.update();
-        Thread.sleep(1000);
-        Shawn.tailEnd.setPosition(0);
-        Thread.sleep(200);
-        Shawn.tailServo.setPosition(0.7);
-        Thread.sleep(200);
-        Shawn.tailEnd.setPosition(0.37);
-        } else {
-        telemetry.addLine("blue");
-        telemetry.update();
-        Thread.sleep(1000);
-        Shawn.tailEnd.setPosition(1);
-        Thread.sleep(200);
-        Shawn.tailServo.setPosition(0.7);
-        Thread.sleep(200);
-        Shawn.tailEnd.setPosition(0.37);
+//        gyroDrive(DRIVE_SPEED, 12, 0);
+//        gyroHold(TURN_SPEED, 0, 1);
+
+        // UNLOCK AND LOWER UNLOCK AND LOWER UNLOCK AND LOWER UNLOCK AND LOWER UNLOCK AND LOWER UNLOCK AND LOWER UNLOCK AND LOWER
+
+
+        // raising actuator
+        Shawn.actuator.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        Shawn.actuator.setTargetPosition(MAX_GB_TICKS);
+        Shawn.actuator.setPower(1);
+
+        // playing lightsaber noise
+        lightsaber.start();
+
+        // wait until actuator reaches final position
+        while(Shawn.actuator.isBusy()) {}
+
+        // stop actuator
+        Shawn.actuator.setPower(0);
+
+        // open claw for 1.5 seconds
+        march.start();          //march start
+        Shawn.claw.setPower(-1);
+        Thread.sleep(1500);
+        Shawn.claw.setPower(0);
+
+        // lowering actuator
+        Shawn.actuator.setTargetPosition(MIN_GB_TICKS);
+        Shawn.actuator.setPower(1);
+
+        // MOVING MOVING MOVING MOVING MOVING MOVING MOVING MOVING MOVING MOVING MOVING MOVING MOVING MOVING MOVING MOVING MOVING
+
+        // move away from the lander
+        targetHeading = 0;
+        gyroDrive(DRIVE_SPEED, 3, targetHeading);
+        gyroHold(TURN_SPEED, targetHeading, 1);
+
+        // turn towards the far wall
+        targetHeading = 45;
+        gyroTurn(TURN_SPEED, targetHeading);
+        gyroHold(TURN_SPEED, targetHeading, 1);
+
+        // drive towards the far wall
+        gyroDrive(DRIVE_SPEED, 47.5, targetHeading);
+        gyroHold(TURN_SPEED, targetHeading, 1);
+
+
+        // wait for actuator to stop
+        while (Shawn.actuator.isBusy()) {}
+
+        // set actuator power to 0
+        Shawn.actuator.setPower(0);
+
+        // move claw until it touches the sensor
+        while (Shawn.touchSensor.getState()) {
+            Shawn.claw.setPower(1);
         }
-        Thread.sleep(500);
-
-        Shawn.rightClaw.setPosition(0.5);
-        Shawn.leftClaw.setPosition(0.45);
-        Thread.sleep(500);
-        Shawn.armServo.setPosition(0.5);
-        Thread.sleep(1000);
-
-        gyroDrive(DRIVE_SPEED, -36, 0);
-        gyroTurn(TURN_SPEED, -50);
-        gyroHold(TURN_SPEED, -50, 0.5);
-        gyroDrive(DRIVE_SPEED, 45, -50);
-        gyroTurn(TURN_SPEED, 180);
-        gyroHold(TURN_SPEED, 180, 0.5);
-
-        //        strafe(0.4, -8000);
-
-        Shawn.armServo.setPosition(0.85);
-        Thread.sleep(500);
-
-        gyroDrive(DRIVE_SPEED/2, -8, 180);
-        Thread.sleep(500);
-
-        Shawn.rightClaw.setPosition(1);
-        Shawn.leftClaw.setPosition(0);
-        Thread.sleep(1000);
-
-        gyroDrive(DRIVE_SPEED/2, 5, 180);
-
-        Shawn.armServo.setPosition(0.9);
-        Shawn.rightClaw.setPosition(0);
-        Shawn.leftClaw.setPosition(1);
-        Thread.sleep(1000);
+        Shawn.claw.setPower(0);
 
 
-        gyroDrive(DRIVE_SPEED, -6, 180);
-        Thread.sleep(1000);
+        // turn the back of the robot towards the depot
+        targetHeading = 130;
+        gyroTurn(TURN_SPEED, targetHeading);
+        gyroHold(TURN_SPEED, targetHeading, 2);
 
-        gyroDrive(DRIVE_SPEED / 2, 3, 180);
+        // reverse to the depot
+        gyroDrive(DRIVE_SPEED, -28, targetHeading);
+        gyroHold(TURN_SPEED, targetHeading, 1);
+
+        // this is where we would barf up the marker
+        gyroHold(TURN_SPEED, targetHeading, 1);
+
+        // turn around to face away from the crater
+        targetHeading = -45;
+        gyroTurn(TURN_SPEED, targetHeading);
+        gyroHold(TURN_SPEED, targetHeading, 1);
+
+        // drive to crater                                  // SHOULD BE MORE TO GET INTO CRATER!
+        gyroDrive(DRIVE_SPEED, -50, targetHeading);
+        gyroHold(TURN_SPEED, targetHeading, 3);
+
+
+        while (march.getCurrentPosition() < 23700) {}
+        march.pause();
 
         telemetry.addData("Path", "Complete");
         telemetry.update();
 
-*/
     }
 
 
-    /**
+    /*
      * Method to drive on a fixed compass bearing (angle), based on encoder counts.
      * Move will stop if either of these conditions occur:
      * 1) Move gets to the desired armPosition
@@ -272,10 +387,12 @@ public class Shawn_AutonomousBlue extends LinearOpMode {
      *                 0 = fwd. +ve is CCW from fwd. -ve is CW from forward.
      *                 If a relative angle is required, add/subtract from current heading.
      */
-    public void gyroDrive(double speed, double distance, double angle) {
+    public void gyroDrive(double speed, double distance, double angle) {                                                // GYRO DRIVE GYRO DRIVE GYRO DRIVE
 
-        int newLeftTarget;
-        int newRightTarget;
+        int newLeftRearTarget;
+        int newLeftFrontTarget;
+        int newRightRearTarget;
+        int newRightFrontTarget;
         int moveCounts;
         double max;
         double error;
@@ -288,44 +405,49 @@ public class Shawn_AutonomousBlue extends LinearOpMode {
 
             // Determine new target armPosition, and pass to motor controller
             moveCounts = (int) (distance * COUNTS_PER_INCH);
-            newLeftTarget = Shawn.leftRear.getCurrentPosition() + moveCounts;
-            newRightTarget = Shawn.rightRear.getCurrentPosition() + moveCounts;
+            newLeftRearTarget = Shawn.leftRear.getCurrentPosition() + moveCounts;
+            newLeftFrontTarget = Shawn.leftFront.getCurrentPosition() + moveCounts;
+            newRightRearTarget = Shawn.rightRear.getCurrentPosition() + moveCounts;
+            newRightFrontTarget = Shawn.rightFront.getCurrentPosition() + moveCounts;
 
             // Set Target and Turn On RUN_TO_POSITION
-            Shawn.leftRear.setTargetPosition(newLeftTarget);
-            Shawn.rightRear.setTargetPosition(newRightTarget);
+            Shawn.leftRear.setTargetPosition(newLeftRearTarget);
+            Shawn.leftFront.setTargetPosition(newLeftFrontTarget);
+            Shawn.rightRear.setTargetPosition(newRightRearTarget);
+            Shawn.rightFront.setTargetPosition(newRightFrontTarget);
 
             Shawn.leftRear.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             Shawn.rightRear.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            Shawn.leftFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            Shawn.rightFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+    //        Shawn.rightFront.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
             // start motion.
             speed = Range.clip(abs(speed), 0.0, 1.0);
             Shawn.leftRear.setPower(speed);
             Shawn.rightRear.setPower(speed);
-            if (distance < 0) {
-                Shawn.leftFront.setPower(speed);
-                Shawn.rightFront.setPower(speed);
-            } else {
-                Shawn.leftFront.setPower(-speed);
-                Shawn.rightFront.setPower(-speed);
-            }
+            Shawn.leftFront.setPower(speed);
+            Shawn.rightFront.setPower(speed);
 
             // keep looping while we are still active, and BOTH motors are running.
             while (opModeIsActive() &&
-                    (Shawn.actuator.isBusy() && Shawn.rightRear.isBusy())) {
+                    (Shawn.leftRear.isBusy() && Shawn.rightRear.isBusy() &&
+                            Shawn.leftFront.isBusy()  && Shawn.rightFront.isBusy())) {
 
                 // adjust relative speed based on heading error.
                 error = getError(angle);
                 steer = getSteer(error, P_DRIVE_COEFF);
 
                 // if driving in reverse, the motor correction also needs to be reversed
-                if (distance < 0)
+                if (distance < 0) {
                     steer *= -1.0;
+                 //   Shawn.rightFront.setDirection(DcMotorSimple.Direction.REVERSE);
+                } else {
+                  //  Shawn.rightFront.setDirection(DcMotorSimple.Direction.FORWARD);
+                }
 
-//                leftSpeed = speed - steer;
-//                rightSpeed = speed + steer;
-                leftSpeed = speed + steer;
-                rightSpeed = speed - steer;
+                leftSpeed = speed - steer;
+                rightSpeed = speed + steer;
 
                 // Normalize speeds if either one exceeds +/- 1.0;
                 max = Math.max(abs(leftSpeed), abs(rightSpeed));
@@ -336,18 +458,13 @@ public class Shawn_AutonomousBlue extends LinearOpMode {
 
                 Shawn.leftRear.setPower(leftSpeed);
                 Shawn.rightRear.setPower(rightSpeed);
-                if (distance < 0) {
-                    Shawn.leftFront.setPower(leftSpeed);
-                    Shawn.rightFront.setPower(rightSpeed);
-                } else {
-                    Shawn.leftFront.setPower(-leftSpeed);
-                    Shawn.rightFront.setPower(-rightSpeed);
-                }
+                Shawn.leftFront.setPower(leftSpeed);
+                Shawn.rightFront.setPower(rightSpeed);
 
                 // Display drive status for the driver.
                 telemetry.addData("Err/St", "%5.1f/%5.1f", error, steer);
-                telemetry.addData("Target", "%7d:%7d", newLeftTarget, newRightTarget);
-                telemetry.addData("Actual", "%7d:%7d", Shawn.actuator.getCurrentPosition(),
+                telemetry.addData("Target", "%7d:%7d", newLeftRearTarget, newRightRearTarget);
+                telemetry.addData("Actual", "%7d:%7d", Shawn.leftRear.getCurrentPosition(),
                         Shawn.rightRear.getCurrentPosition());
                 telemetry.addData("L&R Speed", "%5.2f:%5.2f", leftSpeed, rightSpeed);
                 telemetry.update();
@@ -362,6 +479,15 @@ public class Shawn_AutonomousBlue extends LinearOpMode {
             // Turn off RUN_TO_POSITION
             Shawn.leftRear.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             Shawn.rightRear.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+            Shawn.rightFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            //Shawn.rightFront.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+            Shawn.leftFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+            // Reset the rightFront wheel direction back to "Forward" before exiting.
+            //Shawn.rightFront.setDirection(DcMotorSimple.Direction.FORWARD);             // **** TAKE OUT WHEN WE HAVE THE GOOD MOTOR
+
         }
     }
 
@@ -413,8 +539,7 @@ public class Shawn_AutonomousBlue extends LinearOpMode {
      *              0 = fwd. +ve is CCW from fwd. -ve is CW from forward.
      *              If a relative angle is required, add/subtract from current heading.
      */
-    public void gyroTurn(double speed, double angle) {
-
+    public void gyroTurn(double speed, double angle) {                                                                      // GYRO TURN GYRO TURN GYRO TURN
         // keep looping while we are still active, and not on heading.
         while (opModeIsActive() && !onHeading(speed, angle, P_TURN_COEFF)) {
             // Update telemetry & Allow time for other processes to run.
@@ -432,7 +557,7 @@ public class Shawn_AutonomousBlue extends LinearOpMode {
      *                 If a relative angle is required, add/subtract from current heading.
      * @param holdTime Length of time (in seconds) to hold the specified heading.
      */
-    public void gyroHold(double speed, double angle, double holdTime) {
+    public void gyroHold(double speed, double angle, double holdTime) {                                                     // GYRO HOLD GYRO HOLD GRYO HOLD GYRO HOLD
 
         ElapsedTime holdTimer = new ElapsedTime();
 
@@ -445,7 +570,7 @@ public class Shawn_AutonomousBlue extends LinearOpMode {
         }
 
         // Stop all motion;
-        Shawn.actuator.setPower(0);
+        Shawn.leftRear.setPower(0);
         Shawn.rightRear.setPower(0);
         Shawn.leftFront.setPower(0);
         Shawn.rightFront.setPower(0);
@@ -461,7 +586,7 @@ public class Shawn_AutonomousBlue extends LinearOpMode {
      * @param PCoeff Proportional Gain coefficient
      * @return
      */
-    boolean onHeading(double speed, double angle, double PCoeff) {
+    boolean onHeading(double speed, double angle, double PCoeff) {                                                          // ON HEADING ON HEADING ON HEADING ON HEADING ON HEADING
         double error;
         double steer;
         boolean onTarget = false;
@@ -483,8 +608,8 @@ public class Shawn_AutonomousBlue extends LinearOpMode {
         }
 
         // Send desired speeds to motors.
-        Shawn.actuator.setPower(-leftSpeed);
-        Shawn.rightRear.setPower(-rightSpeed);
+        Shawn.leftRear.setPower(leftSpeed);
+        Shawn.rightRear.setPower(rightSpeed);
         Shawn.leftFront.setPower(leftSpeed);
         Shawn.rightFront.setPower(rightSpeed);
 
@@ -503,7 +628,7 @@ public class Shawn_AutonomousBlue extends LinearOpMode {
      * @return error angle: Degrees in the range +/- 180. Centered on the Shawn's frame of reference
      * +ve error means the Shawn should turn LEFT (CCW) to reduce error.
      */
-    public double getError(double targetAngle) {
+    public double getError(double targetAngle) {                                                                                // GET ERROR GET ERROR GET ERROR GET ERROR
 
         double robotError;
 
@@ -523,7 +648,7 @@ public class Shawn_AutonomousBlue extends LinearOpMode {
      * @param PCoeff Proportional Gain Coefficient
      * @return
      */
-    public double getSteer(double error, double PCoeff) {
+    public double getSteer(double error, double PCoeff) {                                                                        // GET STEER GET STEER GET STEER GET STEER
         return Range.clip(error * PCoeff, -1, 1);
     }
 
