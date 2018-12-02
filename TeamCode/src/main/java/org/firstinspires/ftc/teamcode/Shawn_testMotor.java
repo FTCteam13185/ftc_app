@@ -173,6 +173,15 @@ public class Shawn_testMotor extends OpMode {
             Shawn.sweepy.setPower(0);
         }
 
+        // ARM CONTROL ARM CONTROL ARM CONTROL ARM CONTROL ARM CONTROL
+        if (gamepad2.left_stick_y!= 0) {
+            Shawn.ArmRotation.setPower((double) gamepad2.left_stick_y/4);
+            telemetry.addLine("Value is not equal to zero");
+            telemetry.addData("gamepad2.left_stick_y", gamepad2.left_stick_y/4);
+        }
+        else {
+            Shawn.ArmRotation.setPower(0);
+        }
 
         //DRIVE DRIVE DRIVE DRIVE DRIVE DRIVE DRIVE DRIVE DRIVE DRIVE
         if (-gamepad1.left_stick_y != 0) {

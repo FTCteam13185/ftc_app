@@ -83,8 +83,8 @@ public class HardwareShawn
     public DigitalChannel touchSensor = null;
     public ColorSensor colorSensor = null;
 
-    public DcMotor hub1Motor = null;
-    public DcMotor hub2Motor = null;
+//    public DcMotor hub1Motor = null;
+//    public DcMotor hub2Motor = null;
 
     public MegaMotor newMotor = null;
 
@@ -132,9 +132,18 @@ public class HardwareShawn
         // Define and Initialize Motors
         ArmRotation = hwMap.get(DcMotor.class, "Arm_Rotation" ) ;
         SprocketRotation = hwMap.get(DcMotor.class, "Sprocket_Rotation");
+        SprocketRotation.setMode (DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         SprocketRotation.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+              ArmRotation.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         ArmRotation.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
+
+        SprocketRotation.setPower(0);
+        ArmRotation.setPower(0);
+        ArmRotation.setDirection (DcMotor.Direction.FORWARD);
+        SprocketRotation.setDirection (DcMotor.Direction.FORWARD);
+        ArmRotation.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        SprocketRotation.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         actuator = hwMap.get(DcMotor.class, "actuator");
         sweepy = hwMap.get(DcMotor.class, "sweepy");

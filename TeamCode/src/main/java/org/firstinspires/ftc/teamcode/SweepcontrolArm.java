@@ -41,15 +41,15 @@ public class SweepcontrolArm extends OpMode {
         int ArmCurrentPosition;
         int SprocketCurrentPosition;
 
-        if (gamepad1.left_bumper) {
+        if (gamepad1.x) {
             ArmCurrentPosition = Shawn.ArmRotation.getCurrentPosition();
             Shawn.ArmRotation.setTargetPosition(ArmCurrentPosition + (1440*4));
             SprocketCurrentPosition = Shawn.SprocketRotation.getCurrentPosition();
             Shawn.SprocketRotation.setTargetPosition(SprocketCurrentPosition + (1440 * 4));
             Shawn.SprocketRotation.setPower(1);
             Shawn.ArmRotation.setPower(1);
-            telemetry.addLine("Left Bumper Pressed");
-        } else if (gamepad1.right_bumper) {
+            telemetry.addLine("X Pressed");
+        } else if (gamepad1.b) {
             ArmCurrentPosition = Shawn.ArmRotation.getCurrentPosition();
             Shawn.ArmRotation.setTargetPosition(ArmCurrentPosition - (1440*4));
             SprocketCurrentPosition = Shawn.SprocketRotation.getCurrentPosition();
