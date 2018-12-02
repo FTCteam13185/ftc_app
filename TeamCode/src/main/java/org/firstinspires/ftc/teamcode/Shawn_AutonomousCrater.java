@@ -300,6 +300,8 @@ public class Shawn_AutonomousCrater extends LinearOpMode {
         // stop actuator
         Shawn.actuator.setPower(0);
 
+        Thread.sleep(300);
+
         // open claw for 1.5 seconds
         march.start();          //march start
         Shawn.claw.setPower(-1);
