@@ -109,7 +109,7 @@ public class Shawn_AutonomousDepot extends LinearOpMode {
             (WHEEL_DIAMETER_INCHES * 3.141592653589793238462643383279);
 
     final double TICKS_PER_GB_ROTATION = 537.6;
-    final int MAX_GB_TICKS = 9600 - (int) (TICKS_PER_GB_ROTATION * 1);
+    final int MAX_GB_TICKS = 9600 - (int) (TICKS_PER_GB_ROTATION * 4);
     final int MIN_GB_TICKS = 0;
 
     // These constants define the desired driving/controlType characteristics
@@ -319,16 +319,16 @@ public class Shawn_AutonomousDepot extends LinearOpMode {
         // move away from the lander
         targetHeading = 0;
         gyroDrive(DRIVE_SPEED, 3, targetHeading);
-        gyroHold(TURN_SPEED, targetHeading, 1);
+        gyroHold(TURN_SPEED, targetHeading, 0.75);
 
         // turn towards the far wall
         targetHeading = 45;
         gyroTurn(TURN_SPEED, targetHeading);
-        gyroHold(TURN_SPEED, targetHeading, 1);
+        gyroHold(TURN_SPEED, targetHeading, 0.75);
 
         // drive towards the far wall
         gyroDrive(DRIVE_SPEED, 47.5, targetHeading);
-        gyroHold(TURN_SPEED, targetHeading, 1);
+        gyroHold(TURN_SPEED, targetHeading, 0.75);
 
 
         // wait for actuator to stop
@@ -347,22 +347,30 @@ public class Shawn_AutonomousDepot extends LinearOpMode {
         // turn the back of the robot towards the depot
         targetHeading = 130;
         gyroTurn(TURN_SPEED, targetHeading);
-        gyroHold(TURN_SPEED, targetHeading, 2);
+        gyroHold(TURN_SPEED, targetHeading, 0.75);
 
         // reverse to the depot
         gyroDrive(DRIVE_SPEED, -28, targetHeading);
-        gyroHold(TURN_SPEED, targetHeading, 1);
+        gyroHold(TURN_SPEED, targetHeading, 0.75);
 
-        // this is where we would barf up the marker
-        gyroHold(TURN_SPEED, targetHeading, 1);
-
+        //barf up the marker
+        Shawn.harvester.setTargetPosition(770);
+        Shawn.harvester.setPower(0.4);
+        while (Shawn.harvester.isBusy()) {}
+        Shawn.sweepy.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        Shawn.sweepy.setPower(1);
+        Thread.sleep(250);
+        Shawn.sweepy.setPower(0);
+        Shawn.harvester.setTargetPosition(0);
+        while (Shawn.harvester.isBusy()) {}
+        Shawn.harvester.setPower(0);
         // turn around to face away from the crater
         targetHeading = -45;
         gyroTurn(TURN_SPEED, targetHeading);
-        gyroHold(TURN_SPEED, targetHeading, 1);
+        gyroHold(TURN_SPEED, targetHeading, 0.75);
 
-        // drive to crater                                  // SHOULD BE MORE TO GET INTO CRATER!
-        gyroDrive(DRIVE_SPEED, -50, targetHeading);
+        // drive to crater
+        gyroDrive(DRIVE_SPEED, -75, targetHeading);
         gyroHold(TURN_SPEED, targetHeading, 3);
 
 

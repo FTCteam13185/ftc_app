@@ -37,6 +37,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
+import com.qualcomm.robotcore.util.ShortHash;
 
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
@@ -106,7 +107,7 @@ public class Shawn_AutonomousCrater extends LinearOpMode {
             (WHEEL_DIAMETER_INCHES * 3.141592653589793238462643383279);
 
     final double TICKS_PER_GB_ROTATION = 537.6;
-    final int MAX_GB_TICKS = 9600 - (int) (TICKS_PER_GB_ROTATION * 1);
+    final int MAX_GB_TICKS = 9600 - (int) (TICKS_PER_GB_ROTATION * 4);
     final int MIN_GB_TICKS = 0;
 
     // These constants define the desired driving/controlType characteristics
@@ -172,6 +173,12 @@ public class Shawn_AutonomousCrater extends LinearOpMode {
 
         Shawn.actuator.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         Shawn.actuator.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        Shawn.harvester.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        Shawn.harvester.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        Shawn.armRotation.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        Shawn.armRotation.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
         // VUFORIA VUFORIA VUFORIA VUFORIA VUFORIA VUFORIA VUFORIA VUFORIA VUFORIA VUFORIA VUFORIA VUFORIA VUFORIA VUFORIA VUFORIA VUFORIA
 /*
@@ -285,7 +292,6 @@ public class Shawn_AutonomousCrater extends LinearOpMode {
 
         // UNLOCK AND LOWER UNLOCK AND LOWER UNLOCK AND LOWER UNLOCK AND LOWER UNLOCK AND LOWER UNLOCK AND LOWER UNLOCK AND LOWER
 
-
         // raising actuator
         Shawn.actuator.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         Shawn.actuator.setTargetPosition(MAX_GB_TICKS);
@@ -315,12 +321,12 @@ public class Shawn_AutonomousCrater extends LinearOpMode {
         // MOVING MOVING MOVING MOVING MOVING MOVING MOVING MOVING MOVING MOVING MOVING MOVING MOVING MOVING MOVING MOVING MOVING
 
         // move away from the lander
-        gyroDrive(DRIVE_SPEED, 16, 0);
-        gyroHold(TURN_SPEED, 0, 1);
+        gyroDrive(DRIVE_SPEED, 18, 0);
+        gyroHold(TURN_SPEED, 0, 0.75);
 
         // turn to face the friendly alliance wall
         gyroTurn(TURN_SPEED, -90);
-        gyroHold(TURN_SPEED, -90, 1);
+        gyroHold(TURN_SPEED, -90, 0.75);
 
 
         // wait for actuator to stop
@@ -335,24 +341,33 @@ public class Shawn_AutonomousCrater extends LinearOpMode {
         }
         Shawn.claw.setPower(0);
 
-
         // drive to the wall
-        gyroDrive(DRIVE_SPEED, -51.5, -90);
-        gyroHold(TURN_SPEED, -90, 1);
+        gyroDrive(DRIVE_SPEED, -50, -90);
+        gyroHold(TURN_SPEED, -90, 0.75);
 
         // turn towards depot
         gyroTurn(TURN_SPEED, -45);
-        gyroHold(TURN_SPEED, -45, 1);
+        gyroHold(TURN_SPEED, -45, 0.75);
 
         // reverse towards depot
         gyroDrive(DRIVE_SPEED, -35, -45);
-        gyroHold(TURN_SPEED, -46, 2);
+        gyroHold(TURN_SPEED, -46, 0.75);
 
         // SPIT OUT MARKER
+        Shawn.harvester.setTargetPosition(770);
+        Shawn.harvester.setPower(0.4);
+        while (Shawn.harvester.isBusy()) {}
+        Shawn.sweepy.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        Shawn.sweepy.setPower(1);
+        Thread.sleep(250);
+        Shawn.sweepy.setPower(0);
+        Shawn.harvester.setTargetPosition(0);
+        while (Shawn.harvester.isBusy()) {}
+        Shawn.harvester.setPower(0);
 
         // turn around
         gyroTurn(TURN_SPEED, 135);
-        gyroHold(TURN_SPEED, 135, 1);
+        gyroHold(TURN_SPEED, 135, 0.75);
 
         // skedaddle to the crater
         gyroDrive(DRIVE_SPEED, -75, 135);
@@ -362,7 +377,6 @@ public class Shawn_AutonomousCrater extends LinearOpMode {
 
         telemetry.addData("Path", "Complete");
         telemetry.update();
-
     }
 
 

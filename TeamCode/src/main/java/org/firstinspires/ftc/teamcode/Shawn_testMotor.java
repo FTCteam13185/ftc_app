@@ -31,14 +31,11 @@ package org.firstinspires.ftc.teamcode;
 
 import android.media.MediaPlayer;
 
-import com.qualcomm.hardware.motors.TetrixMotor;
+import com.qualcomm.ftccommon.SoundPlayer;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.ftccommon.SoundPlayer;
 import com.qualcomm.robotcore.util.Range;
-
-import java.io.File;
 
 
 @TeleOp(name = "Test: TestMotor", group = "Motors")
@@ -72,9 +69,14 @@ public class Shawn_testMotor extends OpMode {
 
     final int GB_TICKS_PER_ROTATION = 384;
     final int SUB_ROTATION = 4;
-    final int MAX_GB_TICKS = 9600 - GB_TICKS_PER_ROTATION;
+    final int MAX_GB_TICKS = 9600 - (GB_TICKS_PER_ROTATION * 4);
     final int MIN_GB_TICKS = 0;
     int GBTicks = 0;
+
+    int armTicks = 0;
+    int harvesterTicks = 0;
+    boolean holdHarvester;
+    boolean holdArm;
 
     int sweep = 0;
 
@@ -84,6 +86,8 @@ public class Shawn_testMotor extends OpMode {
     double rf = 0;
 
     int control = 1;
+
+    boolean temp;
 
     // SOUND STUFF
     MediaPlayer lightsaber = null;
@@ -108,6 +112,12 @@ public class Shawn_testMotor extends OpMode {
         lightsaber = MediaPlayer.create(this.hardwareMap.appContext, R.raw.lightsaber);
         lightsaber.seekTo(0);
 
+        armTicks = Shawn.armRotation.getCurrentPosition();
+        harvesterTicks = Shawn.harvester.getCurrentPosition();
+        holdHarvester = true;
+        holdArm = true;
+
+        temp = true;
     }
 
     @Override
@@ -140,8 +150,8 @@ public class Shawn_testMotor extends OpMode {
 
         // CLAW CLAW CLAW CLAW CLAW CLAW CLAW CLAW CLAW CLAW CLAW CLAW CLAW CLAW CLAW CLAW CLAW CLAW CLAW CLAW
         if (gamepad1.dpad_right) {
-            telemetry.addLine("dpad right");
-            telemetry.update();
+            //   telemetry.addLine("dpad right");
+            //   telemetry.update();
             if (Shawn.touchSensor.getState()) {
                 Shawn.claw.setPower(1);
             }
@@ -152,16 +162,16 @@ public class Shawn_testMotor extends OpMode {
         }
 
         if (!Shawn.touchSensor.getState()) {
-            telemetry.addLine("PRESSED!!!!!");
+            //   telemetry.addLine("PRESSED!!!!!");
         } else {
-            telemetry.addLine("NOT PRESSED!! >:(");
+            //   telemetry.addLine("NOT PRESSED!! >:(");
         }
         //SWEEPY THINGY SWEEPY THINGY SWEEPY THINGY SWEEPY THINGY
-        if (gamepad1.x && gamepad1.b) {
-            sweep = 2;
-        } else if (gamepad1.x) {
+        if (gamepad2.x) {
             sweep = 1;
-        } else if (gamepad1.b) {
+        } else if (gamepad2.a) {
+            sweep = 2;
+        } else if (gamepad2.b) {
             sweep = 0;
         }
 
@@ -174,14 +184,67 @@ public class Shawn_testMotor extends OpMode {
         }
 
         // ARM CONTROL ARM CONTROL ARM CONTROL ARM CONTROL ARM CONTROL
-        if (gamepad2.left_stick_y!= 0) {
-            Shawn.ArmRotation.setPower((double) gamepad2.left_stick_y/4);
-            telemetry.addLine("Value is not equal to zero");
-            telemetry.addData("gamepad2.left_stick_y", gamepad2.left_stick_y/4);
+        if (Math.abs(gamepad2.left_stick_y) > 0.5) {
+            holdArm = true;
+            Shawn.armRotation.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            Shawn.armRotation.setPower(0.15 * Range.clip(gamepad2.left_stick_y * 10, -1, 1));
+//            telemetry.addData("Arm's position is ", armTicks);
+//            if (-gamepad2.left_stick_y > 0) {
+//                armTicks += 5;
+//            } else {
+//                armTicks -= 5;
+//            }
+        } else {
+            if (holdArm) {
+                armTicks = Shawn.armRotation.getCurrentPosition();
+                holdArm = false;
+            }
+            Shawn.armRotation.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            Shawn.armRotation.setTargetPosition(armTicks);
+            Shawn.armRotation.setPower(0.5);
+//            telemetry.addData("Arm's position is set to ", armTicks);
+//            telemetry.addData("Arm's position is at ", Shawn.armRotation.getCurrentPosition());
         }
-        else {
-            Shawn.ArmRotation.setPower(0);
+//        Shawn.armRotation.setTargetPosition(armTicks);
+//        Shawn.armRotation.setPower(1);
+        telemetry.update();
+
+//        if (gamepad2.a) {
+//            if (temp) {
+//                temp = false;
+//                Shawn.armRotation.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+//                Shawn.armRotation.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+//                telemetry.addData("Motor's initial position: ", Shawn.armRotation.getCurrentPosition());
+//                telemetry.addData("set to ", Shawn.armRotation.getCurrentPosition() + 1440);
+//                Shawn.armRotation.setTargetPosition(Shawn.armRotation.getCurrentPosition() + 1440);
+//                telemetry.update();
+//                Shawn.armRotation.setPower(1);
+//                while (Shawn.armRotation.isBusy()) {
+//                }
+//                telemetry.addData("reached", Shawn.armRotation.getCurrentPosition());
+//                Shawn.armRotation.setPower(0);
+//                Shawn.armRotation.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+//                telemetry.update();
+//            }
+//        }
+
+        // HARVESTER HARVESTER HARVESTER HARVESTER HARVESTER HARVESTER HARVESTER HARVESTER
+        if (gamepad2.right_stick_y != 0) {
+            holdHarvester = true;
+            Shawn.harvester.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            Shawn.harvester.setPower(-gamepad2.right_stick_y/4);
+        } else {
+            if (holdHarvester) {
+                harvesterTicks = Shawn.harvester.getCurrentPosition();
+                holdHarvester = false;
+            }
+            Shawn.harvester.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            Shawn.harvester.setTargetPosition(harvesterTicks);
+            //Shawn.harvester.setPower(0);
+//            telemetry.addData("harvester ticks set to", harvesterTicks);
+//            telemetry.addData("harvester at", Shawn.harvester.getCurrentPosition());
         }
+        telemetry.update();
 
         //DRIVE DRIVE DRIVE DRIVE DRIVE DRIVE DRIVE DRIVE DRIVE DRIVE
         if (-gamepad1.left_stick_y != 0) {
@@ -190,8 +253,8 @@ public class Shawn_testMotor extends OpMode {
             rr = -gamepad1.left_stick_y;
             rf = -gamepad1.left_stick_y;
 
-            telemetry.addLine("Y");
-            telemetry.addData("gamepad1.left_stick_y", gamepad1.left_stick_y);
+//            telemetry.addLine("Y");
+//            telemetry.addData("gamepad1.left_stick_y", gamepad1.left_stick_y);
 
         } else if (gamepad1.right_stick_x != 0) {
             lr = gamepad1.right_stick_x;
@@ -199,8 +262,8 @@ public class Shawn_testMotor extends OpMode {
             rr = -gamepad1.right_stick_x;
             rf = -gamepad1.right_stick_x;
 
-            telemetry.addLine("X");
-            telemetry.addData("gamepad1.left_stick_x", gamepad1.left_stick_x);
+//            telemetry.addLine("X");
+//            telemetry.addData("gamepad1.left_stick_x", gamepad1.left_stick_x);
 
         }
 
@@ -221,7 +284,7 @@ public class Shawn_testMotor extends OpMode {
         // FINE CONTROL FINE CONTROL FINE CONTROL FINE CONTROL FINE CONTROL FINE CONTROL
         if (gamepad1.left_bumper) {
             control = 2;
-        } else if (gamepad1.right_bumper){
+        } else if (gamepad1.right_bumper) {
             control = 4;
         }
 
@@ -230,8 +293,8 @@ public class Shawn_testMotor extends OpMode {
         Shawn.rightRear.setPower(rr / control);
         Shawn.rightFront.setPower(rf / control);
 
-        telemetry.addData("RF power = ",Shawn.rightFront.getPower());
-        telemetry.addData("RF position = ",Shawn.rightFront.getCurrentPosition());
+        //     telemetry.addData("RF power = ", Shawn.rightFront.getPower());
+        //    telemetry.addData("RF position = ", Shawn.rightFront.getCurrentPosition());
         telemetry.update();
 
     }

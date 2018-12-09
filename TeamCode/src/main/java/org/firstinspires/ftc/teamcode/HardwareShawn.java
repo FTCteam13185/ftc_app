@@ -34,11 +34,8 @@ import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.ReadWriteFile;
 
@@ -67,8 +64,8 @@ public class HardwareShawn
 
     public BNO055IMU imu = null;
     //  public CRServo armClaw = null;
-    public DcMotor ArmRotation = null;
-    public DcMotor SprocketRotation = null;
+    public DcMotor armRotation = null;
+    public DcMotor harvester = null;
 
 
     public DcMotor leftRear = null;
@@ -130,20 +127,20 @@ public class HardwareShawn
         }
 
         // Define and Initialize Motors
-        ArmRotation = hwMap.get(DcMotor.class, "Arm_Rotation" ) ;
-        SprocketRotation = hwMap.get(DcMotor.class, "Sprocket_Rotation");
-        SprocketRotation.setMode (DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        SprocketRotation.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-              ArmRotation.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        ArmRotation.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        armRotation = hwMap.get(DcMotor.class, "Arm_Rotation" ) ;
+        harvester = hwMap.get(DcMotor.class, "Sprocket_Rotation");
+        harvester.setMode (DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        harvester.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        armRotation.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        armRotation.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
 
-        SprocketRotation.setPower(0);
-        ArmRotation.setPower(0);
-        ArmRotation.setDirection (DcMotor.Direction.FORWARD);
-        SprocketRotation.setDirection (DcMotor.Direction.FORWARD);
-        ArmRotation.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        SprocketRotation.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        armRotation.setPower(0);
+        harvester.setPower(0);
+        armRotation.setDirection (DcMotor.Direction.FORWARD);
+        harvester.setDirection (DcMotor.Direction.FORWARD);
+        armRotation.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        harvester.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         actuator = hwMap.get(DcMotor.class, "actuator");
         sweepy = hwMap.get(DcMotor.class, "sweepy");
