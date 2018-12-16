@@ -247,16 +247,16 @@ public class Shawn_testMotor extends OpMode {
         telemetry.update();
 
         //DRIVE DRIVE DRIVE DRIVE DRIVE DRIVE DRIVE DRIVE DRIVE DRIVE
-        if (-gamepad1.left_stick_y != 0) {
-            lr = -gamepad1.left_stick_y;
-            lf = -gamepad1.left_stick_y;
-            rr = -gamepad1.left_stick_y;
-            rf = -gamepad1.left_stick_y;
+        if (Math.abs(gamepad1.left_stick_y) > 0.1) {
+            lr = -gamepad1.left_stick_y + (gamepad1.left_stick_x);
+            lf = -gamepad1.left_stick_y + (gamepad1.left_stick_y);
+            rr = -gamepad1.left_stick_y + (-gamepad1.left_stick_y);
+            rf = -gamepad1.left_stick_y + (-gamepad1.left_stick_y);
 
 //            telemetry.addLine("Y");
 //            telemetry.addData("gamepad1.left_stick_y", gamepad1.left_stick_y);
 
-        } else if (gamepad1.right_stick_x != 0) {
+        } else if (Math.abs(gamepad1.right_stick_x) > 0.1) {
             lr = gamepad1.right_stick_x;
             lf = gamepad1.right_stick_x;
             rr = -gamepad1.right_stick_x;

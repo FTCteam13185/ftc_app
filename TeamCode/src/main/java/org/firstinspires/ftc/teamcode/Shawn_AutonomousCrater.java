@@ -336,10 +336,10 @@ public class Shawn_AutonomousCrater extends LinearOpMode {
         Shawn.actuator.setPower(0);
 
         // move claw until it touches the sensor
-        while (Shawn.touchSensor.getState()) {
-            Shawn.claw.setPower(1);
-        }
-        Shawn.claw.setPower(0);
+//        while (Shawn.touchSensor.getState()) {
+//            Shawn.claw.setPower(1);
+//        }
+//        Shawn.claw.setPower(0);
 
         // drive to the wall
         gyroDrive(DRIVE_SPEED, -50, -90);

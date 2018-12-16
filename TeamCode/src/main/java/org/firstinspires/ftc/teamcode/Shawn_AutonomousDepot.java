@@ -338,10 +338,10 @@ public class Shawn_AutonomousDepot extends LinearOpMode {
         Shawn.actuator.setPower(0);
 
         // move claw until it touches the sensor
-        while (Shawn.touchSensor.getState()) {
-            Shawn.claw.setPower(1);
-        }
-        Shawn.claw.setPower(0);
+//        while (Shawn.touchSensor.getState()) {
+//            Shawn.claw.setPower(1);
+//        }
+//        Shawn.claw.setPower(0);
 
 
         // turn the back of the robot towards the depot
