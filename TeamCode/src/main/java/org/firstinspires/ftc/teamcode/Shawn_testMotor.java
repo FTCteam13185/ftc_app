@@ -37,6 +37,13 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.Range;
 
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
+import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
+
+import static java.lang.Math.abs;
+
 
 @TeleOp(name = "Test: TestMotor", group = "Motors")
 //@Disabled
@@ -67,10 +74,13 @@ public class Shawn_testMotor extends OpMode {
 
     boolean controlType = true;
 
+    static final double P_DRIVE_COEFF = 0.05            ;    // Larger is more responsive, but also less stable
+    static final double DRIVE_SPEED = 0.5;       // SPEEDING AWAY
     final int GB_TICKS_PER_ROTATION = 384;
     final int SUB_ROTATION = 4;
     final int MAX_GB_TICKS = 9600 - (GB_TICKS_PER_ROTATION * 4);
     final int MIN_GB_TICKS = 0;
+
     int GBTicks = 0;
 
     int armTicks = 0;
@@ -85,9 +95,12 @@ public class Shawn_testMotor extends OpMode {
     double lf = 0;
     double rf = 0;
 
-    int control = 1;
-
     boolean temp;
+
+    float currAngle = 0;
+
+    boolean saveAngle = true;
+    float lastAngle = 0;
 
     // SOUND STUFF
     MediaPlayer lightsaber = null;
@@ -95,7 +108,8 @@ public class Shawn_testMotor extends OpMode {
     @Override
     public void init() {
 
-        Shawn.init(hardwareMap, false);
+        // CURRENTLY SET GYRO TO TRUE! ONLY KEEP IF GYRO STAYS
+        Shawn.init(hardwareMap, true);
 
         Shawn.actuator.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         Shawn.actuator.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -107,6 +121,7 @@ public class Shawn_testMotor extends OpMode {
 
 //        Shawn.actuator.setTargetPosition(GBTicks);
 //        Shawn.actuator.setPower(1);
+
 
         //SOUND STUFF
         lightsaber = MediaPlayer.create(this.hardwareMap.appContext, R.raw.lightsaber);
@@ -123,7 +138,15 @@ public class Shawn_testMotor extends OpMode {
     @Override
     public void loop() {
 
-        control = 1;
+        // GYRO GYRO GYRO GYRO GYRO GYRO GYRO GYRO GYRO GYRO GYRO GYRO GYRO GYRO
+        Orientation angles = Shawn.imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+        currAngle = angles.firstAngle;
+
+        double error = 0;
+        double steer = 0;
+        double maxSpeed = 0;
+
+        int control = 1;
 
         lr = 0;
         rr = 0;
@@ -248,15 +271,17 @@ public class Shawn_testMotor extends OpMode {
 
         //DRIVE DRIVE DRIVE DRIVE DRIVE DRIVE DRIVE DRIVE DRIVE DRIVE
         if (Math.abs(gamepad1.left_stick_y) > 0.1) {
+            saveAngle = true;
             lr = -gamepad1.left_stick_y + (gamepad1.left_stick_x);
-            lf = -gamepad1.left_stick_y + (gamepad1.left_stick_y);
-            rr = -gamepad1.left_stick_y + (-gamepad1.left_stick_y);
-            rf = -gamepad1.left_stick_y + (-gamepad1.left_stick_y);
+            lf = -gamepad1.left_stick_y + (gamepad1.left_stick_x);
+            rr = -gamepad1.left_stick_y + (-gamepad1.left_stick_x);
+            rf = -gamepad1.left_stick_y + (-gamepad1.left_stick_x);
 
 //            telemetry.addLine("Y");
 //            telemetry.addData("gamepad1.left_stick_y", gamepad1.left_stick_y);
 
         } else if (Math.abs(gamepad1.right_stick_x) > 0.1) {
+            saveAngle = true;
             lr = gamepad1.right_stick_x;
             lf = gamepad1.right_stick_x;
             rr = -gamepad1.right_stick_x;
@@ -265,20 +290,55 @@ public class Shawn_testMotor extends OpMode {
 //            telemetry.addLine("X");
 //            telemetry.addData("gamepad1.left_stick_x", gamepad1.left_stick_x);
 
-        }
+            // STRAFE STRAFE STRAFE STRAFE STRAFE STRAFE STRAFE STRAFE STRAFE STRAFE STRAFE STRAFE STRAFE STRAFE STRAFE STRAFE
+        } else if (gamepad1.right_trigger != 0) {
+            if (saveAngle) {
+                lastAngle = Shawn.imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle;
+                saveAngle = false;
+            }
 
+            error = getError(lastAngle);
+            steer = getSteer(error, P_DRIVE_COEFF);
 
-        //STRAFE STRAFE STRAFE STRAFE STRAFE STRAFE STRAFE STRAFE STRAFE
-        if (gamepad1.right_trigger != 0) {
-            lf = 1;
-            rf = -1;
-            lr = -1;
-            rr = 1;
+            lf =  DRIVE_SPEED - steer;
+            rf = -DRIVE_SPEED + steer;
+            lr = -DRIVE_SPEED - steer;
+            rr =  DRIVE_SPEED + steer;
+
+            // Normalize speeds if either one exceeds +/- 1.0;
+            maxSpeed = Math.max(Math.max(abs(lf), abs(rf)), Math.max(abs(lr), abs(rr)));
+            if (maxSpeed > 1.0) {
+                lr /= maxSpeed;
+                rf /= maxSpeed;
+                lr /= maxSpeed;
+                rr /= maxSpeed;
+            }
+
         } else if (gamepad1.left_trigger != 0) {
-            lf = -1;
-            rf = 1;
-            lr = 1;
-            rr = -1;
+            if (saveAngle) {
+                lastAngle = Shawn.imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle;
+                saveAngle = false;
+            }
+
+            error = getError(lastAngle);
+            steer = getSteer(error, P_DRIVE_COEFF);
+
+            lf = -DRIVE_SPEED - steer;
+            rf =  DRIVE_SPEED + steer;
+            lr =  DRIVE_SPEED - steer;
+            rr = -DRIVE_SPEED + steer;
+
+            // Normalize speeds if either one exceeds +/- 1.0;
+            maxSpeed = Math.max(Math.max(abs(lf), abs(rf)), Math.max(abs(lr), abs(rr)));
+            if (maxSpeed > 1.0) {
+                lr /= maxSpeed;
+                rf /= maxSpeed;
+                lr /= maxSpeed;
+                rr /= maxSpeed;
+            }
+
+        } else {
+            saveAngle = true;
         }
 
         // FINE CONTROL FINE CONTROL FINE CONTROL FINE CONTROL FINE CONTROL FINE CONTROL
@@ -297,6 +357,37 @@ public class Shawn_testMotor extends OpMode {
         //    telemetry.addData("RF position = ", Shawn.rightFront.getCurrentPosition());
         telemetry.update();
 
+    }
+
+    /**
+     * getError determines the error between the target angle and the Shawn's current heading
+     *
+     * @param targetAngle Desired angle (relative to global reference established at last Gyro Reset).
+     * @return error angle: Degrees in the range +/- 180. Centered on Shawn's frame of reference
+     * +ve error means the Shawn should turn LEFT (CCW) to reduce error.
+     */
+    public double getError(double targetAngle) {                                                                                // GET ERROR GET ERROR GET ERROR GET ERROR
+
+        double robotError;
+
+        // calculate error in -179 to +180 range  (
+        Orientation angles = Shawn.imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+
+        robotError = targetAngle - angles.firstAngle;
+        while (robotError > 180) robotError -= 360;
+        while (robotError <= -180) robotError += 360;
+        return robotError;
+    }
+
+    /**
+     * returns desired steering force.  +/- 1 range.  +ve = steer left
+     *
+     * @param error  Error angle in Shawn relative degrees
+     * @param PCoeff Proportional Gain Coefficient
+     * @return
+     */
+    public double getSteer(double error, double PCoeff) {                                                                        // GET STEER GET STEER GET STEER GET STEER
+        return Range.clip(error * PCoeff, -1, 1);
     }
 
 }

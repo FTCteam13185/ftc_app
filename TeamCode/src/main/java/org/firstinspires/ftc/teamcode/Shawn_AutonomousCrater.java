@@ -434,7 +434,7 @@ public class Shawn_AutonomousCrater extends LinearOpMode {
             Shawn.leftFront.setPower(speed);
             Shawn.rightFront.setPower(speed);
 
-            // keep looping while we are still active, and BOTH motors are running.
+            // keep looping while we are still active, and ALL motors are running.
             while (opModeIsActive() &&
                     (Shawn.leftRear.isBusy() && Shawn.rightRear.isBusy() &&
                             Shawn.leftFront.isBusy()  && Shawn.rightFront.isBusy())) {
