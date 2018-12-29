@@ -293,26 +293,26 @@ public class Shawn_testMotor extends OpMode {
             // STRAFE STRAFE STRAFE STRAFE STRAFE STRAFE STRAFE STRAFE STRAFE STRAFE STRAFE STRAFE STRAFE STRAFE STRAFE STRAFE
         } else if (gamepad1.right_trigger != 0) {
             if (saveAngle) {
-                lastAngle = Shawn.imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle;
-                saveAngle = false;
-            }
+               lastAngle = Shawn.imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle;
+            saveAngle = false;
+        }
 
-            error = getError(lastAngle);
-            steer = getSteer(error, P_DRIVE_COEFF);
+        error = getError(lastAngle);
+        steer = getSteer(error, P_DRIVE_COEFF);
 
-            lf =  DRIVE_SPEED - steer;
-            rf = -DRIVE_SPEED + steer;
-            lr = -DRIVE_SPEED - steer;
-            rr =  DRIVE_SPEED + steer;
+        lf =  DRIVE_SPEED - steer;
+        rf = -DRIVE_SPEED + steer;
+        lr = -DRIVE_SPEED - steer;
+        rr =  DRIVE_SPEED + steer;
 
-            // Normalize speeds if either one exceeds +/- 1.0;
-            maxSpeed = Math.max(Math.max(abs(lf), abs(rf)), Math.max(abs(lr), abs(rr)));
-            if (maxSpeed > 1.0) {
-                lr /= maxSpeed;
-                rf /= maxSpeed;
-                lr /= maxSpeed;
-                rr /= maxSpeed;
-            }
+        // Normalize speeds if either one exceeds +/- 1.0;
+        maxSpeed = Math.max(Math.max(abs(lf), abs(rf)), Math.max(abs(lr), abs(rr)));
+        if (maxSpeed > 1.0) {
+            lr /= maxSpeed;
+            rf /= maxSpeed;
+            lr /= maxSpeed;
+            rr /= maxSpeed;
+        }
 
         } else if (gamepad1.left_trigger != 0) {
             if (saveAngle) {
