@@ -51,7 +51,7 @@ public class Shawn_testMotor extends OpMode {
 
     /* Declare OpMode members. */
 
-//    public static final double ARM_INCREMENT      = 0.01;
+//    public static final double ARM_INCREMENT
 //    public static final double CLAW_INCREMENT     = 0.03;
 //    public static final int LOOP_WAIT             = 5;
 //    public static final double rightStrafeControl = 0.875;
@@ -78,7 +78,7 @@ public class Shawn_testMotor extends OpMode {
     static final double DRIVE_SPEED = 0.5;       // SPEEDING AWAY
     final int GB_TICKS_PER_ROTATION = 384;
     final int SUB_ROTATION = 4;
-    final int MAX_GB_TICKS = 9600 - (GB_TICKS_PER_ROTATION * 4);
+    final int MAX_GB_TICKS = 9600 - (int) (GB_TICKS_PER_ROTATION * 0.5);
     final int MIN_GB_TICKS = 0;
 
     int GBTicks = 0;

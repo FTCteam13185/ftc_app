@@ -109,7 +109,7 @@ public class Shawn_AutonomousDepot extends LinearOpMode {
             (WHEEL_DIAMETER_INCHES * 3.141592653589793238462643383279);
 
     final double TICKS_PER_GB_ROTATION = 537.6;
-    final int MAX_GB_TICKS = 9600 - (int) (TICKS_PER_GB_ROTATION * 4);
+    final int MAX_GB_TICKS = 9600 - (int) (TICKS_PER_GB_ROTATION * 0.5);
     final int MIN_GB_TICKS = 0;
 
     // These constants define the desired driving/controlType characteristics
@@ -239,7 +239,10 @@ public class Shawn_AutonomousDepot extends LinearOpMode {
 
         telemetry.addLine("Vuforia Done");
         telemetry.update();
-*/
+
+        */
+
+
         // BREADY BREADY BREADY BREADY BREADY BREADY BREADY BREADY BREADY BREADY BREADY BREADY BREADY BREADY BREADY BREADY BREADY BREADY BREADY BREADY BREADY BREADY BREADY
 
         telemetry.addData(">", "Press Play to start");
@@ -363,12 +366,12 @@ public class Shawn_AutonomousDepot extends LinearOpMode {
 //        Shawn.harvester.setPower(0);
 
         // turn around to face away from the crater
-        targetHeading = 135;
-        gyroTurn(TURN_SPEED, targetHeading);
-        gyroHold(TURN_SPEED, targetHeading, 0.75);
+//        targetHeading = 135;
+//        gyroTurn(TURN_SPEED, targetHeading);
+//        gyroHold(TURN_SPEED, targetHeading, 0.75);
 
         // drive to crater
-        gyroDrive(DRIVE_SPEED, -75, targetHeading);
+        gyroDrive(DRIVE_SPEED, 75, targetHeading);
         gyroHold(TURN_SPEED, targetHeading, 3);
 
         while (march.getCurrentPosition() < 23700) {}

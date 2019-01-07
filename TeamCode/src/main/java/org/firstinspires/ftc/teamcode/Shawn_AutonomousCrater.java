@@ -107,7 +107,7 @@ public class Shawn_AutonomousCrater extends LinearOpMode {
             (WHEEL_DIAMETER_INCHES * 3.141592653589793238462643383279);
 
     final double TICKS_PER_GB_ROTATION = 537.6;
-    final int MAX_GB_TICKS = 9600 - (int) (TICKS_PER_GB_ROTATION * 4);
+    final int MAX_GB_TICKS = 9600 - (int) (TICKS_PER_GB_ROTATION * 0.5);
     final int MIN_GB_TICKS = 0;
 
     // These constants define the desired driving/controlType characteristics
@@ -357,11 +357,11 @@ public class Shawn_AutonomousCrater extends LinearOpMode {
 //        Shawn.harvester.setPower(0);
 
         // turn around
-        gyroTurn(TURN_SPEED, -45);
-        gyroHold(TURN_SPEED, -45, 0.75);
+//        gyroTurn(TURN_SPEED, -45);
+//        gyroHold(TURN_SPEED, -45, 0.75);
 
         // skedaddle to the crater
-        gyroDrive(DRIVE_SPEED, -75, -45);
+        gyroDrive(DRIVE_SPEED, 75, 135);
 
         while (march.getCurrentPosition() < 23700) {}
         march.pause();
