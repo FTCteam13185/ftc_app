@@ -74,7 +74,7 @@ public class Shawn_testMotor extends OpMode {
 
     boolean controlType = true;
 
-    static final double P_DRIVE_COEFF = 0.05            ;    // Larger is more responsive, but also less stable
+    static final double P_DRIVE_COEFF = 0.05;    // Larger is more responsive, but also less stable
     static final double DRIVE_SPEED = 0.5;       // SPEEDING AWAY
     final int GB_TICKS_PER_ROTATION = 384;
     final int SUB_ROTATION = 4;
