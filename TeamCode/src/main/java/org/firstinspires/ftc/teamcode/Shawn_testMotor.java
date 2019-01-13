@@ -300,10 +300,10 @@ public class Shawn_testMotor extends OpMode {
         error = getError(lastAngle);
         steer = getSteer(error, P_DRIVE_COEFF);
 
-        lf =  DRIVE_SPEED - steer;
-        rf = -DRIVE_SPEED + steer;
-        lr = -DRIVE_SPEED - steer;
-        rr =  DRIVE_SPEED + steer;
+        lf =  DRIVE_SPEED + steer;  // CHANGED STEER
+        rf = -DRIVE_SPEED - steer;
+        lr = -DRIVE_SPEED + steer;
+        rr =  DRIVE_SPEED - steer;
 
         // Normalize speeds if either one exceeds +/- 1.0;
         maxSpeed = Math.max(Math.max(abs(lf), abs(rf)), Math.max(abs(lr), abs(rr)));
@@ -323,10 +323,10 @@ public class Shawn_testMotor extends OpMode {
             error = getError(lastAngle);
             steer = getSteer(error, P_DRIVE_COEFF);
 
-            lf = -DRIVE_SPEED - steer;
-            rf =  DRIVE_SPEED + steer;
-            lr =  DRIVE_SPEED - steer;
-            rr = -DRIVE_SPEED + steer;
+            lf = -DRIVE_SPEED + steer;  // CHANGED STEER
+            rf =  DRIVE_SPEED - steer;
+            lr =  DRIVE_SPEED + steer;
+            rr = -DRIVE_SPEED - steer;
 
             // Normalize speeds if either one exceeds +/- 1.0;
             maxSpeed = Math.max(Math.max(abs(lf), abs(rf)), Math.max(abs(lr), abs(rr)));

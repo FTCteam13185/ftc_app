@@ -79,7 +79,7 @@ public class HardwareShawn
     public CRServo claw = null;
 
     public DigitalChannel touchSensor = null;
-    public ColorSensor colorSensor = null;
+ //   public ColorSensor colorSensor = null;
 
 //    public DcMotor hub1Motor = null;
 //    public DcMotor hub2Motor = null;

@@ -125,7 +125,7 @@ public class Shawn_AutonomousDepot extends LinearOpMode {
     public static final int TICKS_PER_DEGREE = 4;
     public static final double ARM_POWER = 1;
 
-    Shawn_SensorMRColor cSensor = new Shawn_SensorMRColor();
+//    Shawn_SensorMRColor cSensor = new Shawn_SensorMRColor();
 
     // SOUND SOUND SOUND SOUND SOUND SOUND SOUND SOUND SOUND SOUND SOUND SOUND SOUND SOUND SOUND SOUND SOUND
     MediaPlayer lightsaber = null;
@@ -171,8 +171,8 @@ public class Shawn_AutonomousDepot extends LinearOpMode {
         Shawn.leftFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         Shawn.rightFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
-        Shawn.leftFront.setDirection(DcMotorSimple.Direction.FORWARD);
-        Shawn.rightRear.setDirection(DcMotorSimple.Direction.FORWARD);
+        Shawn.leftFront.setDirection(DcMotorSimple.Direction.REVERSE);
+        Shawn.rightRear.setDirection(DcMotorSimple.Direction.REVERSE);
         Shawn.leftRear.setDirection(DcMotorSimple.Direction.REVERSE);
         Shawn.rightFront.setDirection(DcMotorSimple.Direction.REVERSE);
 
@@ -292,7 +292,6 @@ public class Shawn_AutonomousDepot extends LinearOpMode {
 //        gyroHold(TURN_SPEED, 0, 1);
 
         // UNLOCK AND LOWER UNLOCK AND LOWER UNLOCK AND LOWER UNLOCK AND LOWER UNLOCK AND LOWER UNLOCK AND LOWER UNLOCK AND LOWER
-
 
         // raising actuator
         Shawn.actuator.setMode(DcMotor.RunMode.RUN_TO_POSITION);
