@@ -113,7 +113,7 @@ public class Shawn_AutonomousCrater extends LinearOpMode {
     // These constants define the desired driving/controlType characteristics
     // They can/should be tweaked to suite the specific Shawn drive train.
     static final double DRIVE_SPEED = 0.7;     // Nominal speed for better accuracy.
-    static final double TURN_SPEED = 0.5;     // Nominal half speed for better accuracy.
+    static final double TURN_SPEED = 0.6;     // Nominal half speed for better accuracy.
     static final double STRAFE_SPEED = 0.4;   // Slow for to go straighter
 
     static final double HEADING_THRESHOLD = 1;      // As tight as we can make it with an integer gyro
@@ -316,7 +316,7 @@ public class Shawn_AutonomousCrater extends LinearOpMode {
 
         // turn for safety
         gyroTurn(TURN_SPEED, 20);
-        gyroHold(TURN_SPEED, 20, 0.5);
+        gyroHold(DRIVE_SPEED, 20, 0.5);
 
         // move away from the lander
         gyroDrive(DRIVE_SPEED, -17, 0);
@@ -348,10 +348,17 @@ public class Shawn_AutonomousCrater extends LinearOpMode {
         gyroDrive(DRIVE_SPEED, -35, 135);
         gyroHold(TURN_SPEED, 134, 0.75);
 
+        // turn towards corner
+        gyroTurn(TURN_SPEED, 115);
+        gyroHold(TURN_SPEED, 115, 0.5);
+
         // SPIT OUT MARKER
         Shawn.sweepy.setPower(-1);
-        Thread.sleep(1000);
+        Thread.sleep(1500);
         Shawn.sweepy.setPower(0);
+
+        gyroTurn(TURN_SPEED, 135);
+        gyroHold(TURN_SPEED, 135, 0.5);
 
         // skedaddle to the crater
         gyroDrive(DRIVE_SPEED, 75, 135);

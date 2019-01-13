@@ -115,7 +115,7 @@ public class Shawn_AutonomousDepot extends LinearOpMode {
     // These constants define the desired driving/controlType characteristics
     // They can/should be tweaked to suite the specific Shawn drive train.
     static final double DRIVE_SPEED = 0.7;     // Nominal speed for better accuracy.
-    static final double TURN_SPEED = 0.5;     // Nominal half speed for better accuracy.
+    static final double TURN_SPEED = 0.6;     // Nominal half speed for better accuracy.
     static final double STRAFE_SPEED = 0.4;   // Slower to be straighter
 
     static final double HEADING_THRESHOLD = 1;      // As tight as we can make it with an integer gyro
@@ -352,10 +352,17 @@ public class Shawn_AutonomousDepot extends LinearOpMode {
         gyroDrive(DRIVE_SPEED, -28, targetHeading);
         gyroHold(TURN_SPEED, targetHeading, 0.75);
 
+        // turn to corner
+        gyroTurn(TURN_SPEED, -20);
+        gyroHold(TURN_SPEED, -20, 0.5);
+
         //barf up the marker
         Shawn.sweepy.setPower(-1);
-        Thread.sleep(1000);
+        Thread.sleep(1500);
         Shawn.sweepy.setPower(0);
+
+        gyroTurn(TURN_SPEED, targetHeading);
+        gyroHold(TURN_SPEED, targetHeading, 0.5);
 
         // drive to crater
         gyroDrive(DRIVE_SPEED, 75, targetHeading);

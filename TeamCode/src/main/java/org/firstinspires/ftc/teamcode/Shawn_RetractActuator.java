@@ -53,7 +53,7 @@ import static org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocaliz
 public class Shawn_RetractActuator extends LinearOpMode {
 
     final double TICKS_PER_GB_ROTATION = 537.6;
-    final int MAX_GB_TICKS = 9600 - (int) (TICKS_PER_GB_ROTATION * 2);
+    final int MAX_GB_TICKS = 9600 - (int) (TICKS_PER_GB_ROTATION * 0.5);
     final int MIN_GB_TICKS = 0;
 
     HardwareShawn Shawn = new HardwareShawn();
