@@ -269,7 +269,7 @@ public class Shawn_AutonomousCrater extends LinearOpMode {
         // Note: Reverse movement is obtained by setting a negative distance (not speed)
         // Put a hold after each turn
 
-        //fff
+        //fffsdf
 /*
         RelicRecoveryVuMark vuMark = RelicRecoveryVuMark.from(relicTemplate);
 
@@ -309,13 +309,17 @@ public class Shawn_AutonomousCrater extends LinearOpMode {
 
         march.start();          //march start
 
+        // MOVING MOVING MOVING MOVING MOVING MOVING MOVING MOVING MOVING MOVING MOVING MOVING MOVING MOVING MOVING MOVING MOVING\
+
         // strafe away from the lander
         gyroStrafe(STRAFE_SPEED, 2, 2);
 
-        // MOVING MOVING MOVING MOVING MOVING MOVING MOVING MOVING MOVING MOVING MOVING MOVING MOVING MOVING MOVING MOVING MOVING
+        // turn for safety
+        gyroTurn(TURN_SPEED, 20);
+        gyroHold(TURN_SPEED, 20, 0.5);
 
         // move away from the lander
-        gyroDrive(DRIVE_SPEED, -14, 0);
+        gyroDrive(DRIVE_SPEED, -17, 0);
         gyroHold(TURN_SPEED, 0, 0.75);
 
         // lowering actuator
@@ -345,20 +349,9 @@ public class Shawn_AutonomousCrater extends LinearOpMode {
         gyroHold(TURN_SPEED, 134, 0.75);
 
         // SPIT OUT MARKER
-//        Shawn.harvester.setTargetPosition(770);
-//        Shawn.harvester.setPower(0.4);
-//        while (Shawn.harvester.isBusy()) {}
-//        Shawn.sweepy.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-//        Shawn.sweepy.setPower(1);
-//        Thread.sleep(250);
-//        Shawn.sweepy.setPower(0);
-//        Shawn.harvester.setTargetPosition(0);
-//        while (Shawn.harvester.isBusy()) {}
-//        Shawn.harvester.setPower(0);
-
-        // turn around
-//        gyroTurn(TURN_SPEED, -45);
-//        gyroHold(TURN_SPEED, -45, 0.75);
+        Shawn.sweepy.setPower(-1);
+        Thread.sleep(1000);
+        Shawn.sweepy.setPower(0);
 
         // skedaddle to the crater
         gyroDrive(DRIVE_SPEED, 75, 135);

@@ -352,22 +352,10 @@ public class Shawn_AutonomousDepot extends LinearOpMode {
         gyroDrive(DRIVE_SPEED, -28, targetHeading);
         gyroHold(TURN_SPEED, targetHeading, 0.75);
 
-        //barf up the marker                                        // modify this after we finish changing the arm design
-//        Shawn.harvester.setTargetPosition(770);
-//        Shawn.harvester.setPower(0.4);
-//        while (Shawn.harvester.isBusy()) {}
-//        Shawn.sweepy.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-//        Shawn.sweepy.setPower(1);
-//        Thread.sleep(250);
-//        Shawn.sweepy.setPower(0);
-//        Shawn.harvester.setTargetPosition(0);
-//        while (Shawn.harvester.isBusy()) {}
-//        Shawn.harvester.setPower(0);
-
-        // turn around to face away from the crater
-//        targetHeading = 135;
-//        gyroTurn(TURN_SPEED, targetHeading);
-//        gyroHold(TURN_SPEED, targetHeading, 0.75);
+        //barf up the marker
+        Shawn.sweepy.setPower(-1);
+        Thread.sleep(1000);
+        Shawn.sweepy.setPower(0);
 
         // drive to crater
         gyroDrive(DRIVE_SPEED, 75, targetHeading);
