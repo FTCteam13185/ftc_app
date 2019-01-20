@@ -78,7 +78,7 @@ public class Shawn_testMotor extends OpMode {
     static final double DRIVE_SPEED = 0.5;       // SPEEDING AWAY
     final int GB_TICKS_PER_ROTATION = 384;
     final int SUB_ROTATION = 4;
-    final int MAX_GB_TICKS = 9600 - (int) (GB_TICKS_PER_ROTATION * 0.5);
+    final int MAX_GB_TICKS = 9600 - (int) (GB_TICKS_PER_ROTATION * 1);
     final int MIN_GB_TICKS = 0;
 
     int GBTicks = 0;
@@ -127,8 +127,8 @@ public class Shawn_testMotor extends OpMode {
         lightsaber = MediaPlayer.create(this.hardwareMap.appContext, R.raw.lightsaber);
         lightsaber.seekTo(0);
 
-        armTicks = Shawn.armRotation.getCurrentPosition();
-        harvesterTicks = Shawn.harvester.getCurrentPosition();
+   //    armTicks = Shawn.armRotation.getCurrentPosition();
+    //    harvesterTicks = Shawn.harvester.getCurrentPosition();
         holdHarvester = true;
         holdArm = true;
 
@@ -171,103 +171,53 @@ public class Shawn_testMotor extends OpMode {
 //        while(Shawn.actuator.isBusy()){}
 //        Shawn.actuator.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
-        // CLAW CLAW CLAW CLAW CLAW CLAW CLAW CLAW CLAW CLAW CLAW CLAW CLAW CLAW CLAW CLAW CLAW CLAW CLAW CLAW
-        if (gamepad1.dpad_right) {
-            //   telemetry.addLine("dpad right");
-            //   telemetry.update();
-            if (Shawn.touchSensor.getState()) {
-                Shawn.claw.setPower(1);
-            }
-        } else if (gamepad1.dpad_left) {
-            Shawn.claw.setPower(-1);
-        } else {
-            Shawn.claw.setPower(0);
-        }
-
-        if (!Shawn.touchSensor.getState()) {
-            //   telemetry.addLine("PRESSED!!!!!");
-        } else {
-            //   telemetry.addLine("NOT PRESSED!! >:(");
-        }
+//        if (!Shawn.touchSensor.getState()) {
+//            //   telemetry.addLine("PRESSED!!!!!");
+//        } else {
+//            //   telemetry.addLine("NOT PRESSED!! >:(");
+//        }
         //SWEEPY THINGY SWEEPY THINGY SWEEPY THINGY SWEEPY THINGY
-        if (gamepad2.x) {
-            sweep = 1;
-        } else if (gamepad2.a) {
-            sweep = 2;
-        } else if (gamepad2.b) {
-            sweep = 0;
-        }
-
-        if (sweep == 2) {
-            Shawn.sweepy.setPower(1);
-        } else if (sweep == 1) {
-            Shawn.sweepy.setPower(-1);
-        } else {
-            Shawn.sweepy.setPower(0);
-        }
-
-        // ARM CONTROL ARM CONTROL ARM CONTROL ARM CONTROL ARM CONTROL
-        if (Math.abs(gamepad2.left_stick_y) > 0.5) {
-            holdArm = true;
-            Shawn.armRotation.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            Shawn.armRotation.setPower(0.15 * Range.clip(gamepad2.left_stick_y * 10, -1, 1));
-//            telemetry.addData("Arm's position is ", armTicks);
-//            if (-gamepad2.left_stick_y > 0) {
-//                armTicks += 5;
-//            } else {
-//                armTicks -= 5;
-//            }
-        } else {
-            if (holdArm) {
-                armTicks = Shawn.armRotation.getCurrentPosition();
-                holdArm = false;
-            }
-            Shawn.armRotation.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            Shawn.armRotation.setTargetPosition(armTicks);
-            Shawn.armRotation.setPower(0.5);
-//            telemetry.addData("Arm's position is set to ", armTicks);
-//            telemetry.addData("Arm's position is at ", Shawn.armRotation.getCurrentPosition());
-        }
-//        Shawn.armRotation.setTargetPosition(armTicks);
-//        Shawn.armRotation.setPower(1);
-        telemetry.update();
-
-//        if (gamepad2.a) {
-//            if (temp) {
-//                temp = false;
-//                Shawn.armRotation.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-//                Shawn.armRotation.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-//                telemetry.addData("Motor's initial position: ", Shawn.armRotation.getCurrentPosition());
-//                telemetry.addData("set to ", Shawn.armRotation.getCurrentPosition() + 1440);
-//                Shawn.armRotation.setTargetPosition(Shawn.armRotation.getCurrentPosition() + 1440);
-//                telemetry.update();
-//                Shawn.armRotation.setPower(1);
-//                while (Shawn.armRotation.isBusy()) {
-//                }
-//                telemetry.addData("reached", Shawn.armRotation.getCurrentPosition());
-//                Shawn.armRotation.setPower(0);
-//                Shawn.armRotation.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-//                telemetry.update();
-//            }
+//        if (gamepad2.x) {
+//            sweep = 1;
+//        } else if (gamepad2.a) {
+//            sweep = 2;
+//        } else if (gamepad2.b) {
+//            sweep = 0;
+//        }
+//
+//        if (sweep == 2) {
+//            Shawn.sweepy.setPower(1);
+//        } else if (sweep == 1) {
+//            Shawn.sweepy.setPower(-1);
+//        } else {
+//            Shawn.sweepy.setPower(0);
 //        }
 
-        // HARVESTER HARVESTER HARVESTER HARVESTER HARVESTER HARVESTER HARVESTER HARVESTER
-        if (gamepad2.right_stick_y != 0) {
-            holdHarvester = true;
-            Shawn.harvester.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            Shawn.harvester.setPower(-gamepad2.right_stick_y/4);
-        } else {
-            if (holdHarvester) {
-                harvesterTicks = Shawn.harvester.getCurrentPosition();
-                holdHarvester = false;
-            }
-            Shawn.harvester.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            Shawn.harvester.setTargetPosition(harvesterTicks);
-            //Shawn.harvester.setPower(0);
-//            telemetry.addData("harvester ticks set to", harvesterTicks);
-//            telemetry.addData("harvester at", Shawn.harvester.getCurrentPosition());
-        }
-        telemetry.update();
+//        // ARM CONTROL ARM CONTROL ARM CONTROL ARM CONTROL ARM CONTROL
+//        if (Math.abs(gamepad2.left_stick_y) > 0.5) {
+//            holdArm = true;
+//            Shawn.armRotation.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+//            Shawn.armRotation.setPower(0.15 * Range.clip(gamepad2.left_stick_y * 10, -1, 1));
+////            telemetry.addData("Arm's position is ", armTicks);
+////            if (-gamepad2.left_stick_y > 0) {
+////                armTicks += 5;
+////            } else {
+////                armTicks -= 5;
+////            }
+//        } else {
+//            if (holdArm) {
+//                armTicks = Shawn.armRotation.getCurrentPosition();
+//                holdArm = false;
+//            }
+//            Shawn.armRotation.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+//            Shawn.armRotation.setTargetPosition(armTicks);
+//            Shawn.armRotation.setPower(0.5);
+////            telemetry.addData("Arm's position is set to ", armTicks);
+////            telemetry.addData("Arm's position is at ", Shawn.armRotation.getCurrentPosition());
+//        }
+////        Shawn.armRotation.setTargetPosition(armTicks);
+////        Shawn.armRotation.setPower(1);
+//        telemetry.update();
 
         //DRIVE DRIVE DRIVE DRIVE DRIVE DRIVE DRIVE DRIVE DRIVE DRIVE
         if (Math.abs(gamepad1.left_stick_y) > 0.1) {

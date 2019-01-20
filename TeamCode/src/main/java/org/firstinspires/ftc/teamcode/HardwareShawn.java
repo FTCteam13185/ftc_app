@@ -64,7 +64,6 @@ public class HardwareShawn
     /* Public OpMode members. */
 
     public BNO055IMU imu = null;
-    //  public CRServo armClaw = null;
     public DcMotor armRotation = null;
     public DcMotor harvester = null;
 
@@ -75,16 +74,11 @@ public class HardwareShawn
     public DcMotor rightFront = null;
 
     public DcMotor actuator = null;
-    public DcMotor sweepy = null;
+ //   public DcMotor sweepy = null;
     public CRServo claw = null;
 
     public DigitalChannel touchSensor = null;
  //   public ColorSensor colorSensor = null;
-
-//    public DcMotor hub1Motor = null;
-//    public DcMotor hub2Motor = null;
-
-    public MegaMotor newMotor = null;
 
     /* local OpMode members. */
     HardwareMap hwMap           =  null;
@@ -128,6 +122,7 @@ public class HardwareShawn
         }
 
         // Define and Initialize Motors
+        /*
         armRotation = hwMap.get(DcMotor.class, "Arm_Rotation" ) ;
         harvester = hwMap.get(DcMotor.class, "Sprocket_Rotation");
         harvester.setMode (DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -142,22 +137,21 @@ public class HardwareShawn
         harvester.setDirection (DcMotor.Direction.FORWARD);
         armRotation.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         harvester.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-
+*/
         actuator = hwMap.get(DcMotor.class, "actuator");
-        sweepy = hwMap.get(DcMotor.class, "sweepy");
-        claw = hwMap.get(CRServo.class, "claw");
+
+    //    sweepy = hwMap.get(DcMotor.class, "sweepy");
 
         leftRear = hwMap.get(DcMotor.class, "leftRear");
         rightRear = hwMap.get(DcMotor.class, "rightRear");
         leftFront = hwMap.get(DcMotor.class, "leftFront");
         rightFront = hwMap.get(DcMotor.class, "rightFront");
 
-        touchSensor = hwMap.get(DigitalChannel.class, "touchSensor");
-        touchSensor.setMode(DigitalChannel.Mode.INPUT);
+ //       touchSensor = hwMap.get(DigitalChannel.class, "touchSensor");
+ //       touchSensor.setMode(DigitalChannel.Mode.INPUT);
 
         actuator.setPower(0);
-        sweepy.setPower(0);
-        claw.setPower(0);
+   //     sweepy.setPower(0);
 
         leftRear.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         rightRear.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -172,8 +166,8 @@ public class HardwareShawn
 //        imu = hwMap.get(BNO055IMU.class, "imu");
 //
         actuator.setDirection(DcMotor.Direction.FORWARD);
-        sweepy.setDirection(DcMotor.Direction.FORWARD);
-        claw.setDirection(DcMotor.Direction.FORWARD);
+   //     sweepy.setDirection(DcMotor.Direction.FORWARD);
+ //       claw.setDirection(DcMotor.Direction.FORWARD);
 
         leftRear.setDirection(DcMotor.Direction.REVERSE);
         rightRear.setDirection(DcMotor.Direction.REVERSE);
@@ -188,7 +182,7 @@ public class HardwareShawn
      //   newMotor.myMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         actuator.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         actuator.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        sweepy.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+   //     sweepy.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         leftRear.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         rightRear.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -197,7 +191,7 @@ public class HardwareShawn
     //    rightFront.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         actuator.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        sweepy.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+    //    sweepy.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         leftRear.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rightRear.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);

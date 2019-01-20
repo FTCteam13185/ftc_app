@@ -109,7 +109,7 @@ public class Shawn_AutonomousDepot extends LinearOpMode {
             (WHEEL_DIAMETER_INCHES * 3.141592653589793238462643383279);
 
     final double TICKS_PER_GB_ROTATION = 537.6;
-    final int MAX_GB_TICKS = 9600 - (int) (TICKS_PER_GB_ROTATION * 0.5);
+    final int MAX_GB_TICKS = 9600 - (int) (TICKS_PER_GB_ROTATION * 1);
     final int MIN_GB_TICKS = 0;
 
     // These constants define the desired driving/controlType characteristics
@@ -357,15 +357,15 @@ public class Shawn_AutonomousDepot extends LinearOpMode {
         gyroHold(TURN_SPEED, -20, 0.5);
 
         //barf up the marker
-        Shawn.sweepy.setPower(-1);
-        Thread.sleep(1500);
-        Shawn.sweepy.setPower(0);
+//        Shawn.sweepy.setPower(-1);
+//        Thread.sleep(1500);
+//        Shawn.sweepy.setPower(0);
 
         gyroTurn(TURN_SPEED, targetHeading);
         gyroHold(TURN_SPEED, targetHeading, 0.5);
 
         // drive to crater
-        gyroDrive(DRIVE_SPEED, 75, targetHeading);
+        gyroDrive(DRIVE_SPEED, 78, targetHeading);
         gyroHold(TURN_SPEED, targetHeading, 3);
 
         while (march.getCurrentPosition() < 23700) {}
