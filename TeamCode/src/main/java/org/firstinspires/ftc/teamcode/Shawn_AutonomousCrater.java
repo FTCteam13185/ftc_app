@@ -175,9 +175,6 @@ public class Shawn_AutonomousCrater extends LinearOpMode {
         Shawn.actuator.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         Shawn.actuator.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-        Shawn.harvester.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        Shawn.harvester.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
         Shawn.armRotation.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         Shawn.armRotation.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
@@ -312,27 +309,27 @@ public class Shawn_AutonomousCrater extends LinearOpMode {
         // MOVING MOVING MOVING MOVING MOVING MOVING MOVING MOVING MOVING MOVING MOVING MOVING MOVING MOVING MOVING MOVING MOVING\
 
         // strafe away from the lander
-        gyroStrafe(STRAFE_SPEED, 2, 2);
+      //  gyroStrafe(STRAFE_SPEED, 5, 2);
 
         // turn for safety
-        gyroTurn(TURN_SPEED, 20);
-        gyroHold(DRIVE_SPEED, 20, 0.5);
+        gyroTurn(TURN_SPEED, 45);
+        gyroHold(DRIVE_SPEED, 45, 0.5);
 
-        // move away from the lander
-        gyroDrive(DRIVE_SPEED, -17, 0);
-        gyroHold(TURN_SPEED, 0, 0.75);
+        // move to friendly alliance wall
+        gyroDrive(DRIVE_SPEED, -44, 45);
+        gyroHold(DRIVE_SPEED, 45, 0.1);
 
-        // lowering actuator
+        // lower actuator
         Shawn.actuator.setTargetPosition(MIN_GB_TICKS);
         Shawn.actuator.setPower(1);
 
-        // turn to face the friendly alliance wall
-        gyroTurn(TURN_SPEED, 90);
-        gyroHold(TURN_SPEED, 90, 0.75);
+        // turn towards depot
+        gyroTurn(TURN_SPEED, 135);
+        gyroHold(DRIVE_SPEED, 135, 0.75);
 
-        // drive to the wall
-        gyroDrive(DRIVE_SPEED, -50, 90);
-        gyroHold(TURN_SPEED, 90, 0.75);
+        // reverse towards depot
+        gyroDrive(DRIVE_SPEED, -66, 135);
+        gyroHold(DRIVE_SPEED, 134, 0.75);
 
         // wait for actuator to stop
         while (Shawn.actuator.isBusy()) {}
@@ -340,25 +337,30 @@ public class Shawn_AutonomousCrater extends LinearOpMode {
         // set actuator power to 0
         Shawn.actuator.setPower(0);
 
-        // turn towards depot
-        gyroTurn(TURN_SPEED, 135);
-        gyroHold(TURN_SPEED, 135, 0.75);
-
-        // reverse towards depot
-        gyroDrive(DRIVE_SPEED, -35, 135);
-        gyroHold(TURN_SPEED, 134, 0.75);
-
-        // turn towards corner
-        gyroTurn(TURN_SPEED, 115);
-        gyroHold(TURN_SPEED, 115, 0.5);
+//        // turn towards corner
+//        gyroTurn(TURN_SPEED, 115);
+//        gyroHold(DRIVE_SPEED, 115, 0.5);
 
         // SPIT OUT MARKER
+        Shawn.armRotation.setTargetPosition(-500);
+        Shawn.armRotation.setPower(0.5);
+        while (Shawn.armRotation.isBusy()) {}
+        Shawn.armRotation.setPower(0);
+        Thread.sleep(200);
+
 //        Shawn.sweepy.setPower(-1);
 //        Thread.sleep(1500);
 //        Shawn.sweepy.setPower(0);
 
-        gyroTurn(TURN_SPEED, 135);
-        gyroHold(TURN_SPEED, 135, 0.5);
+        Shawn.armRotation.setTargetPosition(0);
+        Shawn.armRotation.setPower(0.5);
+        while (Shawn.armRotation.isBusy()) {}
+        Shawn.armRotation.setPower(0);
+        Thread.sleep(200);
+
+//      // reTURN AHAHAHAHAHAHA
+//        gyroTurn(TURN_SPEED, 135);
+//        gyroHold(DRIVE_SPEED, 135, 0.5);
 
         // skedaddle to the crater
         gyroDrive(DRIVE_SPEED, 78, 135);
@@ -693,6 +695,7 @@ public class Shawn_AutonomousCrater extends LinearOpMode {
         Shawn.leftRear.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         Shawn.leftFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         Shawn.rightRear.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        Shawn.rightFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         // Display it for the driver.
         telemetry.addData("Target", "%5.2f", angle);

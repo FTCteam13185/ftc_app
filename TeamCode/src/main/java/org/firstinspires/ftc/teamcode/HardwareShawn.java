@@ -56,8 +56,6 @@ import java.io.File;
  * Motor channel:  Left  drive motor:        "left_drive"
  * Motor channel:  Right drive motor:        "right_drive"
  * Motor channel:  Manipulator drive motor:  "left_arm"
- * Servo channel:  Servo to open left claw:  "left_hand"
- * Servo channel:  Servo to open right claw: "right_hand"
  */
 public class HardwareShawn
 {
@@ -65,8 +63,6 @@ public class HardwareShawn
 
     public BNO055IMU imu = null;
     public DcMotor armRotation = null;
-    public DcMotor harvester = null;
-
 
     public DcMotor leftRear = null;
     public DcMotor rightRear = null;
@@ -74,8 +70,9 @@ public class HardwareShawn
     public DcMotor rightFront = null;
 
     public DcMotor actuator = null;
- //   public DcMotor sweepy = null;
-    public CRServo claw = null;
+    public DcMotor sweepy = null;
+    public CRServo pulley = null;
+ //   public DcMotor brakePulley = null;
 
     public DigitalChannel touchSensor = null;
  //   public ColorSensor colorSensor = null;
@@ -122,36 +119,28 @@ public class HardwareShawn
         }
 
         // Define and Initialize Motors
-        /*
-        armRotation = hwMap.get(DcMotor.class, "Arm_Rotation" ) ;
-        harvester = hwMap.get(DcMotor.class, "Sprocket_Rotation");
-        harvester.setMode (DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        harvester.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        armRotation = hwMap.get(DcMotor.class, "Arm_Rotation" );
         armRotation.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        armRotation.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        armRotation.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
 
         armRotation.setPower(0);
-        harvester.setPower(0);
-        armRotation.setDirection (DcMotor.Direction.FORWARD);
-        harvester.setDirection (DcMotor.Direction.FORWARD);
+        armRotation.setDirection(DcMotor.Direction.FORWARD);
         armRotation.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        harvester.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-*/
-        actuator = hwMap.get(DcMotor.class, "actuator");
 
-    //    sweepy = hwMap.get(DcMotor.class, "sweepy");
+        actuator = hwMap.get(DcMotor.class, "actuator");
+        sweepy = hwMap.get(DcMotor.class, "sweepy");
 
         leftRear = hwMap.get(DcMotor.class, "leftRear");
         rightRear = hwMap.get(DcMotor.class, "rightRear");
         leftFront = hwMap.get(DcMotor.class, "leftFront");
         rightFront = hwMap.get(DcMotor.class, "rightFront");
 
- //       touchSensor = hwMap.get(DigitalChannel.class, "touchSensor");
- //       touchSensor.setMode(DigitalChannel.Mode.INPUT);
+        pulley = hwMap.get(CRServo.class, "pulley");
 
         actuator.setPower(0);
-   //     sweepy.setPower(0);
+        sweepy.setPower(0);
 
         leftRear.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         rightRear.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -166,8 +155,8 @@ public class HardwareShawn
 //        imu = hwMap.get(BNO055IMU.class, "imu");
 //
         actuator.setDirection(DcMotor.Direction.FORWARD);
-   //     sweepy.setDirection(DcMotor.Direction.FORWARD);
- //       claw.setDirection(DcMotor.Direction.FORWARD);
+        sweepy.setDirection(DcMotor.Direction.FORWARD);
+        pulley.setDirection(DcMotor.Direction.FORWARD);
 
         leftRear.setDirection(DcMotor.Direction.REVERSE);
         rightRear.setDirection(DcMotor.Direction.REVERSE);
@@ -177,12 +166,9 @@ public class HardwareShawn
 //        // Set all motors to run without encoders.
 //        // May want to use RUN_USING_ENCODERS if encoders are installed.
 //
-        //actuator.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-     //   newMotor.myMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-     //   newMotor.myMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         actuator.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         actuator.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-   //     sweepy.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        sweepy.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         leftRear.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         rightRear.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -191,7 +177,7 @@ public class HardwareShawn
     //    rightFront.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         actuator.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-    //    sweepy.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        sweepy.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         leftRear.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rightRear.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);

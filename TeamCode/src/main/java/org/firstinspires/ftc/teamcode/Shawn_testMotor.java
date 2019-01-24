@@ -77,6 +77,7 @@ public class Shawn_testMotor extends OpMode {
     static final double P_DRIVE_COEFF = 0.05;    // Larger is more responsive, but also less stable
     static final double DRIVE_SPEED = 0.5;       // SPEEDING AWAY
     final int GB_TICKS_PER_ROTATION = 384;
+    final int REV_TICKS_PER_ROTATION = 2240;
     final int SUB_ROTATION = 4;
     final int MAX_GB_TICKS = 9600 - (int) (GB_TICKS_PER_ROTATION * 1);
     final int MIN_GB_TICKS = 0;
@@ -101,6 +102,8 @@ public class Shawn_testMotor extends OpMode {
 
     boolean saveAngle = true;
     float lastAngle = 0;
+
+    int armPos = 0;
 
     // SOUND STUFF
     MediaPlayer lightsaber = null;
@@ -168,55 +171,82 @@ public class Shawn_testMotor extends OpMode {
         Shawn.actuator.setTargetPosition(GBTicks);
         Shawn.actuator.setPower(1);
 
-//        while(Shawn.actuator.isBusy()){}
-//        Shawn.actuator.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-
-//        if (!Shawn.touchSensor.getState()) {
-//            //   telemetry.addLine("PRESSED!!!!!");
-//        } else {
-//            //   telemetry.addLine("NOT PRESSED!! >:(");
-//        }
         //SWEEPY THINGY SWEEPY THINGY SWEEPY THINGY SWEEPY THINGY
-//        if (gamepad2.x) {
-//            sweep = 1;
-//        } else if (gamepad2.a) {
-//            sweep = 2;
-//        } else if (gamepad2.b) {
-//            sweep = 0;
-//        }
-//
-//        if (sweep == 2) {
-//            Shawn.sweepy.setPower(1);
-//        } else if (sweep == 1) {
-//            Shawn.sweepy.setPower(-1);
-//        } else {
-//            Shawn.sweepy.setPower(0);
-//        }
 
-//        // ARM CONTROL ARM CONTROL ARM CONTROL ARM CONTROL ARM CONTROL
-//        if (Math.abs(gamepad2.left_stick_y) > 0.5) {
-//            holdArm = true;
-//            Shawn.armRotation.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-//            Shawn.armRotation.setPower(0.15 * Range.clip(gamepad2.left_stick_y * 10, -1, 1));
-////            telemetry.addData("Arm's position is ", armTicks);
-////            if (-gamepad2.left_stick_y > 0) {
-////                armTicks += 5;
-////            } else {
-////                armTicks -= 5;
-////            }
+        if (gamepad2.dpad_up) {
+            Shawn.sweepy.setPower(0.75);
+        } else if (gamepad2.dpad_down) {
+            Shawn.sweepy.setPower(-0.75);
+        } else {
+            Shawn.sweepy.setPower(0);
+        }
+
+        // ARM CONTROL ARM CONTROL ARM CONTROL ARM CONTROL ARM CONTROL
+
+        if (gamepad2.a) {
+            Shawn.armRotation.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            Shawn.armRotation.setTargetPosition(0);
+            Shawn.armRotation.setPower(0.5);
+            armPos = 1;
+        } else if (gamepad2.b) {
+            Shawn.armRotation.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            Shawn.armRotation.setTargetPosition(-1690);
+            Shawn.armRotation.setPower(0.5);
+            armPos = 2;
+        } else if (gamepad2.y) {
+            Shawn.armRotation.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            Shawn.armRotation.setTargetPosition(-3560);
+            Shawn.armRotation.setPower(0.5);
+            armPos = 3;
+        }
+
+        if (armPos != 0) {
+            if (!Shawn.armRotation.isBusy()) {
+                armPos = 0;
+                Shawn.armRotation.setPower(0);
+            }
+        }
+
+        if (-gamepad2.left_stick_y > 0.5 && armPos == 0) {
+            if (Shawn.armRotation.getCurrentPosition() > -3560) {
+                Shawn.armRotation.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                Shawn.armRotation.setPower(-0.25);
+            }
+            else {
+                Shawn.armRotation.setPower(0);
+            }
+        } else if (-gamepad2.left_stick_y < -0.5 && armPos == 0) {
+            if (Shawn.armRotation.getCurrentPosition() < 0) {
+                Shawn.armRotation.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                Shawn.armRotation.setPower(0.25);
+            }
+            else {
+                Shawn.armRotation.setPower(0);
+            }
+        } else if (armPos == 0) {
+            Shawn.armRotation.setPower(0);
+        }
+//        Shawn.armRotation.setTargetPosition(armTicks);
+//        Shawn.armRotation.setPower(1);
+
+        // PULLEY CONTROL PULLEY CONTROL PULLEY CONTROL PULLEY CONTROL PULLEY CONTROL PULLEY CONTROL
+
+        if (-gamepad2.right_stick_y > 0.1) {
+            Shawn.pulley.setPower(-gamepad2.right_stick_y);
+        } else if (-gamepad2.right_stick_y < -0.1) {
+            Shawn.pulley.setPower(-gamepad2.right_stick_y);
+        } else {
+            Shawn.pulley.setPower(0);
+        }
+
+//        if (-gamepad2.right_stick_y > 0.1) {
+//            Shawn.brakePulley.setPower(-gamepad2.right_stick_y / 2);
+//        } else if (-gamepad2.right_stick_y < -0.1) {
+//            Shawn.brakePulley.setPower(-gamepad2.right_stick_y / 2);
 //        } else {
-//            if (holdArm) {
-//                armTicks = Shawn.armRotation.getCurrentPosition();
-//                holdArm = false;
-//            }
-//            Shawn.armRotation.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-//            Shawn.armRotation.setTargetPosition(armTicks);
-//            Shawn.armRotation.setPower(0.5);
-////            telemetry.addData("Arm's position is set to ", armTicks);
-////            telemetry.addData("Arm's position is at ", Shawn.armRotation.getCurrentPosition());
+//            Shawn.brakePulley.setPower(0);
 //        }
-////        Shawn.armRotation.setTargetPosition(armTicks);
-////        Shawn.armRotation.setPower(1);
+//        telemetry.addData("pulley ticks: ", Shawn.brakePulley.getCurrentPosition());
 //        telemetry.update();
 
         //DRIVE DRIVE DRIVE DRIVE DRIVE DRIVE DRIVE DRIVE DRIVE DRIVE
@@ -227,18 +257,12 @@ public class Shawn_testMotor extends OpMode {
             rr = -gamepad1.left_stick_y + (-gamepad1.left_stick_x);
             rf = -gamepad1.left_stick_y + (-gamepad1.left_stick_x);
 
-//            telemetry.addLine("Y");
-//            telemetry.addData("gamepad1.left_stick_y", gamepad1.left_stick_y);
-
         } else if (Math.abs(gamepad1.right_stick_x) > 0.1) {
             saveAngle = true;
             lr = gamepad1.right_stick_x;
             lf = gamepad1.right_stick_x;
             rr = -gamepad1.right_stick_x;
             rf = -gamepad1.right_stick_x;
-
-//            telemetry.addLine("X");
-//            telemetry.addData("gamepad1.left_stick_x", gamepad1.left_stick_x);
 
             // STRAFE STRAFE STRAFE STRAFE STRAFE STRAFE STRAFE STRAFE STRAFE STRAFE STRAFE STRAFE STRAFE STRAFE STRAFE STRAFE
         } else if (gamepad1.right_trigger != 0) {
@@ -303,8 +327,6 @@ public class Shawn_testMotor extends OpMode {
         Shawn.rightRear.setPower(rr / control);
         Shawn.rightFront.setPower(rf / control);
 
-        //     telemetry.addData("RF power = ", Shawn.rightFront.getPower());
-        //    telemetry.addData("RF position = ", Shawn.rightFront.getCurrentPosition());
         telemetry.update();
 
     }
