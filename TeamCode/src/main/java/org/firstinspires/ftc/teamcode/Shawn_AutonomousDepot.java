@@ -150,8 +150,6 @@ public class Shawn_AutonomousDepot extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
 
-        double targetHeading = 0;
-
         /*
          * Initialize the standard drive system variables.
          * The init() method of the hardware class does most of the work here
@@ -178,6 +176,9 @@ public class Shawn_AutonomousDepot extends LinearOpMode {
 
         Shawn.actuator.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         Shawn.actuator.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        Shawn.armRotation.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        Shawn.armRotation.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
         // VUFORIA VUFORIA VUFORIA VUFORIA VUFORIA VUFORIA VUFORIA VUFORIA VUFORIA VUFORIA VUFORIA VUFORIA VUFORIA VUFORIA VUFORIA VUFORIA
 /*
@@ -242,6 +243,10 @@ public class Shawn_AutonomousDepot extends LinearOpMode {
 
         */
 
+        Shawn.leftRear.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        Shawn.rightRear.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        Shawn.leftFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        Shawn.rightFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         // BREADY BREADY BREADY BREADY BREADY BREADY BREADY BREADY BREADY BREADY BREADY BREADY BREADY BREADY BREADY BREADY BREADY BREADY BREADY BREADY BREADY BREADY BREADY
 
@@ -269,27 +274,7 @@ public class Shawn_AutonomousDepot extends LinearOpMode {
         // Note: Reverse movement is obtained by setting a negative distance (not speed)
         // Put a hold after each turn
 
-        //fff
-/*
-        RelicRecoveryVuMark vuMark = RelicRecoveryVuMark.from(relicTemplate);
-
-        if (vuMark != RelicRecoveryVuMark.UNKNOWN) {
-            telemetry.addData("VuMark", "%s visible", vuMark);
-            if (vuMark == RelicRecoveryVuMark.RIGHT) {
-                key = 1;
-            } else if (vuMark == RelicRecoveryVuMark.CENTER) {
-                key = 2;
-            } else if (vuMark == RelicRecoveryVuMark.LEFT) {
-                key = 3;
-            }
-        } else {
-            telemetry.addData("VuMark", "not visible");
-        }
-        Thread.sleep(3000);
-*/
-
-//        gyroDrive(DRIVE_SPEED, 12, 0);
-//        gyroHold(TURN_SPEED, 0, 1);
+        //fffsdf
 
         // UNLOCK AND LOWER UNLOCK AND LOWER UNLOCK AND LOWER UNLOCK AND LOWER UNLOCK AND LOWER UNLOCK AND LOWER UNLOCK AND LOWER
 
@@ -306,41 +291,29 @@ public class Shawn_AutonomousDepot extends LinearOpMode {
 
         // stop actuator
         Shawn.actuator.setPower(0);
-
-//        // open claw for 1.5 seconds                              // CHANGED ROBOT DESIGN; THERE IS NO MORE CLAW!!!!
         march.start();          //march start
-//        Shawn.claw.setPower(-1);
-//        Thread.sleep(1500);
-//        Shawn.claw.setPower(0);
 
         // MOVING MOVING MOVING MOVING MOVING MOVING MOVING MOVING MOVING MOVING MOVING MOVING MOVING MOVING MOVING MOVING MOVING
 
-        // strafe away from the lander
-        gyroStrafe(STRAFE_SPEED, 1.5, 0);
+        // turn away from lander
+        gyroTurn(TURN_SPEED, 45);
+        gyroHold(DRIVE_SPEED, 45, 0.3);
 
         // turn towards the far wall
-        targetHeading = 45;
-        gyroTurn(TURN_SPEED, targetHeading);
-        gyroHold(TURN_SPEED, targetHeading, 0.75);
+        gyroTurn(TURN_SPEED, 45);
+        gyroHold(TURN_SPEED, 45, 0.75);
 
         // lowering actuator
         Shawn.actuator.setTargetPosition(MIN_GB_TICKS);
         Shawn.actuator.setPower(1);
 
         // drive towards the far wall
-        gyroDrive(DRIVE_SPEED, -47.5, targetHeading);
-        gyroHold(TURN_SPEED, targetHeading, 0.75);
-
-        // move claw until it touches the sensor
-//        while (Shawn.touchSensor.getState()) {                            // TOOK THE CLAW OUT
-//            Shawn.claw.setPower(1);
-//        }
-//        Shawn.claw.setPower(0);
+        gyroDrive(TURN_SPEED, -46, 45);
+        gyroHold(TURN_SPEED, 45, 0.75);
 
         // turn the back of the robot towards the depot
-        targetHeading = -45;
-        gyroTurn(TURN_SPEED, targetHeading);
-        gyroHold(TURN_SPEED, targetHeading, 0.75);
+        gyroTurn(TURN_SPEED, -45);
+        gyroHold(TURN_SPEED, -45, 0.75);
 
         // wait for actuator to stop
         while (Shawn.actuator.isBusy()) {}
@@ -349,24 +322,24 @@ public class Shawn_AutonomousDepot extends LinearOpMode {
         Shawn.actuator.setPower(0);
 
         // reverse to the depot
-        gyroDrive(DRIVE_SPEED, -28, targetHeading);
-        gyroHold(TURN_SPEED, targetHeading, 0.75);
-
-        // turn to corner
-        gyroTurn(TURN_SPEED, -20);
-        gyroHold(TURN_SPEED, -20, 0.5);
+        gyroDrive(DRIVE_SPEED, -43, -45);
+        gyroHold(TURN_SPEED, -45, 0.75);
 
         //barf up the marker
-//        Shawn.sweepy.setPower(-1);
-//        Thread.sleep(1500);
-//        Shawn.sweepy.setPower(0);
-
-        gyroTurn(TURN_SPEED, targetHeading);
-        gyroHold(TURN_SPEED, targetHeading, 0.5);
+        Shawn.armRotation.setTargetPosition(-500);
+        Shawn.armRotation.setPower(0.5);
+        while (Shawn.armRotation.isBusy()) {}
+        Shawn.armRotation.setPower(0);
+        Thread.sleep(200);
+        Shawn.armRotation.setTargetPosition(0);
+        Shawn.armRotation.setPower(0.5);
+        while (Shawn.armRotation.isBusy()) {}
+        Shawn.armRotation.setPower(0);
+        Thread.sleep(200);
 
         // drive to crater
-        gyroDrive(DRIVE_SPEED, 78, targetHeading);
-        gyroHold(TURN_SPEED, targetHeading, 3);
+        gyroDrive(DRIVE_SPEED, 78, -45);
+        gyroHold(TURN_SPEED, -45, 3);
 
         while (march.getCurrentPosition() < 23700) {}
         march.pause();
@@ -504,7 +477,7 @@ public class Shawn_AutonomousDepot extends LinearOpMode {
      *              0 = fwd. +ve is CCW from fwd. -ve is CW from forward.
      *              If a relative angle is required, add/subtract from current heading.
      */
-    public void gyroTurn(double speed, double angle) {                                                                      // GYRO TURN GYRO TURN GYRO TURN
+    public void gyroTurn(double speed, double angle) {                                                          // GYRO TURN GYRO TURN GYRO TURN
         // keep looping while we are still active, and not on heading.
         while (opModeIsActive() && !onHeading(speed, angle, P_TURN_COEFF)) {
             // Update telemetry & Allow time for other processes to run.

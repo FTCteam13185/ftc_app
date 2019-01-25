@@ -347,11 +347,6 @@ public class Shawn_AutonomousCrater extends LinearOpMode {
         while (Shawn.armRotation.isBusy()) {}
         Shawn.armRotation.setPower(0);
         Thread.sleep(200);
-
-//        Shawn.sweepy.setPower(-1);
-//        Thread.sleep(1500);
-//        Shawn.sweepy.setPower(0);
-
         Shawn.armRotation.setTargetPosition(0);
         Shawn.armRotation.setPower(0.5);
         while (Shawn.armRotation.isBusy()) {}
@@ -679,23 +674,11 @@ public class Shawn_AutonomousCrater extends LinearOpMode {
             leftSpeed = -rightSpeed;
         }
 
-        // CHANGE ALL MODES TO RUN_WITHOUT_ENCODER              // REMOVE WHEN WE HAVE GOOD MOTOR
-        Shawn.leftRear.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        Shawn.leftFront.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        Shawn.rightRear.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        Shawn.rightFront.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-
         // Send desired speeds to motors.
         Shawn.leftRear.setPower(leftSpeed);
         Shawn.rightRear.setPower(rightSpeed);
         Shawn.leftFront.setPower(leftSpeed);
         Shawn.rightFront.setPower(rightSpeed);
-
-        // CHANGE ALL MODES TO RUN_USING_ENCODER              // REMOVE WHEN WE HAVE GOOD MOTOR
-        Shawn.leftRear.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        Shawn.leftFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        Shawn.rightRear.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        Shawn.rightFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         // Display it for the driver.
         telemetry.addData("Target", "%5.2f", angle);
