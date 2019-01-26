@@ -308,7 +308,7 @@ public class Shawn_AutonomousDepot extends LinearOpMode {
         Shawn.actuator.setPower(1);
 
         // drive towards the far wall
-        gyroDrive(TURN_SPEED, -46, 45);
+        gyroDrive(TURN_SPEED, -44, 45);
         gyroHold(TURN_SPEED, 45, 0.75);
 
         // turn the back of the robot towards the depot

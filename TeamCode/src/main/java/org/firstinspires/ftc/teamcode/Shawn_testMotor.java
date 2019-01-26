@@ -149,7 +149,7 @@ public class Shawn_testMotor extends OpMode {
         double steer = 0;
         double maxSpeed = 0;
 
-        int control = 1;
+        double control = 1;
 
         lr = 0;
         rr = 0;
@@ -183,20 +183,15 @@ public class Shawn_testMotor extends OpMode {
 
         // ARM CONTROL ARM CONTROL ARM CONTROL ARM CONTROL ARM CONTROL
 
-        if (gamepad2.a) {
-            Shawn.armRotation.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            Shawn.armRotation.setTargetPosition(0);
-            Shawn.armRotation.setPower(0.5);
-            armPos = 1;
-        } else if (gamepad2.b) {
+        if (gamepad2.b) {
             Shawn.armRotation.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             Shawn.armRotation.setTargetPosition(-1690);
-            Shawn.armRotation.setPower(0.5);
+            Shawn.armRotation.setPower(0.2);
             armPos = 2;
         } else if (gamepad2.y) {
             Shawn.armRotation.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            Shawn.armRotation.setTargetPosition(-3560);
-            Shawn.armRotation.setPower(0.5);
+            Shawn.armRotation.setTargetPosition(-3500);
+            Shawn.armRotation.setPower(0.3);
             armPos = 3;
         }
 
@@ -267,10 +262,9 @@ public class Shawn_testMotor extends OpMode {
             // STRAFE STRAFE STRAFE STRAFE STRAFE STRAFE STRAFE STRAFE STRAFE STRAFE STRAFE STRAFE STRAFE STRAFE STRAFE STRAFE
         } else if (gamepad1.right_trigger != 0) {
             if (saveAngle) {
-               lastAngle = Shawn.imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle;
-            saveAngle = false;
-        }
-
+                lastAngle = Shawn.imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle;
+                saveAngle = false;
+            }
         error = getError(lastAngle);
         steer = getSteer(error, P_DRIVE_COEFF);
 
@@ -311,21 +305,33 @@ public class Shawn_testMotor extends OpMode {
                 rr /= maxSpeed;
             }
 
+        } else if (gamepad2.right_trigger != 0) {
+            lr = gamepad2.right_trigger;
+            lf = gamepad2.right_trigger;
+            rr = -gamepad2.right_trigger;
+            rf = -gamepad2.right_trigger;
+        } else if (gamepad2.left_trigger != 0) {
+            lr = -gamepad2.left_trigger;
+            lf = -gamepad2.left_trigger;
+            rr = gamepad2.left_trigger;
+            rf = gamepad2.left_trigger;
         } else {
-            saveAngle = true;
+                saveAngle = true;
         }
+
+
 
         // FINE CONTROL FINE CONTROL FINE CONTROL FINE CONTROL FINE CONTROL FINE CONTROL
         if (gamepad1.left_bumper) {
-            control = 2;
+            control = 0.5;
         } else if (gamepad1.right_bumper) {
-            control = 4;
+            control = 2;
         }
 
-        Shawn.leftRear.setPower(lr / control);
-        Shawn.leftFront.setPower(lf / control);
-        Shawn.rightRear.setPower(rr / control);
-        Shawn.rightFront.setPower(rf / control);
+        Shawn.leftRear.setPower((lr / 2) / control);
+        Shawn.leftFront.setPower((lf / 2) / control);
+        Shawn.rightRear.setPower((rr / 2) / control);
+        Shawn.rightFront.setPower((rf / 2) / control);
 
         telemetry.update();
 

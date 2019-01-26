@@ -240,6 +240,11 @@ public class Shawn_AutonomousCrater extends LinearOpMode {
         telemetry.update();
 */
 
+        Shawn.leftRear.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        Shawn.rightRear.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        Shawn.leftFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        Shawn.rightFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
         // BREADY BREADY BREADY BREADY BREADY BREADY BREADY BREADY BREADY BREADY BREADY BREADY BREADY BREADY BREADY BREADY BREADY BREADY BREADY BREADY BREADY BREADY BREADY
 
         telemetry.addData(">", "Press Play to start");
