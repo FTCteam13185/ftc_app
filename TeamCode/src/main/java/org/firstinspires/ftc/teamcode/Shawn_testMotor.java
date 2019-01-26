@@ -165,6 +165,10 @@ public class Shawn_testMotor extends OpMode {
             }
         } else if (gamepad1.a) {
             GBTicks = MIN_GB_TICKS;
+        } else if (gamepad1.dpad_down) {
+            GBTicks -= 10;
+        }else if (gamepad1.dpad_up) {
+            GBTicks += 10;
         }
 
         Shawn.actuator.setMode(DcMotor.RunMode.RUN_TO_POSITION);
