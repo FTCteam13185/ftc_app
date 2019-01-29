@@ -131,22 +131,6 @@ public class Shawn_AutonomousDepot extends LinearOpMode {
     MediaPlayer lightsaber = null;
     MediaPlayer march = null;
 
-    // VUFORIA VUFORIA VUFORIA VUFORIA VUFORIA VUFORIA VUFORIA VUFORIA VUFORIA VUFORIA VUFORIA VUFORIA VUFORIA
-
-    private static final String VUFORIA_KEY = "AdC2UuL/////AAAAmbSzzw4/ykWZk7KXU2Ee5ktIYR7RAtJsPrHto/zr/+Lbg1yivLyOllic76kSLHyg2pVgyK+O1gc28/qTWiKCP8WOCzNZ6cq1WMeHspqwVy2jAEN2uR/L/knOn6MO2mqToCJX4" +
-            "zwu15GGIlEyAdbkYKC996Rl3vWD1gtojsWjbAsiVeWVTcfRpENlJA4B/jKsoQHnrzvHIbBV+K5cFh2nYU12jwN8UyM0gUdPPGvspDPVeti8gTKXl+RGddwkIgoLJD0W+Qy0VlCq0j/85C1b72E2yAbFYsIs5GSuOtuYJZw09a+sssGGnbUEXBeU" +
-            "T2mPi607EIU4ga0gcI4gLEo4Ry/qxLBX6v056cXpZrx2JOQW";
-
-    private static final float mmPerInch = 25.4f;
-    private static final float mmFTCFieldWidth = (12 * 6) * mmPerInch;       // the width of the FTC field (from the center point to the outer panels)
-    private static final float mmTargetHeight = (6) * mmPerInch;          // the height of the center of the target image above the floor
-
-    private static final VuforiaLocalizer.CameraDirection CAMERA_CHOICE = BACK;
-    private OpenGLMatrix lastLocation = null;
-    private boolean targetVisible = false;
-
-    VuforiaLocalizer vuforia;
-
     @Override
     public void runOpMode() throws InterruptedException {
 
@@ -155,6 +139,15 @@ public class Shawn_AutonomousDepot extends LinearOpMode {
          * The init() method of the hardware class does most of the work here
          */
         Shawn.init(hardwareMap, true);
+
+        // TFOD TFOD TFOD TFOD TFOD TFOD TFOD TFOD TFOD TFOD TFOD TFOD TFOD TFOD TFOD TFOD TFOD TFOD TFOD
+        Shawn_TensorDetectionCLASS tfod = new Shawn_TensorDetectionCLASS(this, this.hardwareMap, 1000);
+
+        if (ClassFactory.getInstance().canCreateTFObjectDetector()) {
+            tfod.init();
+        } else {
+            telemetry.addLine("uh oh spaghetti-o! This device does not support TFOD!!");
+        }
 
         // SOUND SOUND SOUND
         lightsaber = MediaPlayer.create(this.hardwareMap.appContext, R.raw.lightsaber);
@@ -179,69 +172,6 @@ public class Shawn_AutonomousDepot extends LinearOpMode {
 
         Shawn.armRotation.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         Shawn.armRotation.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-        // VUFORIA VUFORIA VUFORIA VUFORIA VUFORIA VUFORIA VUFORIA VUFORIA VUFORIA VUFORIA VUFORIA VUFORIA VUFORIA VUFORIA VUFORIA VUFORIA
-/*
-        int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
-        VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters(cameraMonitorViewId);
-        parameters.vuforiaLicenseKey = VUFORIA_KEY;
-        parameters.cameraDirection = CAMERA_CHOICE;
-
-        //instantiate vuforia
-        vuforia = ClassFactory.getInstance().createVuforia(parameters);
-
-        // Load the data sets that for the trackable objects. These particular data sets are stored in the 'assets' part of our application.
-        VuforiaTrackables targetsRoverRuckus = this.vuforia.loadTrackablesFromAsset("RoverRuckus");
-        VuforiaTrackable blueRover = targetsRoverRuckus.get(0);
-        blueRover.setName("Blue-Rover");
-        VuforiaTrackable redFootprint = targetsRoverRuckus.get(1);
-        redFootprint.setName("Red-Footprint");
-        VuforiaTrackable frontCraters = targetsRoverRuckus.get(2);
-        frontCraters.setName("Front-Craters");
-        VuforiaTrackable backSpace = targetsRoverRuckus.get(3);
-        backSpace.setName("Back-Space");
-
-        // For convenience, gather together all the trackable objects in one easily-iterable collection
-        List<VuforiaTrackable> allTrackables = new ArrayList<VuforiaTrackable>();
-        allTrackables.addAll(targetsRoverRuckus);
-
-        // putting the targets on the walls (they are all originally at the point (0, 0), we must translate and
-        // rotate them to the positions they are on the actual field
-        // moving blue target (rover)
-        OpenGLMatrix blueRoverLocationOnField = OpenGLMatrix
-                .translation(0, mmFTCFieldWidth, mmTargetHeight)
-                .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0, 0));
-        blueRover.setLocation(blueRoverLocationOnField);
-        // moving red target (footprint)
-        OpenGLMatrix redFootprintLocationOnField = OpenGLMatrix
-                .translation(0, -mmFTCFieldWidth, mmTargetHeight)
-                .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0, 180));
-        redFootprint.setLocation(redFootprintLocationOnField);
-        // moving front target (craters)
-        OpenGLMatrix frontCratersLocationOnField = OpenGLMatrix
-                .translation(-mmFTCFieldWidth, 0, mmTargetHeight)
-                .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0, 90));
-        frontCraters.setLocation(frontCratersLocationOnField);
-        // moving back target (space)
-        OpenGLMatrix backSpaceLocationOnField = OpenGLMatrix
-                .translation(mmFTCFieldWidth, 0, mmTargetHeight)
-                .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0, -90));
-        backSpace.setLocation(backSpaceLocationOnField);
-
-        // translate camera position (originally in the middle of the robot) CAMERA CAMERA CAMERA CAMERA CAMERA CAMERA CAMERA CAMERA CAMERA CAMERA CAMERA CAMERA CAMERA
-        final int CAMERA_FORWARD_DISPLACEMENT = 110;   // eg: Camera is 110 mm in front of robot center
-        final int CAMERA_VERTICAL_DISPLACEMENT = 200;   // eg: Camera is 200 mm above ground
-        final int CAMERA_LEFT_DISPLACEMENT = 0;     // eg: Camera is ON the robot's center line
-
-        OpenGLMatrix phoneLocationOnRobot = OpenGLMatrix
-                .translation(CAMERA_FORWARD_DISPLACEMENT, CAMERA_LEFT_DISPLACEMENT, CAMERA_VERTICAL_DISPLACEMENT)
-                .multiplied(Orientation.getRotationMatrix(EXTRINSIC, YZX, DEGREES,
-                        CAMERA_CHOICE == FRONT ? 90 : -90, 0, 0));
-
-        telemetry.addLine("Vuforia Done");
-        telemetry.update();
-
-        */
 
         Shawn.leftRear.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         Shawn.rightRear.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -278,6 +208,12 @@ public class Shawn_AutonomousDepot extends LinearOpMode {
 
         // UNLOCK AND LOWER UNLOCK AND LOWER UNLOCK AND LOWER UNLOCK AND LOWER UNLOCK AND LOWER UNLOCK AND LOWER UNLOCK AND LOWER
 
+//        while (opModeIsActive()) {
+//            if (tfod.detectGold()) {
+//                //telemetry.addLine("gold");
+//            }
+//        }
+
         // raising actuator
         Shawn.actuator.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         Shawn.actuator.setTargetPosition(MAX_GB_TICKS);
@@ -294,6 +230,36 @@ public class Shawn_AutonomousDepot extends LinearOpMode {
         march.start();          //march start
 
         // MOVING MOVING MOVING MOVING MOVING MOVING MOVING MOVING MOVING MOVING MOVING MOVING MOVING MOVING MOVING MOVING MOVING
+
+        gyroTurn(TURN_SPEED, 180);
+        gyroHold(TURN_SPEED, 180, 0.5);
+
+        // lowering actuator
+        Shawn.actuator.setTargetPosition(MIN_GB_TICKS);
+        Shawn.actuator.setPower(1);
+
+        gyroDrive(TURN_SPEED, -6, 180);
+        gyroHold(TURN_SPEED, 180, 0.2);
+
+        if (tfod.detectGold(1.0)) {
+            telemetry.addLine("THE GOLD IS IN THE CENTER!!! WHOO");
+            gyroDrive(DRIVE_SPEED, 32, 180);
+        } else {
+            gyroTurn(TURN_SPEED, 205);
+            gyroHold(TURN_SPEED, 205, 0.2);
+            if (tfod.detectGold(1.0)) {
+                telemetry.addLine("THE GOLD IS ON THE LEFT!!");
+                gyroDrive(DRIVE_SPEED, 40, 205);
+            } else {
+                telemetry.addLine("THE GOLD SHOULD BE ON THE RIGHT!!");
+                gyroTurn(TURN_SPEED, 155);
+                gyroHold(TURN_SPEED, 155, 0.2);
+                gyroDrive(DRIVE_SPEED, 40, 155);
+            }
+        }
+        telemetry.update();
+
+        Thread.sleep(1000000);
 
         // turn away from lander
         gyroTurn(TURN_SPEED, 45);
