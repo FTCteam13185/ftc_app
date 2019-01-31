@@ -214,6 +214,7 @@ public class Shawn_AutonomousDepot extends LinearOpMode {
 //            }
 //        }
 
+
         // raising actuator
         Shawn.actuator.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         Shawn.actuator.setTargetPosition(MAX_GB_TICKS);
