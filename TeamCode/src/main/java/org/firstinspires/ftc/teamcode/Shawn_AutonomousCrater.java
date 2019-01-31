@@ -37,28 +37,14 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
-import com.qualcomm.robotcore.util.ShortHash;
 
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
-import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
-import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
-import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
-import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import static java.lang.Math.abs;
-import static org.firstinspires.ftc.robotcore.external.navigation.AngleUnit.DEGREES;
-import static org.firstinspires.ftc.robotcore.external.navigation.AxesOrder.XYZ;
-import static org.firstinspires.ftc.robotcore.external.navigation.AxesOrder.YZX;
-import static org.firstinspires.ftc.robotcore.external.navigation.AxesReference.EXTRINSIC;
-import static org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer.CameraDirection.BACK;
-import static org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer.CameraDirection.FRONT;
 
 /**
  * This file illustrates the concept of driving a path based on Gyro heading and encoder counts.
@@ -125,25 +111,18 @@ public class Shawn_AutonomousCrater extends LinearOpMode {
 
   //  Shawn_SensorMRColor cSensor = new Shawn_SensorMRColor();
 
+    // The hypotenuse of the triangle we make when we turn to knock off a gold not in the center
+    public static final int FORWARD_SIDE = 35;
+    public static final int FORWARD_CENTER = 30;
+    public static final int DETECT_BACKUP = 6;
+    public static final int SIDE_A = 15;
+    public static final int ANGLE = 25;
+    public static final double BACK_TO_WALL = -4.00 * 12;
+    public static final double DETECT_TIME = 1.5;
+
     // SOUND SOUND SOUND SOUND SOUND SOUND SOUND SOUND SOUND SOUND SOUND SOUND SOUND SOUND SOUND SOUND SOUND
     MediaPlayer lightsaber = null;
     MediaPlayer march = null;
-
-    // VUFORIA VUFORIA VUFORIA VUFORIA VUFORIA VUFORIA VUFORIA VUFORIA VUFORIA VUFORIA VUFORIA VUFORIA VUFORIA
-
-    private static final String VUFORIA_KEY = "AdC2UuL/////AAAAmbSzzw4/ykWZk7KXU2Ee5ktIYR7RAtJsPrHto/zr/+Lbg1yivLyOllic76kSLHyg2pVgyK+O1gc28/qTWiKCP8WOCzNZ6cq1WMeHspqwVy2jAEN2uR/L/knOn6MO2mqToCJX4" +
-            "zwu15GGIlEyAdbkYKC996Rl3vWD1gtojsWjbAsiVeWVTcfRpENlJA4B/jKsoQHnrzvHIbBV+K5cFh2nYU12jwN8UyM0gUdPPGvspDPVeti8gTKXl+RGddwkIgoLJD0W+Qy0VlCq0j/85C1b72E2yAbFYsIs5GSuOtuYJZw09a+sssGGnbUEXBeU" +
-            "T2mPi607EIU4ga0gcI4gLEo4Ry/qxLBX6v056cXpZrx2JOQW";
-
-    private static final float mmPerInch = 25.4f;
-    private static final float mmFTCFieldWidth = (12 * 6) * mmPerInch;       // the width of the FTC field (from the center point to the outer panels)
-    private static final float mmTargetHeight = (6) * mmPerInch;          // the height of the center of the target image above the floor
-
-    private static final VuforiaLocalizer.CameraDirection CAMERA_CHOICE = BACK;
-    private OpenGLMatrix lastLocation = null;
-    private boolean targetVisible = false;
-
-    VuforiaLocalizer vuforia;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -153,6 +132,15 @@ public class Shawn_AutonomousCrater extends LinearOpMode {
          * The init() method of the hardware class does most of the work here
          */
         Shawn.init(hardwareMap, true);
+
+        // TFOD TFOD TFOD TFOD TFOD TFOD TFOD TFOD TFOD TFOD TFOD TFOD TFOD TFOD TFOD TFOD TFOD TFOD TFOD
+        Shawn_TensorDetectionCLASS tfod = new Shawn_TensorDetectionCLASS(this, this.hardwareMap, 1000);
+
+        if (ClassFactory.getInstance().canCreateTFObjectDetector()) {
+            tfod.init();
+        } else {
+            telemetry.addLine("uh oh spaghetti-o! This device does not support TFOD!!");
+        }
 
         // SOUND SOUND SOUND
         lightsaber = MediaPlayer.create(this.hardwareMap.appContext, R.raw.lightsaber);
@@ -177,68 +165,6 @@ public class Shawn_AutonomousCrater extends LinearOpMode {
 
         Shawn.armRotation.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         Shawn.armRotation.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-        // VUFORIA VUFORIA VUFORIA VUFORIA VUFORIA VUFORIA VUFORIA VUFORIA VUFORIA VUFORIA VUFORIA VUFORIA VUFORIA VUFORIA VUFORIA VUFORIA
-/*
-        int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
-        VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters(cameraMonitorViewId);
-        parameters.vuforiaLicenseKey = VUFORIA_KEY;
-        parameters.cameraDirection = CAMERA_CHOICE;
-
-        //instantiate vuforia
-        vuforia = ClassFactory.getInstance().createVuforia(parameters);
-
-        // Load the data sets that for the trackable objects. These particular data sets are stored in the 'assets' part of our application.
-        VuforiaTrackables targetsRoverRuckus = this.vuforia.loadTrackablesFromAsset("RoverRuckus");
-        VuforiaTrackable blueRover = targetsRoverRuckus.get(0);
-        blueRover.setName("Blue-Rover");
-        VuforiaTrackable redFootprint = targetsRoverRuckus.get(1);
-        redFootprint.setName("Red-Footprint");
-        VuforiaTrackable frontCraters = targetsRoverRuckus.get(2);
-        frontCraters.setName("Front-Craters");
-        VuforiaTrackable backSpace = targetsRoverRuckus.get(3);
-        backSpace.setName("Back-Space");
-
-        // For convenience, gather together all the trackable objects in one easily-iterable collection
-        List<VuforiaTrackable> allTrackables = new ArrayList<VuforiaTrackable>();
-        allTrackables.addAll(targetsRoverRuckus);
-
-        // putting the targets on the walls (they are all originally at the point (0, 0), we must translate and
-        // rotate them to the positions they are on the actual field
-        // moving blue target (rover)
-        OpenGLMatrix blueRoverLocationOnField = OpenGLMatrix
-                .translation(0, mmFTCFieldWidth, mmTargetHeight)
-                .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0, 0));
-        blueRover.setLocation(blueRoverLocationOnField);
-        // moving red target (footprint)
-        OpenGLMatrix redFootprintLocationOnField = OpenGLMatrix
-                .translation(0, -mmFTCFieldWidth, mmTargetHeight)
-                .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0, 180));
-        redFootprint.setLocation(redFootprintLocationOnField);
-        // moving front target (craters)
-        OpenGLMatrix frontCratersLocationOnField = OpenGLMatrix
-                .translation(-mmFTCFieldWidth, 0, mmTargetHeight)
-                .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0, 90));
-        frontCraters.setLocation(frontCratersLocationOnField);
-        // moving back target (space)
-        OpenGLMatrix backSpaceLocationOnField = OpenGLMatrix
-                .translation(mmFTCFieldWidth, 0, mmTargetHeight)
-                .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0, -90));
-        backSpace.setLocation(backSpaceLocationOnField);
-
-        // translate camera position (originally in the middle of the robot) CAMERA CAMERA CAMERA CAMERA CAMERA CAMERA CAMERA CAMERA CAMERA CAMERA CAMERA CAMERA CAMERA
-        final int CAMERA_FORWARD_DISPLACEMENT = 110;   // eg: Camera is 110 mm in front of robot center
-        final int CAMERA_VERTICAL_DISPLACEMENT = 200;   // eg: Camera is 200 mm above ground
-        final int CAMERA_LEFT_DISPLACEMENT = 0;     // eg: Camera is ON the robot's center line
-
-        OpenGLMatrix phoneLocationOnRobot = OpenGLMatrix
-                .translation(CAMERA_FORWARD_DISPLACEMENT, CAMERA_LEFT_DISPLACEMENT, CAMERA_VERTICAL_DISPLACEMENT)
-                .multiplied(Orientation.getRotationMatrix(EXTRINSIC, YZX, DEGREES,
-                        CAMERA_CHOICE == FRONT ? 90 : -90, 0, 0));
-
-        telemetry.addLine("Vuforia Done");
-        telemetry.update();
-*/
 
         Shawn.leftRear.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         Shawn.rightRear.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -272,26 +198,6 @@ public class Shawn_AutonomousCrater extends LinearOpMode {
         // Put a hold after each turn
 
         //fffsdf
-/*
-        RelicRecoveryVuMark vuMark = RelicRecoveryVuMark.from(relicTemplate);
-
-        if (vuMark != RelicRecoveryVuMark.UNKNOWN) {
-            telemetry.addData("VuMark", "%s visible", vuMark);
-            if (vuMark == RelicRecoveryVuMark.RIGHT) {
-                key = 1;
-            } else if (vuMark == RelicRecoveryVuMark.CENTER) {
-                key = 2;
-            } else if (vuMark == RelicRecoveryVuMark.LEFT) {
-                key = 3;
-            }
-        } else {
-            telemetry.addData("VuMark", "not visible");
-        }
-        Thread.sleep(3000);
-*/
-
-//        gyroDrive(DRIVE_SPEED, 12, 0);
-//        gyroHold(TURN_SPEED, 0, 1);
 
         // UNLOCK AND LOWER UNLOCK AND LOWER UNLOCK AND LOWER UNLOCK AND LOWER UNLOCK AND LOWER UNLOCK AND LOWER UNLOCK AND LOWER
 
@@ -316,35 +222,85 @@ public class Shawn_AutonomousCrater extends LinearOpMode {
         // strafe away from the lander
       //  gyroStrafe(STRAFE_SPEED, 5, 2);
 
-        // turn for safety
-        gyroTurn(TURN_SPEED, 45);
-        gyroHold(DRIVE_SPEED, 45, 0.5);
+        // Turn 180 degrees and back up towards lander
+        gyroTurn(TURN_SPEED, 180);
+        gyroHold(TURN_SPEED, 180, 0.5);
 
-        // move to friendly alliance wall
-        gyroDrive(DRIVE_SPEED, -44, 45);
-        gyroHold(DRIVE_SPEED, 45, 0.1);
-
-        // lower actuator
+        // lowering actuator
         Shawn.actuator.setTargetPosition(MIN_GB_TICKS);
         Shawn.actuator.setPower(1);
 
-        // turn towards depot
-        gyroTurn(TURN_SPEED, 135);
-        gyroHold(DRIVE_SPEED, 135, 0.75);
+        gyroDrive(DRIVE_SPEED, -DETECT_BACKUP, 180);
+        gyroHold(TURN_SPEED, 180, 0.1);
 
-        // reverse towards depot
-        gyroDrive(DRIVE_SPEED, -66, 135);
-        gyroHold(DRIVE_SPEED, 134, 0.75);
+        // detect and knock off gold
 
-        // wait for actuator to stop
-        while (Shawn.actuator.isBusy()) {}
+        // sdfsdf
+        double sideB = SIDE_A * (Math.tan(((ANGLE * Math.PI) / 180)));
+        double hypotenuse = (SIDE_A /(Math.cos(((ANGLE * Math.PI) / 180))));
+
+        if (tfod.detectGold(DETECT_TIME)) {
+            telemetry.addLine("THE GOLD IS IN THE CENTER!!! WHOO");
+            // knock gold
+            gyroDrive(DRIVE_SPEED, FORWARD_CENTER, 180);
+            gyroHold(TURN_SPEED, 180, 0.1);
+            // drive back
+            gyroDrive(DRIVE_SPEED, (-FORWARD_CENTER) + SIDE_A, 180);
+            gyroHold(TURN_SPEED, 180, 0.1);
+            // turn to face friendly alliance wall
+            gyroTurn(TURN_SPEED, 90);
+            gyroHold(TURN_SPEED, 90, 0.2);
+            // drive towards friendly alliance wall
+            gyroDrive(DRIVE_SPEED, BACK_TO_WALL, 90);
+            gyroHold(DRIVE_SPEED, 90, 0.1);
+        } else {
+            gyroTurn(TURN_SPEED, 205);
+            gyroHold(TURN_SPEED, 205, 0.2);
+            if (tfod.detectGold(DETECT_TIME)) {
+                telemetry.addLine("THE GOLD IS ON THE LEFT!!");
+                // knock gold
+                gyroDrive(DRIVE_SPEED, FORWARD_SIDE, 205);
+                gyroHold(TURN_SPEED, 205, 0.1);
+                // drive back THE HYPOTENUSE OF THE TRIANGLE FORMED BY TURNING 25 DEGREES IS 6 in/cos25 degrees
+                gyroDrive(DRIVE_SPEED, (-FORWARD_SIDE) + hypotenuse, 205);
+                gyroHold(TURN_SPEED, 205, 0.1);
+                // turn to face friendly alliance wall
+                gyroTurn(TURN_SPEED, 90);
+                gyroHold(TURN_SPEED, 90, 0.2);
+                // drive towards friendly alliance wall
+                gyroDrive(DRIVE_SPEED, BACK_TO_WALL + sideB, 90);
+                gyroHold(DRIVE_SPEED, 90, 0.1);
+            } else {
+                telemetry.addLine("THE GOLD SHOULD BE ON THE RIGHT!!");
+                // turn to face gold
+                gyroTurn(TURN_SPEED, 155);
+                gyroHold(TURN_SPEED, 155, 0.2);
+                // knock gold
+                gyroDrive(DRIVE_SPEED, FORWARD_SIDE, 155);
+                gyroHold(TURN_SPEED, 155, 0.1);
+                // drive back
+                gyroDrive(DRIVE_SPEED, (-FORWARD_SIDE) + hypotenuse, 155);
+                gyroHold(TURN_SPEED, 155, 0.1);
+                // turn to face friendly alliance wall
+                gyroTurn(TURN_SPEED, 90);
+                gyroHold(TURN_SPEED, 90, 0.2);
+                // drive towards friendly alliance wall
+                gyroDrive(DRIVE_SPEED, BACK_TO_WALL - sideB, 90);
+                gyroHold(TURN_SPEED, 90, 0.1);
+            }
+        }
+        telemetry.update();
 
         // set actuator power to 0
         Shawn.actuator.setPower(0);
 
-//        // turn towards corner
-//        gyroTurn(TURN_SPEED, 115);
-//        gyroHold(DRIVE_SPEED, 115, 0.5);
+        // turn towards depot
+        gyroTurn(TURN_SPEED, 135);
+        gyroHold(DRIVE_SPEED, 135, 0.3);
+
+        // reverse towards depot
+        gyroDrive(1, -42, 135);
+        gyroHold(DRIVE_SPEED, 135, 0.2);
 
         // SPIT OUT MARKER
         Shawn.armRotation.setTargetPosition(-500);
@@ -358,12 +314,8 @@ public class Shawn_AutonomousCrater extends LinearOpMode {
         Shawn.armRotation.setPower(0);
         Thread.sleep(200);
 
-//      // reTURN AHAHAHAHAHAHA
-//        gyroTurn(TURN_SPEED, 135);
-//        gyroHold(DRIVE_SPEED, 135, 0.5);
-
         // skedaddle to the crater
-        gyroDrive(DRIVE_SPEED, 78, 135);
+        gyroDrive(1, 82, 135);
 
         while (march.getCurrentPosition() < 23700) {}
         march.pause();

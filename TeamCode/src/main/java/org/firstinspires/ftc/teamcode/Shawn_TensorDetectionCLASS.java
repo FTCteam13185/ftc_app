@@ -117,6 +117,7 @@ public class Shawn_TensorDetectionCLASS {
                     opmode.telemetry.addData("# Object Detected", updatedRecognitions.size());
                     if (updatedRecognitions.size() > 0) {
                         opmode.telemetry.addData("image height", updatedRecognitions.get(0).getImageHeight());
+                        opmode.telemetry.addData("image width", updatedRecognitions.get(0).getImageWidth());
                     }
                     opmode.telemetry.update();
                     if (updatedRecognitions.size() >= 1) {

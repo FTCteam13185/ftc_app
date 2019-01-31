@@ -214,6 +214,7 @@ public class Shawn_AutonomousDepot extends LinearOpMode {
 //            }
 //        }
 
+        tfod.detectGold(100000);
 
         // raising actuator
         Shawn.actuator.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -239,9 +240,11 @@ public class Shawn_AutonomousDepot extends LinearOpMode {
         Shawn.actuator.setTargetPosition(MIN_GB_TICKS);
         Shawn.actuator.setPower(1);
 
+        // move back towards lander
         gyroDrive(TURN_SPEED, -6, 180);
         gyroHold(TURN_SPEED, 180, 0.2);
 
+        // detect and knock off gold
         if (tfod.detectGold(1.0)) {
             telemetry.addLine("THE GOLD IS IN THE CENTER!!! WHOO");
             gyroDrive(DRIVE_SPEED, 32, 180);
