@@ -131,6 +131,15 @@ public class Shawn_AutonomousDepot extends LinearOpMode {
     MediaPlayer lightsaber = null;
     MediaPlayer march = null;
 
+    // EVERRYTHING FOR SENSING AND KNOCKING EVERYTHING FOR SENSING AND KNOCKING EVERYTHING FOR SENSING AND KNOCKING
+    public static final int FORWARD_SIDE = 35;
+    public static final int FORWARD_CENTER = 30;
+    public static final int DETECT_BACKUP = 6;
+    public static final int SIDE_A = 15;
+    public static final int ANGLE = 25;
+    public static final double BACK_TO_WALL = -15.5;
+    public static final double DETECT_TIME = 1.5;
+
     @Override
     public void runOpMode() throws InterruptedException {
 
@@ -214,8 +223,6 @@ public class Shawn_AutonomousDepot extends LinearOpMode {
 //            }
 //        }
 
-        tfod.detectGold(100000);
-
         // raising actuator
         Shawn.actuator.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         Shawn.actuator.setTargetPosition(MAX_GB_TICKS);
@@ -233,69 +240,96 @@ public class Shawn_AutonomousDepot extends LinearOpMode {
 
         // MOVING MOVING MOVING MOVING MOVING MOVING MOVING MOVING MOVING MOVING MOVING MOVING MOVING MOVING MOVING MOVING MOVING
 
-        gyroTurn(TURN_SPEED, 180);
-        gyroHold(TURN_SPEED, 180, 0.5);
+        gyroTurn(TURN_SPEED, 179);
+//        gyroHold(TURN_SPEED, 180, 0.5);
 
         // lowering actuator
         Shawn.actuator.setTargetPosition(MIN_GB_TICKS);
         Shawn.actuator.setPower(1);
 
         // move back towards lander
-        gyroDrive(TURN_SPEED, -6, 180);
+        gyroDrive(TURN_SPEED, -DETECT_BACKUP, 180);
         gyroHold(TURN_SPEED, 180, 0.2);
 
+        boolean normalPath = true;
+
         // detect and knock off gold
-        if (tfod.detectGold(1.0)) {
-            telemetry.addLine("THE GOLD IS IN THE CENTER!!! WHOO");
-            gyroDrive(DRIVE_SPEED, 32, 180);
+
+        double sideB = SIDE_A * (Math.tan(((ANGLE * Math.PI) / 180)));
+        double hypotenuse = (SIDE_A /(Math.cos(((ANGLE * Math.PI) / 180))));
+
+        if (tfod.detectGold(DETECT_TIME)) {
+            telemetry.addLine("THE GOLD IS IN THE CENTER!!! WHOO"); // sdfsdf
+            // knock gold
+            gyroDrive(DRIVE_SPEED, FORWARD_CENTER, 180);
+//            gyroHold(TURN_SPEED, 180, 0.1);
+            // drive back
+            gyroDrive(DRIVE_SPEED, (-FORWARD_CENTER) + SIDE_A, 180);
+//            gyroHold(TURN_SPEED, 180, 0.1);
+            // turn to face friendly alliance wall
+            gyroTurn(TURN_SPEED, 90);
+            gyroHold(TURN_SPEED, 90, 0.2);
+            // drive towards friendly alliance wall
+            gyroDrive(DRIVE_SPEED, BACK_TO_WALL, 90);
+//            gyroHold(DRIVE_SPEED, 90, 0.1);
         } else {
             gyroTurn(TURN_SPEED, 205);
             gyroHold(TURN_SPEED, 205, 0.2);
-            if (tfod.detectGold(1.0)) {
+            if (tfod.detectGold(DETECT_TIME)) {
                 telemetry.addLine("THE GOLD IS ON THE LEFT!!");
-                gyroDrive(DRIVE_SPEED, 40, 205);
+                // knock gold
+                gyroDrive(DRIVE_SPEED, FORWARD_SIDE, 205);
+//                gyroHold(TURN_SPEED, 205, 0.1);
+                // drive back THE HYPOTENUSE OF THE TRIANGLE FORMED BY TURNING 25 DEGREES IS 6 in/cos25 degrees
+                gyroDrive(DRIVE_SPEED, (-FORWARD_SIDE) + hypotenuse, 205);
+//                gyroHold(TURN_SPEED, 205, 0.1);
+                // turn to face friendly alliance wall
+                gyroTurn(TURN_SPEED, 90);
+                gyroHold(TURN_SPEED, 90, 0.2);
+                // drive towards friendly alliance wall
+                gyroDrive(DRIVE_SPEED, BACK_TO_WALL + sideB, 90);
+//                gyroHold(DRIVE_SPEED, 90, 0.1);
             } else {
                 telemetry.addLine("THE GOLD SHOULD BE ON THE RIGHT!!");
+                // turn to face gold
                 gyroTurn(TURN_SPEED, 155);
                 gyroHold(TURN_SPEED, 155, 0.2);
-                gyroDrive(DRIVE_SPEED, 40, 155);
+                // knock gold
+                gyroDrive(DRIVE_SPEED, FORWARD_SIDE, 155);
+//                gyroHold(TURN_SPEED, 155, 0.1);
+                // drive back
+                gyroDrive(DRIVE_SPEED, (-FORWARD_SIDE) + hypotenuse, 155);
+//                gyroHold(TURN_SPEED, 155, 0.1);
+                // turn to face friendly alliance wall
+                gyroTurn(TURN_SPEED, 90);
+                gyroHold(TURN_SPEED, 90, 0.2);
+                // drive towards friendly alliance wall
+                gyroDrive(DRIVE_SPEED, BACK_TO_WALL - sideB, 90);
+//                gyroHold(TURN_SPEED, 90, 0.1);
             }
         }
         telemetry.update();
 
-        Thread.sleep(1000000);
-
-        // turn away from lander
-        gyroTurn(TURN_SPEED, 45);
-        gyroHold(DRIVE_SPEED, 45, 0.3);
-
-        // turn towards the far wall
-        gyroTurn(TURN_SPEED, 45);
-        gyroHold(TURN_SPEED, 45, 0.75);
-
-        // lowering actuator
-        Shawn.actuator.setTargetPosition(MIN_GB_TICKS);
-        Shawn.actuator.setPower(1);
-
-        // drive towards the far wall
-        gyroDrive(TURN_SPEED, -44, 45);
-        gyroHold(TURN_SPEED, 45, 0.75);
-
-        // turn the back of the robot towards the depot
-        gyroTurn(TURN_SPEED, -45);
-        gyroHold(TURN_SPEED, -45, 0.75);
-
-        // wait for actuator to stop
-        while (Shawn.actuator.isBusy()) {}
-
         // set actuator power to 0
         Shawn.actuator.setPower(0);
 
-        // reverse to the depot
-        gyroDrive(DRIVE_SPEED, -43, -45);
-        gyroHold(TURN_SPEED, -45, 0.75);
+        // turn towards depot wall
+        gyroTurn(TURN_SPEED, 45);
+        gyroHold(DRIVE_SPEED, 45, 0.5);
 
-        //barf up the marker
+        // reverse towards depot wall
+        gyroDrive(DRIVE_SPEED, -23, 45);
+//        gyroHold(DRIVE_SPEED, 45, 0.2);
+
+        // turn to depot
+        gyroTurn(TURN_SPEED, -45);
+        gyroHold(TURN_SPEED, -45, 0.5);
+
+        // reverse to depot
+        gyroDrive(DRIVE_SPEED, -43, -45);
+//        gyroHold(TURN_SPEED, -45, 0.1);
+
+        // SPIT OUT MARKER
         Shawn.armRotation.setTargetPosition(-500);
         Shawn.armRotation.setPower(0.5);
         while (Shawn.armRotation.isBusy()) {}
@@ -307,9 +341,8 @@ public class Shawn_AutonomousDepot extends LinearOpMode {
         Shawn.armRotation.setPower(0);
         Thread.sleep(200);
 
-        // drive to crater
-        gyroDrive(DRIVE_SPEED, 78, -45);
-        gyroHold(TURN_SPEED, -45, 3);
+        // skedaddle to the crater
+        gyroDrive(1, 82, -45);
 
         while (march.getCurrentPosition() < 23700) {}
         march.pause();

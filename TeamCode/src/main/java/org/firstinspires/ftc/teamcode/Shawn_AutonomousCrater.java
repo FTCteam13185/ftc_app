@@ -111,6 +111,7 @@ public class Shawn_AutonomousCrater extends LinearOpMode {
 
   //  Shawn_SensorMRColor cSensor = new Shawn_SensorMRColor();
 
+
     // The hypotenuse of the triangle we make when we turn to knock off a gold not in the center
     public static final int FORWARD_SIDE = 35;
     public static final int FORWARD_CENTER = 30;
@@ -296,7 +297,7 @@ public class Shawn_AutonomousCrater extends LinearOpMode {
 
         // turn towards depot
         gyroTurn(TURN_SPEED, 135);
-        gyroHold(DRIVE_SPEED, 135, 0.3);
+        gyroHold(DRIVE_SPEED, 135, 0.5);  // Hold time was 0.3
 
         // reverse towards depot
         gyroDrive(1, -42, 135);
