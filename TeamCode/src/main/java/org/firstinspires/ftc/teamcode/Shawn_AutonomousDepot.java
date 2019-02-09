@@ -138,7 +138,7 @@ public class Shawn_AutonomousDepot extends LinearOpMode {
     public static final int SIDE_A = 15;
     public static final int ANGLE = 25;
     public static final double BACK_TO_WALL = -15.5;
-    public static final double DETECT_TIME = 1.5;
+    public static final double DETECT_TIME = 1.75;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -275,7 +275,7 @@ public class Shawn_AutonomousDepot extends LinearOpMode {
         } else {
             gyroTurn(TURN_SPEED, 205);
             gyroHold(TURN_SPEED, 205, 0.2);
-            if (tfod.detectGold(DETECT_TIME)) {
+            if (tfod.detectGold(/*DETECT_TIME*/ 10000000)) {
                 telemetry.addLine("THE GOLD IS ON THE LEFT!!");
                 // knock gold
                 gyroDrive(DRIVE_SPEED, FORWARD_SIDE, 205);
@@ -334,15 +334,15 @@ public class Shawn_AutonomousDepot extends LinearOpMode {
         Shawn.armRotation.setPower(0.5);
         while (Shawn.armRotation.isBusy()) {}
         Shawn.armRotation.setPower(0);
-        Thread.sleep(200);
+
+        // skedaddle to the crater
+        gyroDrive(1, 82, -45);
+
         Shawn.armRotation.setTargetPosition(0);
         Shawn.armRotation.setPower(0.5);
         while (Shawn.armRotation.isBusy()) {}
         Shawn.armRotation.setPower(0);
         Thread.sleep(200);
-
-        // skedaddle to the crater
-        gyroDrive(1, 82, -45);
 
         while (march.getCurrentPosition() < 23700) {}
         march.pause();

@@ -194,7 +194,7 @@ public class Shawn_testMotor extends OpMode {
             armPos = 2;
         } else if (gamepad2.y) {
             Shawn.armRotation.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            Shawn.armRotation.setTargetPosition(-3500);
+            Shawn.armRotation.setTargetPosition(-3450);
             Shawn.armRotation.setPower(0.3);
             armPos = 3;
         }
@@ -207,7 +207,7 @@ public class Shawn_testMotor extends OpMode {
         }
 
         if (-gamepad2.left_stick_y > 0.5 && armPos == 0) {
-            if (Shawn.armRotation.getCurrentPosition() > -3560) {
+            if (Shawn.armRotation.getCurrentPosition() > -3450) {
                 Shawn.armRotation.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
                 Shawn.armRotation.setPower(-0.25);
             }
@@ -310,15 +310,15 @@ public class Shawn_testMotor extends OpMode {
             }
 
         } else if (gamepad2.right_trigger != 0) {
-            lr = gamepad2.right_trigger;
-            lf = gamepad2.right_trigger;
-            rr = -gamepad2.right_trigger;
-            rf = -gamepad2.right_trigger;
+            lr = gamepad2.right_trigger / 2;
+            lf = gamepad2.right_trigger / 2;
+            rr = -gamepad2.right_trigger / 2;
+            rf = -gamepad2.right_trigger / 2;
         } else if (gamepad2.left_trigger != 0) {
-            lr = -gamepad2.left_trigger;
-            lf = -gamepad2.left_trigger;
-            rr = gamepad2.left_trigger;
-            rf = gamepad2.left_trigger;
+            lr = -gamepad2.left_trigger / 2;
+            lf = -gamepad2.left_trigger / 2;
+            rr = gamepad2.left_trigger / 2;
+            rf = gamepad2.left_trigger / 2;
         } else {
                 saveAngle = true;
         }

@@ -119,19 +119,18 @@ public class Shawn_TensorDetectionCLASS {
                         opmode.telemetry.addData("image height", updatedRecognitions.get(0).getImageHeight());
                         opmode.telemetry.addData("image width", updatedRecognitions.get(0).getImageWidth());
                     }
-                    opmode.telemetry.update();
                     if (updatedRecognitions.size() >= 1) {
                         for (Recognition recognition : updatedRecognitions) {
                             if (recognition.getBottom() > screenLimit) {
                                 opmode.telemetry.addData("bottom position", recognition.getBottom());
                                 opmode.telemetry.addLine("GOLD!");
-                                opmode.telemetry.update();
                                 seen = true;
                             }
                         }
                     } else {
                         seen = false;
                     }
+                    opmode.telemetry.update();
                 }
             }
         }
