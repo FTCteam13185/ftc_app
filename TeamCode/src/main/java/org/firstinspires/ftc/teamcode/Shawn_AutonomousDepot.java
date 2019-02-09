@@ -131,12 +131,25 @@ public class Shawn_AutonomousDepot extends LinearOpMode {
     MediaPlayer lightsaber = null;
     MediaPlayer march = null;
 
-    // EVERRYTHING FOR SENSING AND KNOCKING EVERYTHING FOR SENSING AND KNOCKING EVERYTHING FOR SENSING AND KNOCKING
-    public static final int FORWARD_SIDE = 35;
-    public static final int FORWARD_CENTER = 30;
-    public static final int DETECT_BACKUP = 6;
-    public static final int SIDE_A = 15;
-    public static final int ANGLE = 25;
+    // Constant for Sampling path
+    public static final double TILE_DIAGONAL = 2 * Math.sqrt(2) * 12;
+
+    public static final double DETECT_BACKUP = /*5.5*/ 0;
+
+    public static final double DIST_TO_TILE_CORNER = 14;
+    public static final double DIST_TO_CENTER_MINERAL = DIST_TO_TILE_CORNER + (TILE_DIAGONAL / 2) + DETECT_BACKUP;
+    public static final double DIST_TO_SIDE_MINERAL = Math.sqrt(Math.pow(DIST_TO_CENTER_MINERAL, 2) + Math.pow(TILE_DIAGONAL/2, 2));
+    public static final double ANGLE_TO_SIDE_MINERAL = (Math.acos(DIST_TO_CENTER_MINERAL/DIST_TO_SIDE_MINERAL) * 180) / Math.PI;
+
+    // so we do not go to far when we go to knock off the mineral (distance to center mineral is the distance from the middle of the robot)
+    public static final double CUBE_SIDE = 2;
+    public static final double LESS = 9 - (2 * CUBE_SIDE);
+    public static final double EXTRA_DIST = 5;
+
+    // The hypotenuse of the triangle we make when we turn to knock off a gold not in the center
+    public static final double FORWARD_SIDE = DIST_TO_SIDE_MINERAL - LESS;
+    public static final double FORWARD_CENTER = DIST_TO_CENTER_MINERAL - LESS;
+    public static final double SIDE_A = DIST_TO_TILE_CORNER + DETECT_BACKUP;
     public static final double BACK_TO_WALL = -15.5;
     public static final double DETECT_TIME = 1.75;
 
@@ -241,7 +254,7 @@ public class Shawn_AutonomousDepot extends LinearOpMode {
         // MOVING MOVING MOVING MOVING MOVING MOVING MOVING MOVING MOVING MOVING MOVING MOVING MOVING MOVING MOVING MOVING MOVING
 
         gyroTurn(TURN_SPEED, 179);
-//        gyroHold(TURN_SPEED, 180, 0.5);
+        gyroHold(TURN_SPEED, 180, 0.5);
 
         // lowering actuator
         Shawn.actuator.setTargetPosition(MIN_GB_TICKS);
@@ -255,57 +268,59 @@ public class Shawn_AutonomousDepot extends LinearOpMode {
 
         // detect and knock off gold
 
-        double sideB = SIDE_A * (Math.tan(((ANGLE * Math.PI) / 180)));
-        double hypotenuse = (SIDE_A /(Math.cos(((ANGLE * Math.PI) / 180))));
+        // sdfsdf
+        double sideB = SIDE_A * (Math.tan(((ANGLE_TO_SIDE_MINERAL * Math.PI) / 180)));
+        double hypotenuse = Math.sqrt(Math.pow(SIDE_A, 2) + Math.pow(sideB, 2));
 
         if (tfod.detectGold(DETECT_TIME)) {
-            telemetry.addLine("THE GOLD IS IN THE CENTER!!! WHOO"); // sdfsdf
+            telemetry.addLine("THE GOLD IS IN THE CENTER!!! WHOO");
             // knock gold
             gyroDrive(DRIVE_SPEED, FORWARD_CENTER, 180);
-//            gyroHold(TURN_SPEED, 180, 0.1);
+            gyroHold(TURN_SPEED, 180, 0.1);
             // drive back
             gyroDrive(DRIVE_SPEED, (-FORWARD_CENTER) + SIDE_A, 180);
-//            gyroHold(TURN_SPEED, 180, 0.1);
+            gyroHold(TURN_SPEED, 180, 0.1);
             // turn to face friendly alliance wall
             gyroTurn(TURN_SPEED, 90);
             gyroHold(TURN_SPEED, 90, 0.2);
             // drive towards friendly alliance wall
             gyroDrive(DRIVE_SPEED, BACK_TO_WALL, 90);
-//            gyroHold(DRIVE_SPEED, 90, 0.1);
+            gyroHold(DRIVE_SPEED, 90, 0.1);
         } else {
-            gyroTurn(TURN_SPEED, 205);
-            gyroHold(TURN_SPEED, 205, 0.2);
-            if (tfod.detectGold(/*DETECT_TIME*/ 10000000)) {
+            // turn to look at left mineral
+            gyroTurn(TURN_SPEED, 180 + ANGLE_TO_SIDE_MINERAL);
+            gyroHold(TURN_SPEED, 180 + ANGLE_TO_SIDE_MINERAL, 0.2);
+            if (tfod.detectGold(DETECT_TIME)) {
                 telemetry.addLine("THE GOLD IS ON THE LEFT!!");
                 // knock gold
-                gyroDrive(DRIVE_SPEED, FORWARD_SIDE, 205);
-//                gyroHold(TURN_SPEED, 205, 0.1);
-                // drive back THE HYPOTENUSE OF THE TRIANGLE FORMED BY TURNING 25 DEGREES IS 6 in/cos25 degrees
-                gyroDrive(DRIVE_SPEED, (-FORWARD_SIDE) + hypotenuse, 205);
-//                gyroHold(TURN_SPEED, 205, 0.1);
+                gyroDrive(DRIVE_SPEED, FORWARD_SIDE /* this is because the wheel gets caught on the gold block*/ + EXTRA_DIST, 180 + ANGLE_TO_SIDE_MINERAL);
+                gyroHold(TURN_SPEED, 180 + ANGLE_TO_SIDE_MINERAL, 0.1);
+                // drive back
+                gyroDrive(DRIVE_SPEED, (-FORWARD_SIDE) + hypotenuse - EXTRA_DIST, 180 + ANGLE_TO_SIDE_MINERAL);
+                gyroHold(TURN_SPEED, 180 + ANGLE_TO_SIDE_MINERAL, 0.1);
                 // turn to face friendly alliance wall
                 gyroTurn(TURN_SPEED, 90);
                 gyroHold(TURN_SPEED, 90, 0.2);
                 // drive towards friendly alliance wall
                 gyroDrive(DRIVE_SPEED, BACK_TO_WALL + sideB, 90);
-//                gyroHold(DRIVE_SPEED, 90, 0.1);
+                gyroHold(DRIVE_SPEED, 90, 0.1);
             } else {
                 telemetry.addLine("THE GOLD SHOULD BE ON THE RIGHT!!");
                 // turn to face gold
-                gyroTurn(TURN_SPEED, 155);
-                gyroHold(TURN_SPEED, 155, 0.2);
+                gyroTurn(TURN_SPEED, 180 - ANGLE_TO_SIDE_MINERAL);
+                gyroHold(TURN_SPEED, 180 - ANGLE_TO_SIDE_MINERAL, 0.2);
                 // knock gold
-                gyroDrive(DRIVE_SPEED, FORWARD_SIDE, 155);
-//                gyroHold(TURN_SPEED, 155, 0.1);
+                gyroDrive(DRIVE_SPEED, FORWARD_SIDE, 180 - ANGLE_TO_SIDE_MINERAL);
+                gyroHold(TURN_SPEED, 180 - ANGLE_TO_SIDE_MINERAL, 0.1);
                 // drive back
-                gyroDrive(DRIVE_SPEED, (-FORWARD_SIDE) + hypotenuse, 155);
-//                gyroHold(TURN_SPEED, 155, 0.1);
+                gyroDrive(DRIVE_SPEED, (-FORWARD_SIDE) + hypotenuse, 180 - ANGLE_TO_SIDE_MINERAL);
+                gyroHold(TURN_SPEED, 180 - ANGLE_TO_SIDE_MINERAL, 0.1);
                 // turn to face friendly alliance wall
                 gyroTurn(TURN_SPEED, 90);
                 gyroHold(TURN_SPEED, 90, 0.2);
                 // drive towards friendly alliance wall
                 gyroDrive(DRIVE_SPEED, BACK_TO_WALL - sideB, 90);
-//                gyroHold(TURN_SPEED, 90, 0.1);
+                gyroHold(TURN_SPEED, 90, 0.1);
             }
         }
         telemetry.update();
@@ -334,15 +349,14 @@ public class Shawn_AutonomousDepot extends LinearOpMode {
         Shawn.armRotation.setPower(0.5);
         while (Shawn.armRotation.isBusy()) {}
         Shawn.armRotation.setPower(0);
-
-        // skedaddle to the crater
-        gyroDrive(1, 82, -45);
-
         Shawn.armRotation.setTargetPosition(0);
         Shawn.armRotation.setPower(0.5);
         while (Shawn.armRotation.isBusy()) {}
         Shawn.armRotation.setPower(0);
         Thread.sleep(200);
+
+        // skedaddle to the crater
+        gyroDrive(1, 82, -45);
 
         while (march.getCurrentPosition() < 23700) {}
         march.pause();
