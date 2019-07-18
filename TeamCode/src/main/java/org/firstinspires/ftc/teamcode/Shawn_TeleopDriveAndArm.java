@@ -29,6 +29,8 @@
 
 package org.firstinspires.ftc.teamcode;
 
+import android.media.MediaPlayer;
+
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -60,6 +62,10 @@ public class Shawn_TeleopDriveAndArm extends OpMode {
     boolean controlType = true;
     Shawn_SweepControl sweeper = null;
 
+    // SPEECH SPEECH SPEECH SPEECH SPEECH SPEECH SPEECH SPEECH SPEECH
+    MediaPlayer speech = null;
+    boolean playingSpeech = false;
+
     @Override
     public void init() {
 
@@ -68,13 +74,31 @@ public class Shawn_TeleopDriveAndArm extends OpMode {
 
         sweeper = new Shawn_SweepControl(Shawn.hwMap);
 
-
+       // speech = MediaPlayer.create(this.hardwareMap.appContext, R.raw.!!!!!!!!);  // SPEECH SPEECH SPEECH SPEECH SPEECH SPEECH
+        speech = MediaPlayer.create(this.hardwareMap.appContext, R.raw.imperialmarch);
+        speech.seekTo(0);
+        speech.pause();
 
         telemetry.addData("Status", "Initialized");
     }
 
     @Override
     public void loop() {
+
+        // SPEECH SPEECH SPEECH SPEECH SPEECH SPEECH SPEECH SPEECH SPEECH SPEECH SPEECH
+        while (gamepad1.a) {
+            if (playingSpeech) {
+                playingSpeech = false;
+            } else {
+                playingSpeech = true;
+            }
+        }
+
+        if (playingSpeech) {
+            speech.start();
+        } else {
+            speech.pause();
+        }
 
         if (gamepad1.dpad_up) {
             sweeper.sweepyOp(1);

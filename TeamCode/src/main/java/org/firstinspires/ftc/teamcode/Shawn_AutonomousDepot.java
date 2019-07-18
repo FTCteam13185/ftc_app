@@ -150,7 +150,7 @@ public class Shawn_AutonomousDepot extends LinearOpMode {
     public static final double FORWARD_SIDE = DIST_TO_SIDE_MINERAL - LESS;
     public static final double FORWARD_CENTER = DIST_TO_CENTER_MINERAL - LESS;
     public static final double SIDE_A = DIST_TO_TILE_CORNER + DETECT_BACKUP;
-    public static final double BACK_TO_WALL = -15.5;
+    public static final double BACK_TO_WALL = -17;
     public static final double DETECT_TIME = 1.75;
 
     @Override
@@ -349,14 +349,16 @@ public class Shawn_AutonomousDepot extends LinearOpMode {
         Shawn.armRotation.setPower(0.5);
         while (Shawn.armRotation.isBusy()) {}
         Shawn.armRotation.setPower(0);
-        Shawn.armRotation.setTargetPosition(0);
-        Shawn.armRotation.setPower(0.5);
-        while (Shawn.armRotation.isBusy()) {}
-        Shawn.armRotation.setPower(0);
-        Thread.sleep(200);
 
         // skedaddle to the crater
-        gyroDrive(1, 82, -45);
+        gyroDrive(1, 41, -45);
+
+        Shawn.armRotation.setTargetPosition(0);
+        Shawn.armRotation.setPower(0.5);
+
+        gyroDrive(1, 41, -45);
+
+        Shawn.armRotation.setPower(0);
 
         while (march.getCurrentPosition() < 23700) {}
         march.pause();

@@ -79,9 +79,9 @@ import static java.lang.Math.abs;
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 
-@Autonomous(name = "Shawn: Autonomous Crater", group = "Pushbot")
+@Autonomous(name = "Shawn: Autonomous Unlatch and SAMPLE", group = "Pushbot")
 //@Disabled
-public class Shawn_AutonomousCrater extends LinearOpMode {
+public class Shawn_AutonomousSample extends LinearOpMode {
 
     /* Declare OpMode members. */
     HardwareShawn Shawn = new HardwareShawn();   // Use a Shawn's hardware
@@ -252,46 +252,24 @@ public class Shawn_AutonomousCrater extends LinearOpMode {
 
         if (tfod.detectGold(DETECT_TIME)) {
             telemetry.addLine("THE GOLD IS IN THE CENTER!!! WHOO");
-
-            // temporary delay
-       //     Thread.sleep(4000);
-            // temporary delay
-
             // knock gold
             gyroDrive(DRIVE_SPEED, FORWARD_CENTER, 180);
             gyroHold(TURN_SPEED, 180, 0.1);
             // drive back
             gyroDrive(DRIVE_SPEED, (-FORWARD_CENTER) + SIDE_A, 180);
             gyroHold(TURN_SPEED, 180, 0.1);
-            // turn to face friendly alliance wall
-            gyroTurn(TURN_SPEED, 90);
-            gyroHold(TURN_SPEED, 90, 0.2);
-            // drive towards friendly alliance wall
-            gyroDrive(DRIVE_SPEED, BACK_TO_WALL, 90);
-            gyroHold(DRIVE_SPEED, 90, 0.1);
         } else {
             // turn to look at left mineral
             gyroTurn(TURN_SPEED, 180 + ANGLE_TO_SIDE_MINERAL);
             gyroHold(TURN_SPEED, 180 + ANGLE_TO_SIDE_MINERAL, 0.2);
             if (tfod.detectGold(DETECT_TIME)) {
                 telemetry.addLine("THE GOLD IS ON THE LEFT!!");
-
-                // temporary delay
-      //          Thread.sleep(2000);
-                // temporary delay
-
                 // knock gold
                 gyroDrive(DRIVE_SPEED, FORWARD_SIDE, 180 + ANGLE_TO_SIDE_MINERAL);
                 gyroHold(TURN_SPEED, 180 + ANGLE_TO_SIDE_MINERAL, 0.1);
                 // drive back
                 gyroDrive(DRIVE_SPEED, (-FORWARD_SIDE) + hypotenuse, 180 + ANGLE_TO_SIDE_MINERAL);
                 gyroHold(TURN_SPEED, 180 + ANGLE_TO_SIDE_MINERAL, 0.1);
-                // turn to face friendly alliance wall
-                gyroTurn(TURN_SPEED, 90);
-                gyroHold(TURN_SPEED, 90, 0.2);
-                // drive towards friendly alliance wall
-                gyroDrive(DRIVE_SPEED, BACK_TO_WALL + sideB, 90);
-                gyroHold(DRIVE_SPEED, 90, 0.1);
             } else {
                 telemetry.addLine("THE GOLD SHOULD BE ON THE RIGHT!!");
                 // turn to face gold
@@ -303,42 +281,12 @@ public class Shawn_AutonomousCrater extends LinearOpMode {
                 // drive back
                 gyroDrive(DRIVE_SPEED, (-FORWARD_SIDE) + hypotenuse, 180 - ANGLE_TO_SIDE_MINERAL);
                 gyroHold(TURN_SPEED, 180 - ANGLE_TO_SIDE_MINERAL, 0.1);
-                // turn to face friendly alliance wall
-                gyroTurn(TURN_SPEED, 90);
-                gyroHold(TURN_SPEED, 90, 0.2);
-                // drive towards friendly alliance wall
-                gyroDrive(DRIVE_SPEED, BACK_TO_WALL - sideB, 90);
-                gyroHold(TURN_SPEED, 90, 0.1);
             }
         }
         telemetry.update();
 
         // set actuator power to 0
         Shawn.actuator.setPower(0);
-
-        // turn towards depot
-        gyroTurn(TURN_SPEED, 135);
-        gyroHold(DRIVE_SPEED, 135, 0.5);  // Hold time was 0.3
-
-        // reverse towards depot
-        gyroDrive(1, -45, 135);
-        gyroHold(DRIVE_SPEED, 135, 0.2);
-
-        // SPIT OUT MARKER
-        Shawn.armRotation.setTargetPosition(-500);
-        Shawn.armRotation.setPower(0.5);
-        while (Shawn.armRotation.isBusy()) {}
-        Shawn.armRotation.setPower(0);
-
-        // skedaddle to the crater
-        gyroDrive(1, 41, 137);
-
-        Shawn.armRotation.setTargetPosition(0);
-        Shawn.armRotation.setPower(0.5);
-
-        gyroDrive(1, 44, 137);
-
-        Shawn.armRotation.setPower(0);
 
         while (march.getCurrentPosition() < 23700) {}
         march.pause();
