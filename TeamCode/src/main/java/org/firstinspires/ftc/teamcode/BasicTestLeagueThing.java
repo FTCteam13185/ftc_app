@@ -35,7 +35,11 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.util.Range;
+
+import org.firstinspires.ftc.robotcontroller.external.samples.SensorDigitalTouch;
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 @TeleOp(name="Basic: League Test Drive", group="Iterative Opmode")
 public class BasicTestLeagueThing extends OpMode {
@@ -47,8 +51,9 @@ public class BasicTestLeagueThing extends OpMode {
     private DcMotor rightRear = null;   // blue
 
     private CRServo clawServo = null;
-
     private CRServo armMotor = null;
+
+    private DigitalChannel armStop = null;
 
     /*
      * Code to run ONCE when the driver hits INIT
@@ -67,6 +72,9 @@ public class BasicTestLeagueThing extends OpMode {
 
         clawServo = hardwareMap.get(CRServo.class, "clawServo");
         armMotor = hardwareMap.get(CRServo.class, "armMotor");
+
+        armStop = hardwareMap.get(DigitalChannel.class, "armStop");
+        armStop.setMode(DigitalChannel.Mode.INPUT);
 
         // Most robots need the motor on one side to be reversed to drive forward
         // Reverse the motor that runs backwards when connected directly to the battery
@@ -177,11 +185,15 @@ public class BasicTestLeagueThing extends OpMode {
         // control arm
         if (gamepad1.dpad_up) {
             armMotor.setPower(0.5);
-        } else if (gamepad1.dpad_down) {
+        } else if (gamepad1.dpad_down && armStop.getState()) {
             armMotor.setPower(-0.5);
         } else {
             armMotor.setPower(0);
         }
+
+
+        // write touch sensor control to screen
+        telemetry.addData("Touch Sensor", armStop.getState());
 
     }
 
