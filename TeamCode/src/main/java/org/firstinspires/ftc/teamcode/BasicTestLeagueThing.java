@@ -48,6 +48,8 @@ public class BasicTestLeagueThing extends OpMode {
 
     private CRServo clawServo = null;
 
+    private CRServo armMotor = null;
+
     /*
      * Code to run ONCE when the driver hits INIT
      */
@@ -64,6 +66,7 @@ public class BasicTestLeagueThing extends OpMode {
         rightRear = hardwareMap.get(DcMotor.class, "rightRear");
 
         clawServo = hardwareMap.get(CRServo.class, "clawServo");
+        armMotor = hardwareMap.get(CRServo.class, "armMotor");
 
         // Most robots need the motor on one side to be reversed to drive forward
         // Reverse the motor that runs backwards when connected directly to the battery
@@ -78,6 +81,7 @@ public class BasicTestLeagueThing extends OpMode {
         rightRear.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         clawServo.setDirection(CRServo.Direction.FORWARD);
+        armMotor.setDirection(CRServo.Direction.FORWARD);
 
         // while the power of the wheels is 0, brake
         leftFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -168,6 +172,15 @@ public class BasicTestLeagueThing extends OpMode {
             clawServo.setPower(-1);
         } else {
             clawServo.setPower(0);
+        }
+
+        // control arm
+        if (gamepad1.dpad_up) {
+            armMotor.setPower(0.5);
+        } else if (gamepad1.dpad_down) {
+            armMotor.setPower(-0.5);
+        } else {
+            armMotor.setPower(0);
         }
 
     }
