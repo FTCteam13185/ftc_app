@@ -36,6 +36,7 @@ import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcontroller.external.samples.SensorDigitalTouch;
@@ -45,15 +46,18 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 public class BasicTestLeagueThing extends OpMode {
 
     // Declare OpMode members.
-    private DcMotor leftFront = null;   // white
-    private DcMotor leftRear = null;    // yellow
-    private DcMotor rightFront = null;  // green
-    private DcMotor rightRear = null;   // blue
+    private DcMotor leftFront = null;   // white - port 2
+    private DcMotor leftRear = null;    // yellow - port 1
+    private DcMotor rightFront = null;  // green - port 3
+    private DcMotor rightRear = null;   // blue - port 0
 
-    private CRServo clawServo = null;
+    private Servo clawServo = null;
     private CRServo armMotor = null;
 
     private DigitalChannel armStop = null;
+
+    private double clawPos;
+    private final double clawIncrement = 0.02;
 
     /*
      * Code to run ONCE when the driver hits INIT
@@ -70,9 +74,13 @@ public class BasicTestLeagueThing extends OpMode {
         rightFront = hardwareMap.get(DcMotor.class, "rightFront");
         rightRear = hardwareMap.get(DcMotor.class, "rightRear");
 
-        clawServo = hardwareMap.get(CRServo.class, "clawServo");
+        // servos
+        clawServo = hardwareMap.get(Servo.class, "clawServo");
         armMotor = hardwareMap.get(CRServo.class, "armMotor");
 
+        clawPos = clawServo.getPosition();
+
+        // arm touch sensor
         armStop = hardwareMap.get(DigitalChannel.class, "armStop");
         armStop.setMode(DigitalChannel.Mode.INPUT);
 
@@ -88,7 +96,7 @@ public class BasicTestLeagueThing extends OpMode {
         rightFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         rightRear.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-        clawServo.setDirection(CRServo.Direction.FORWARD);
+        clawServo.setDirection(Servo.Direction.FORWARD);
         armMotor.setDirection(CRServo.Direction.FORWARD);
 
         // while the power of the wheels is 0, brake
@@ -175,12 +183,11 @@ public class BasicTestLeagueThing extends OpMode {
 
         // controlling the claw
         if (gamepad1.dpad_right) {
-            clawServo.setPower(1);
+            clawPos = Range.clip(clawPos + clawIncrement, -1.0, 1.0);
         } else if (gamepad1.dpad_left) {
-            clawServo.setPower(-1);
-        } else {
-            clawServo.setPower(0);
+            clawPos = Range.clip(clawPos - clawIncrement, -1.0, 1.0);
         }
+        clawServo.setPosition(clawPos);
 
         // control arm
         if (gamepad1.dpad_up) {
@@ -207,8 +214,6 @@ public class BasicTestLeagueThing extends OpMode {
         leftRear.setPower(0);
         rightFront.setPower(0);
         rightRear.setPower(0);
-
-        clawServo.setPower(0);
     }
 
 }
